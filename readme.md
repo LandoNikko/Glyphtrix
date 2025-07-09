@@ -14,11 +14,13 @@
 
 [discord-shield-static]: https://img.shields.io/badge/Discord-landomrandom-031203?style=for-the-badge&labelColor=0b0b0b&messageColor=e0e6f7&logo=discord&logoColor=00FF00
 
-# VisuType
+# Glyphtrix
 
-VisuType is a web application that transforms images and videos into real-time, character-based visual art directly in your browser.
+Glyphtrix is a local web app that transforms images and videos into real-time, character-based visual art in your browser.
 
-![VisuType_Home](https://github.com/user-attachments/assets/4b72104b-ada1-49be-8d08-d4b9511bb2ce)
+Try it here: https://landonikko.github.io/Glyphtrix
+
+![Glyphtrix_Home](https://github.com/user-attachments/assets/4b72104b-ada1-49be-8d08-d4b9511bb2ce)
 
 ## ![Features Shield][features-shield]
 
@@ -35,7 +37,7 @@ VisuType is a web application that transforms images and videos into real-time, 
 
 | Input Image | Output: Binary |
 | :------------: | :---------------: |
-| ![Input Image](https://github.com/user-attachments/assets/6cd90c8b-d13b-41bd-a332-e73e5bd0fd24) | ![VisuType_Binary](https://github.com/user-attachments/assets/cbeb344a-e8dd-4785-935f-9b6f241ba955) |
+| ![Input Image](https://github.com/user-attachments/assets/6cd90c8b-d13b-41bd-a332-e73e5bd0fd24) | ![VisuType_Binary](https://github.com/user-attachments/assets/f96016f4-b1ee-4a04-a27e-78c2bfa431e2) |
 | Output: Chinese Characters | Output: Custom with Unicode Character |
 | ![VisuType_Chinese](https://github.com/user-attachments/assets/562fe261-7747-4de0-9786-d27ae357464a) | ![VisuType_Custom](https://github.com/user-attachments/assets/3b255674-ccf0-4f4e-b30c-9f6926190b7b) |
 
@@ -52,7 +54,7 @@ VisuType is a web application that transforms images and videos into real-time, 
 
 ## ![How it Works Shield][how-it-works-shield]
 
-VisuType analyzes the input image or video frame by frame. It applies selected pre-processing effects (like blur, brightness, levels), then divides the (potentially modified) visual into a grid based on the "Density" setting. The average brightness of each grid cell is mapped to a character from the chosen "Character Set." Finally, these characters are rendered onto an output canvas using the selected "Font Family," "Scale Factor," and "Color Scheme."
+Glyphtrix analyzes the input image or video frame by frame. It applies selected pre-processing effects (like blur, brightness, levels), then divides the (potentially modified) visual into a grid based on the "Density" setting. The average brightness of each grid cell is mapped to a character from the chosen "Character Set." Finally, these characters are rendered onto an output canvas using the selected "Font Family," "Scale Factor," and "Color Scheme."
 
 [how-it-works-shield]: https://img.shields.io/badge/How%20it%20Works-00FF00?style=for-the-badge&color=0b0b0b&labelColor=00FF00
 

@@ -3,20 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VisuType</title>
+  <title>Glyphtrix</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
-    /* Google Fonts Import */
     @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Space+Mono:wght@400;700&family=VT323&family=Cutive+Mono&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap');
+
+    :root {
+      /* Primary Colors */
+      --primary-bg: #000;
+      --primary-text: #00FF00;
+      --primary-white: #FFFFFF;
+      
+      /* Border Colors */
+      --border-primary: #555;
+      --border-secondary: #333;
+      --border-light: #111;
+      
+      /* Hover States */
+      --hover-green: #002200;
+      --hover-red: #440000;
+      --hover-red-dark: #660000;
+      
+      /* Status Colors */
+      --error-text: #FF6666;
+      --muted-green: #336633;
+      --dark-green: #001100;
+      --disabled-red: #220000;
+      
+      /* Accent Colors */
+      --accent-dark: #111;
+      --overlay-bg: rgba(0, 0, 0, 0.8);
+      --overlay-dark: rgba(0, 0, 0, 0.85);
+      
+      /* Drag States */
+      --drag-hover: #444;
+      --drag-default: #333;
+    }
 
     html, body {
       height: 100%;
       margin: 0;
       overflow: hidden;
       font-family: "Courier New", Courier, monospace;
-      background-color: #000;
-      color: #00FF00;
+      background-color: var(--primary-bg);
+      color: var(--primary-text);
     }
 
     body {
@@ -30,7 +61,7 @@
       display: flex;
       width: 100%;
       max-width: none;
-      background-color: #000;
+      background-color: var(--primary-bg);
       border-radius: 0;
       overflow: hidden;
       flex-grow: 1;
@@ -50,7 +81,7 @@
     }
 
     .input-column {
-      border-right: 1px solid #555;
+      border-right: 1px solid var(--border-primary);
     }
 
     .column-header {
@@ -60,7 +91,7 @@
       justify-content: center;
       width: 100%;
       box-sizing: border-box;
-      border-bottom: 1px solid #555;
+      border-bottom: 1px solid var(--border-primary);
       flex-shrink: 0;
       position: relative;
     }
@@ -108,7 +139,7 @@
 
 
     #outputCanvas {
-      background-color: black;
+      background-color: var(--primary-bg);
       width: 100%;
       max-width: 100%;
       height: calc(100% - 100px);
@@ -122,7 +153,7 @@
         left: 0;
         width: 100%;
         height: calc(100% - 100px);
-        background-color: rgba(0,0,0,0.85);
+        background-color: var(--overlay-dark);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -132,17 +163,17 @@
     #sequenceLoadingSpinner svg {
         width: 64px;
         height: 64px;
-        fill: #00FF00;
+        fill: var(--primary-text);
     }
     #sequenceLoadingOverlay p {
         margin-top: 15px;
         font-size: 1.2em;
-        color: #00FF00;
+        color: var(--primary-text);
     }
     #cancelSequenceButton {
-        background-color: #440000;
-        color: #FF6666;
-        border: 1px solid #FF6666;
+        background-color: var(--hover-red);
+        color: var(--error-text);
+        border: 1px solid var(--error-text);
         padding: 8px 15px;
         font-size: 0.9em;
         cursor: pointer;
@@ -150,12 +181,12 @@
         margin-top: 20px;
     }
     #cancelSequenceButton:hover {
-        background-color: #660000;
+        background-color: var(--hover-red-dark);
     }
 
 
     .upload-zone {
-      border: 4px dashed #555;
+      border: 4px dashed var(--border-primary);
       width: 80%;
       height: 80%;
       display: flex;
@@ -167,7 +198,7 @@
     }
 
     .upload-zone:hover {
-      background-color: #002200;
+      background-color: var(--hover-green);
     }
 
     .upload-zone i {
@@ -178,12 +209,12 @@
     .settings-panel-container {
       width: 100%;
       height: 200px;
-      background-color: #000;
+      background-color: var(--primary-bg);
       display: flex;
       align-items: stretch;
       justify-content: space-between;
       box-sizing: border-box;
-      border-top: 1px solid #555;
+      border-top: 1px solid var(--border-primary);
       flex-shrink: 0;
       overflow-x: hidden;
     }
@@ -200,13 +231,13 @@
     }
      .upload-panel-content {
         flex-grow: 0.4; align-items: flex-start;
-        border-right: 1px solid #555;
+        border-right: 1px solid var(--border-primary);
         min-width: 180px;
      }
      .download-panel-content {
         flex-grow: 0.8;
         align-items: flex-start;
-        border-left: 1px solid #555;
+        border-left: 1px solid var(--border-primary);
         min-width: 280px;
      }
      .settings-title-section {
@@ -220,7 +251,7 @@
      .settings-font-content {
         flex-grow: 1;
         align-items: flex-start;
-        min-width: 220px; /* Increased for more preset buttons */
+        min-width: 220px;
      }
      .settings-output-content {
         flex-grow: 0.7;
@@ -271,16 +302,16 @@
         margin-top: 5px;
     }
     .checkbox-container input[type="checkbox"] {
-        margin-right: 8px; width: 16px; height: 16px; accent-color: #00FF00;
-        background-color: #333; border: 1px solid #555; cursor: pointer;
+        margin-right: 8px; width: 16px; height: 16px; accent-color: var(--primary-text);
+        background-color: var(--border-secondary); border: 1px solid var(--border-primary); cursor: pointer;
         -webkit-appearance: none; -moz-appearance: none; appearance: none;
         border-radius: 3px; position: relative;
     }
     .checkbox-container input[type="checkbox"]:checked {
-        background-color: #005500; border-color: #00FF00;
+        background-color: var(--hover-green); border-color: var(--primary-text);
     }
     .checkbox-container input[type="checkbox"]:checked::before {
-        content: '\2713'; font-size: 12px; color: #00FF00;
+        content: '\2713'; font-size: 12px; color: var(--primary-text);
         position: absolute; left: 2px; top: 0px;
     }
     .checkbox-container label { font-size: 0.85em; cursor: pointer; }
@@ -288,7 +319,7 @@
 
     .control-container label { margin-bottom: 3px; font-size: 0.85em; white-space: nowrap; }
      .control-container select, .select-group select {
-        background-color: #000; color: #00FF00; border: 1px solid #555;
+        background-color: var(--primary-bg); color: var(--primary-text); border: 1px solid var(--border-primary);
         padding: 5px; width: 100%; font-family: inherit;
         box-sizing: border-box;
         height: 28px;
@@ -299,9 +330,9 @@
         margin: 0;
     }
     .control-container input[type="text"] {
-        background-color: #000;
-        color: #00FF00;
-        border: 1px solid #555;
+        background-color: var(--primary-bg);
+        color: var(--primary-text);
+        border: 1px solid var(--border-primary);
         padding: 5px;
         width: 100%;
         max-width: 180px;
@@ -317,9 +348,9 @@
         gap: 5px;
     }
     .preset-button {
-        background-color: #111;
-        color: #00FF00;
-        border: 1px solid #555;
+        background-color: var(--border-light);
+        color: var(--primary-text);
+        border: 1px solid var(--border-primary);
         padding: 3px 6px;
         font-size: 0.8em;
         cursor: pointer;
@@ -328,8 +359,8 @@
         text-align: center;
     }
     .preset-button:hover {
-        background-color: #002200;
-        border-color: #00FF00;
+        background-color: var(--hover-green);
+        border-color: var(--primary-text);
     }
 
 
@@ -340,18 +371,18 @@
         gap: 0px;
     }
     .input-group button, .select-group button {
-        background-color: #000; color: #00FF00; border: 1px solid #00FF00;
+        background-color: var(--primary-bg); color: var(--primary-text); border: 1px solid var(--primary-text);
         padding: 5px 8px; font-size: 1em; cursor: pointer;
         height: 28px; box-sizing: border-box;
         flex-shrink: 0;
         margin: 0;
     }
      .input-group button:hover, .select-group button:hover {
-        background-color: #002200;
+        background-color: var(--hover-green);
      }
     .input-group input[type="number"] {
-        width: 50px; text-align: center; background-color: #000; color: #00FF00;
-        border: 1px solid #555; padding: 3px; height: 28px; box-sizing: border-box;
+        width: 50px; text-align: center; background-color: var(--primary-bg); color: var(--primary-text);
+        border: 1px solid var(--border-primary); padding: 3px; height: 28px; box-sizing: border-box;
         -moz-appearance: textfield; margin: 0 3px;
     }
     .input-group input[type=number]::-webkit-outer-spin-button,
@@ -363,21 +394,21 @@
         display: flex; justify-content: space-between; width: 100%;
         margin-bottom: 3px; font-size: 0.85em; white-space: nowrap;
     }
-    .slider-container label span { margin-left: 5px; color: #00FF00; }
+    .slider-container label span { margin-left: 5px; color: var(--primary-text); }
 
     input[type="range"] {
         -webkit-appearance: none; appearance: none; width: 100%;
-        height: 8px; background: #333; outline: none; opacity: 0.7;
+        height: 8px; background: var(--border-secondary); outline: none; opacity: 0.7;
         transition: opacity .15s ease-in-out; border-radius: 4px;
     }
     input[type="range"]:hover { opacity: 1; }
     input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none; appearance: none; width: 16px; height: 16px;
-        background: #00FF00; cursor: pointer; border-radius: 50%; border: 1px solid #000;
+        background: var(--primary-text); cursor: pointer; border-radius: 50%; border: 1px solid var(--primary-bg);
     }
     input[type="range"]::-moz-range-thumb {
-        width: 16px; height: 16px; background: #00FF00; cursor: pointer;
-        border-radius: 50%; border: 1px solid #000;
+        width: 16px; height: 16px; background: var(--primary-text); cursor: pointer;
+        border-radius: 50%; border: 1px solid var(--primary-bg);
     }
     .slider-container.disabled-for-video,
     .control-container.disabled-for-video,
@@ -393,10 +424,10 @@
 
 
     .condensed-upload-zone {
-      border: 2px dashed #555; padding: 8px; cursor: pointer;
+      border: 2px dashed var(--border-primary); padding: 8px; cursor: pointer;
       display: inline-block; transition: background-color 0.2s;
     }
-     .condensed-upload-zone:hover { background-color: #002200; }
+     .condensed-upload-zone:hover { background-color: var(--hover-green); }
     .condensed-upload-zone input[type="file"] { display: none; }
     .condensed-upload-zone label {
         cursor: pointer; display: flex; flex-direction: column;
@@ -408,13 +439,13 @@
     .condensed-upload-zone .filename-container span { margin-bottom: 3px; font-size: 0.9em; }
 
     .change-image-button {
-        background-color: #000; color: #00FF00; border: 1px solid #00FF00;
+        background-color: var(--primary-bg); color: var(--primary-text); border: 1px solid var(--primary-text);
         padding: 4px 7px; cursor: pointer; display: inline-flex; align-items: center;
         transition: background-color 0.2s; width: 140px; justify-content: center;
         font-size: 0.8em; align-self: flex-start; margin-top: 5px;
     }
     .download-button {
-        background-color: #000; color: #00FF00; border: 1px solid #00FF00;
+        background-color: var(--primary-bg); color: var(--primary-text); border: 1px solid var(--primary-text);
         padding: 6px 10px; cursor: pointer; display: inline-flex; align-items: center;
         transition: background-color 0.2s;
         width: 100%;
@@ -424,10 +455,10 @@
         font-size: 0.85em;
         box-sizing: border-box;
     }
-    .download-button:hover, .change-image-button:hover{ background-color: #002200; }
+    .download-button:hover, .change-image-button:hover{ background-color: var(--hover-green); }
     .download-button i { margin-right: 8px; font-size: 1.1em; }
     .download-button:disabled {
-        color: #336633; border-color: #336633; cursor: not-allowed; background-color: #001100;
+        color: var(--muted-green); border-color: var(--muted-green); cursor: not-allowed; background-color: var(--dark-green);
     }
     .download-buttons-grid {
         display: grid;
@@ -439,20 +470,139 @@
         width: 100%; margin-top: 10px; display: flex; justify-content: flex-start;
     }
     .reset-button {
-        background-color: #220000; color: #FF6666; border: 1px solid #FF6666;
+        background-color: var(--disabled-red); color: var(--error-text); border: 1px solid var(--error-text);
         padding: 6px 10px; width: auto; min-width: 160px;
         cursor: pointer; transition: background-color 0.2s;
     }
-    .reset-button:hover { background-color: #440000; }
+    .reset-button:hover { background-color: var(--hover-red); }
 
 
     .mobile-panel {
         display: none; width: 100%; flex-direction: column; align-items: center;
-        padding: 10px; box-sizing: border-box; background-color: #000; flex-shrink: 0;
+        padding: 10px; box-sizing: border-box; background-color: var(--primary-bg); flex-shrink: 0;
     }
-    #mobileUploadPanelPlaceholder { border-bottom: 1px solid #555; align-items: flex-start; }
-    #mobileDownloadPanelPlaceholder { border-top: 1px solid #555; align-items: flex-start; }
-    #mobileSettingsPanel { border-bottom: 1px solid #555; border-top: 1px solid #555; }
+    #mobileUploadPanelPlaceholder { border-bottom: 1px solid var(--border-primary); align-items: flex-start; }
+    #mobileDownloadPanelPlaceholder { border-top: 1px solid var(--border-primary); align-items: flex-start; }
+    #mobileSettingsPanel { border-bottom: 1px solid var(--border-primary); border-top: 1px solid var(--border-primary); }
+
+    /* Info Modal Styles */
+    .info-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--overlay-bg);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .info-modal-content {
+        background-color: var(--primary-bg);
+        border: 2px solid var(--primary-text);
+        border-radius: 8px;
+        max-width: 600px;
+        max-height: 80vh;
+        width: 100%;
+        overflow-y: auto;
+        color: var(--primary-text);
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    .info-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px 10px 25px;
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .info-modal-header h2 {
+        margin: 0;
+        color: var(--primary-text);
+        font-size: 1.5em;
+    }
+
+    .info-modal-close {
+        background: none;
+        border: none;
+        color: var(--primary-text);
+        font-size: 2em;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .info-modal-close:hover {
+        color: var(--error-text);
+    }
+
+    .info-modal-body {
+        padding: 20px 25px 25px 25px;
+        line-height: 1.6;
+    }
+
+    .info-modal-body h3 {
+        color: var(--primary-text);
+        margin: 20px 0 10px 0;
+        font-size: 1.2em;
+    }
+
+    .info-modal-body ul, .info-modal-body ol {
+        margin: 10px 0;
+        padding-left: 25px;
+    }
+
+    .info-modal-body li {
+        margin-bottom: 8px;
+    }
+
+    .info-modal-body p {
+        margin: 15px 0;
+    }
+
+    .info-modal-body strong {
+        color: var(--primary-text);
+        font-weight: bold;
+    }
+
+    .info-modal-footer {
+        padding: 15px 25px 25px 25px;
+        border-top: 1px solid var(--border-primary);
+        display: flex;
+        justify-content: center;
+    }
+
+    .github-link-button {
+        background-color: var(--border-light);
+        color: var(--primary-text);
+        border: 1px solid var(--primary-text);
+        padding: 10px 20px;
+        font-size: 0.9em;
+        cursor: pointer;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: inherit;
+        transition: background-color 0.2s;
+    }
+
+    .github-link-button:hover {
+        background-color: var(--hover-green);
+    }
+
+    .github-link-button i {
+        font-size: 1.1em;
+    }
 
     @media (max-width: 768px) {
       body { justify-content: flex-start; }
@@ -474,7 +624,7 @@
       .settings-column { margin-bottom: 10px; width: 100%;}
 
 
-      .column-header { height: 50px; border-top: 1px solid #555; }
+      .column-header { height: 50px; border-top: 1px solid var(--border-primary); }
       .input-column, .output-column { width: 100%; flex-grow: 1; min-height: 150px; border-right: none; }
       #outputCanvas { height: calc(100% - 50px); }
       .settings-panel-section-content {
@@ -491,6 +641,17 @@
       .slider-container input[type="range"], .input-group input[type="number"], .select-group select {
           width: 100%;
           max-width: none;
+      }
+
+      /* Mobile modal adjustments */
+      .info-modal {
+          padding: 10px;
+      }
+      .info-modal-content {
+          max-height: 90vh;
+      }
+      .info-modal-header, .info-modal-body {
+          padding: 15px 20px;
       }
     }
   </style>
@@ -529,13 +690,49 @@
         <p id="sequenceLoadingOverlayText">Rendering PNG Sequence...</p>
         <button id="cancelSequenceButton">Cancel Rendering</button>
       </div>
-      <a id="downloadLink" style="display: none;" download="visutype_image.png">Download Image</a>
+      <a id="downloadLink" style="display: none;" download="Glyphtrix_image.png">Download Image</a>
     </div>
   </div>
 
   <div class="mobile-panel" id="mobileSettingsPanel"></div>
   <div class="mobile-panel" id="mobileDownloadPanelPlaceholder"></div>
 
+  <!-- Info Modal -->
+  <div id="infoModal" class="info-modal" style="display: none;">
+    <div class="info-modal-content">
+      <div class="info-modal-header">
+        <h2>About Glyphtrix</h2>
+        <button class="info-modal-close" onclick="closeInfoModal()">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p><strong>Glyphtrix</strong> is a local web app that transforms images and videos into real-time, character-based visual art in your browser.</p>
+        
+        <h3>Features</h3>
+        <ul>
+          <li>Image & Video Support</li>
+          <li>Multiple Character Sets</li>
+          <li>Real-time Processing</li>
+          <li>Customizable Output</li>
+          <li>Export Options</li>
+        </ul>
+        
+        <h3>How to Use</h3>
+        <ol>
+          <li>Upload an image or video</li>
+          <li>Adjust the settings to customize your character art</li>
+          <li>Preview and download your creation</li>
+        </ol>
+        
+        <p>Tip: If <strong>Density</strong> value is high, increase the <strong>Scale Factor</strong> to make the characters bigger. Pay attention to the <strong>Resolution</strong> value, higher values will take longer to render.</p>
+        
+        <div class="info-modal-footer">
+          <button class="github-link-button" onclick="openGitHub()">
+            <i class="ri-github-line"></i> View Source Code on GitHub
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="settings-panel-container" id="desktopSettingsPanel">
     <div class="settings-panel-section-content upload-panel-content" id="uploadPanelContent">
@@ -694,6 +891,9 @@
         </button>
         <button class="download-button" onclick="downloadPngSequence()" id="downloadPngSequenceButton" style="display: none;">
             <i class="ri-download-2-line"></i> Download Sequence
+        </button>
+        <button class="download-button" onclick="openInfoModal()" id="openInfoButton">
+            <i class="ri-information-line"></i> About Glyphtrix
         </button>
       </div>
     </div>
@@ -915,7 +1115,7 @@
     });
 
 
-    async function generateVisuTypeFrameBlob(videoTime, tempCanvas, tempCtx, offscreenRenderCanvas, offscreenRenderCtx) {
+    async function generateGlyphtrixFrameBlob(videoTime, tempCanvas, tempCtx, offscreenRenderCanvas, offscreenRenderCtx) {
         return new Promise(async (resolve, reject) => {
             if (cancelSequenceRenderFlag) {
                 return reject(new Error("Sequence rendering cancelled by user."));
@@ -954,8 +1154,6 @@
                     const numOutputCols = frameBlobMatrix[0].length;
                     offscreenRenderCanvas.width = Math.max(1, numOutputCols * charWidth);
                     offscreenRenderCanvas.height = Math.max(1, numOutputRows * charHeight);
-                    // No need to update main gridSizeDisplay here, it's for the main canvas
-
                     offscreenRenderCtx.fillStyle = getCanvasBackgroundColor(colorSchemeSelect.value);
                     offscreenRenderCtx.fillRect(0, 0, offscreenRenderCanvas.width, offscreenRenderCanvas.height);
                     offscreenRenderCtx.font = `${effectiveCharSize}px ${availableFonts[fontSelect.selectedIndex].cssName}`;
@@ -1004,7 +1202,7 @@
         if (cachedZipBlob && sequenceSettingsSnapshot === currentSettings) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(cachedZipBlob);
-            link.download = 'visutype_sequence.zip';
+            link.download = 'Glyphtrix_sequence.zip';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1046,7 +1244,7 @@
                 sequenceLoadingOverlayText.textContent = progressMessage;
                 sequenceLoadingMessage.textContent = progressMessage;
 
-                const blob = await generateVisuTypeFrameBlob(currentTime, tempCaptureCanvas, tempCaptureCtx, offscreenRenderCanvas, offscreenRenderCtx);
+                const blob = await generateGlyphtrixFrameBlob(currentTime, tempCaptureCanvas, tempCaptureCtx, offscreenRenderCanvas, offscreenRenderCtx);
                 pngBlobs.push(blob);
             }
 
@@ -1064,7 +1262,7 @@
 
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(cachedZipBlob);
-                link.download = 'visutype_sequence.zip';
+                link.download = 'Glyphtrix_sequence.zip';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -1121,7 +1319,7 @@
         invertColorsToggle.checked = false;
         previewChangesToggle.checked = true;
 
-        densityInput.value = isVideoInput ? 20 : 7; // Set based on current type
+        densityInput.value = isVideoInput ? 20 : 7;
         scaleFactorInput.value = 1.0;
         colorSchemeSelect.value = 'greenOnBlack';
         fontSelect.selectedIndex = 0;
@@ -1236,8 +1434,8 @@
     }
     function getCanvasBackgroundColor(scheme) {
         switch (scheme) {
-            case 'blackOnWhite': return '#FFFFFF';
-            case 'greenOnBlack': case 'whiteOnBlack': default: return '#000000';
+            case 'blackOnWhite': return getComputedStyle(document.documentElement).getPropertyValue('--primary-white');
+            case 'greenOnBlack': case 'whiteOnBlack': default: return getComputedStyle(document.documentElement).getPropertyValue('--primary-bg');
         }
     }
 
@@ -1777,10 +1975,10 @@
     });
 
 
-    inputColumn.addEventListener('dragover', (e) => { e.preventDefault(); inputColumn.style.backgroundColor = '#444'; });
-    inputColumn.addEventListener('dragleave', () => { inputColumn.style.backgroundColor = '#333'; });
+    inputColumn.addEventListener('dragover', (e) => { e.preventDefault(); inputColumn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--drag-hover'); });
+    inputColumn.addEventListener('dragleave', () => { inputColumn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--drag-default'); });
     inputColumn.addEventListener('drop', (e) => {
-        e.preventDefault(); inputColumn.style.backgroundColor = '#333';
+        e.preventDefault(); inputColumn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--drag-default');
         const file = e.dataTransfer.files[0];
         if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
           handleImageUpload(file);
@@ -1791,7 +1989,7 @@
     });
     uploadZone.addEventListener('click', () => { imageUpload.click(); });
 
-    condensedUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); condensedUploadZone.style.backgroundColor = '#002200'; });
+    condensedUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); condensedUploadZone.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--hover-green'); });
     condensedUploadZone.addEventListener('dragleave', () => { condensedUploadZone.style.backgroundColor = 'transparent';});
     condensedUploadZone.addEventListener('drop', (e) => {
         e.preventDefault(); condensedUploadZone.style.backgroundColor = 'transparent';
@@ -1808,7 +2006,7 @@
         if (!outputCanvas || !currentBlobMatrix) return;
         const imgData = outputCanvas.toDataURL("image/png");
         const link = document.createElement('a');
-        link.href = imgData; link.download = 'visutype_image.png';
+        link.href = imgData; link.download = 'Glyphtrix_image.png';
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
     function downloadText() {
@@ -1816,7 +2014,7 @@
         let textToDownload = currentBlobMatrix.map(row => row.map(cell => cell.char).join('')).join('\n');
         const blob = new Blob([textToDownload], { type: "text/plain;charset=utf-8" });
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob); link.download = 'visutype_image.txt';
+        link.href = URL.createObjectURL(blob); link.download = 'Glyphtrix_image.txt';
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
       }
     }
@@ -1827,6 +2025,32 @@
         newTab.document.body.style.backgroundColor = getCanvasBackgroundColor(currentColorScheme);
         newTab.document.body.innerHTML = `<img src="${imgData}" style="max-width:100%; height:auto;">`;
    }
+       function openGitHub() {
+        window.open('https://github.com/LandoNikko/Glyphtrix', '_blank');
+    }
+
+    function openInfoModal() {
+        document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    function closeInfoModal() {
+        document.getElementById('infoModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside of it
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('infoModal');
+        if (event.target === modal) {
+            closeInfoModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeInfoModal();
+        }
+    });
 
     function layoutPanels() {
         const isMobile = window.innerWidth <= 768;
@@ -1903,7 +2127,7 @@
             fontSelect.appendChild(option);
         });
         populateCustomCharacterPresets();
-        setDefaultValues(); // This will set initial density based on whether isVideoInput is true (which it isn't on load)
+        setDefaultValues(); // Sets initial density based on whether isVideoInput is true (which it isn't on load)
         if(uploadPanelTitle) uploadPanelTitle.style.display = 'none';
         layoutPanels();
         updatePngSequenceButtonState();
