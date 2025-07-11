@@ -1,16 +1,13 @@
-[![License][license-shield]][https://github.com/LandoNikko/Glyphtrix/blob/main/LICENSE]   [![GitHub][github-shield]][https://github.com/LandoNikko/Glyphtrix]   [![Email][gmail-shield]][landonikko@gmail.com]   ![Discord: landomrandom Status][discord-shield-static]
+[![License][license-shield]][license-url]   [![GitHub][github-shield]][github-url]   [![Email][gmail-shield]][gmail-url]   ![Discord: landomrandom Status][discord-shield-static]
 
 [license-shield]: https://img.shields.io/badge/License-GPL%20v2-031203?style=for-the-badge&labelColor=0b0b0b&logo=gnu&logoColor=00FF00
-[license-url]: LICENSE
-
-[demo-shield]: https://img.shields.io/badge/Try_it-0b0b0b?style=for-the-badge&color=0b0b0b
-[demo-url]: URL
+[license-url]: [LICENSE](https://github.com/LandoNikko/Glyphtrix/blob/main/LICENSE)
 
 [github-shield]: https://img.shields.io/badge/GitHub-031203?style=for-the-badge&color=0b0b0b&logo=github&logoColor=00FF00
-[github-url]: URL
+[github-url]: [URL](https://github.com/LandoNikko/Glyphtrix)
 
 [gmail-shield]: https://img.shields.io/badge/Email-031203?style=for-the-badge&color=0b0b0b&logo=gmail&logoColor=00FF00
-[gmail-url]: URL
+[gmail-url]: landonikko@gmail.com
 
 [discord-shield-static]: https://img.shields.io/badge/Discord-landomrandom-031203?style=for-the-badge&labelColor=0b0b0b&messageColor=e0e6f7&logo=discord&logoColor=00FF00
 
@@ -62,6 +59,6 @@ Glyphtrix analyzes the input image or video frame by frame. It applies selected 
 
 Contributions, bug reports and suggestions are welcome!
 
-[![Email][gmail-shield]][landonikko@gmail.com]   ![Discord: landomrandom Status][discord-shield-static]
+[![Email][gmail-shield]][gmail-url]   ![Discord: landomrandom Status][discord-shield-static]
 
 [feedback-shield]: https://img.shields.io/badge/Feedback%20&%20Contribute-031203?style=for-the-badge&color=0b0b0b&logo=github&logoColor=e0e6f7
