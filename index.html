@@ -12,7 +12,7 @@
     :root {
       /* Primary Colors */
       --primary-bg: #000;
-      --primary-text: #fff; /* 00FF00 */
+      --primary-text: #fff;
       --primary-white: #FFFFFF;
       
       /* Border Colors */
@@ -21,14 +21,14 @@
       --border-light: #111;
       
       /* Hover States */
-      --hover-green: #1d1d1d; /* 002200 */
+      --hover-grey: #1d1d1d;
       --hover-red: #440000;
       --hover-red-dark: #660000;
       
       /* Status Colors */
       --error-text: #FF6666;
-      --muted-green: #636363; /* 336633 */
-      --dark-green: #111111; /* 001100 */
+      --muted-grey: #636363;
+      --dark-grey: #111111;
       --disabled-red: #220000;
       
       /* Accent Colors */
@@ -102,12 +102,19 @@
         display: flex;
         align-items: center;
     }
-    #loadingSpinner {
+          #loadingSpinner {
         position: absolute;
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
-    }
+      }
+      
+      #mobileLoadingSpinner {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
     #sequenceLoadingMessage {
         font-size: 0.9em;
         margin-top: 5px;
@@ -170,8 +177,6 @@
         z-index: 10;
     }
     #sequenceLoadingSpinner svg {
-        width: 64px;
-        height: 64px;
         fill: var(--primary-text);
     }
     #sequenceLoadingOverlay p {
@@ -207,12 +212,45 @@
     }
 
     .upload-zone:hover {
-      background-color: var(--hover-green);
+      background-color: var(--hover-grey);
     }
 
     .upload-zone i {
       font-size: 3em;
       margin-bottom: 10px;
+    }
+
+    .upload-zone span {
+      text-align: center;
+    }
+
+    .upload-zone.loading i {
+      display: none;
+    }
+
+    .upload-zone.loading .upload-spinner {
+      display: inline-block;
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    .upload-zone .upload-spinner {
+      display: none;
+    }
+
+    .example-buttons-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .example-buttons-container .btn-action {
+      min-width: 160px;
+      justify-content: center;
+      padding: 8px 12px;
+      font-size: 0.9em;
     }
 
     .settings-panel-container {
@@ -319,7 +357,7 @@
         border-radius: 3px; position: relative;
     }
     .checkbox-container input[type="checkbox"]:checked {
-        background-color: var(--hover-green); border-color: var(--primary-text);
+        background-color: var(--hover-grey); border-color: var(--primary-text);
     }
     .checkbox-container input[type="checkbox"]:checked::before {
         content: '\2713'; font-size: 12px; color: var(--primary-text);
@@ -355,12 +393,12 @@
     }
     .control-container input[type="text"]:disabled {
         background-color: var(--border-secondary);
-        color: var(--muted-green);
+        color: var(--muted-grey);
         cursor: not-allowed;
     }
     #customCharsHelpButton:disabled {
         background-color: var(--border-secondary);
-        color: var(--muted-green);
+        color: var(--muted-grey);
         cursor: not-allowed;
         border-color: var(--border-secondary);
     }
@@ -421,17 +459,7 @@
         width: 16px; height: 16px; background: var(--primary-text); cursor: pointer;
         border-radius: 50%; border: 1px solid var(--primary-bg);
     }
-    .slider-container.disabled-for-video,
-    .control-container.disabled-for-video,
-    .checkbox-container.disabled-for-video {
-        opacity: 0.5;
-    }
-     .slider-container.disabled-for-video input[type="range"],
-     .control-container.disabled-for-video input,
-     .control-container.disabled-for-video select,
-     .checkbox-container.disabled-for-video input {
-        pointer-events: none;
-    }
+
 
 
     .condensed-upload-zone {
@@ -443,7 +471,7 @@
       width: 100%;
       overflow: hidden;
     }
-     .condensed-upload-zone:hover { background-color: var(--hover-green); }
+     .condensed-upload-zone:hover { background-color: var(--hover-grey); }
     .condensed-upload-zone input[type="file"] { display: none; }
     .condensed-upload-zone label {
         cursor: pointer;
@@ -478,13 +506,14 @@
         align-items: center;
     }
     .btn-base:hover {
-        background-color: var(--hover-green);
+        background-color: var(--hover-grey);
+        transform: translateY(-1px);
     }
     .btn-base:disabled {
-        color: var(--muted-green);
-        border-color: var(--muted-green);
+        color: var(--muted-grey);
+        border-color: var(--muted-grey);
         cursor: not-allowed;
-        background-color: var(--dark-green);
+        background-color: var(--dark-grey);
     }
 
     .change-image-button {
@@ -497,14 +526,8 @@
         max-width: 140px;
     }
     .download-button {
-        padding: 6px 10px;
         width: 100%;
-        justify-content: flex-start;
-        padding-left: 10px;
-        margin-bottom: 0;
-        font-size: 0.85em;
     }
-    .download-button i { margin-right: 8px; font-size: 1.1em; }
     .download-buttons-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -531,7 +554,7 @@
         display: none; width: 100%; flex-direction: column; align-items: center;
         padding: 10px; box-sizing: border-box; background-color: var(--primary-bg);
     }
-    #mobileUploadPanelPlaceholder { border-top: 1px solid var(--border-primary); align-items: center; }
+    #mobileUploadPanelPlaceholder { align-items: center; }
     #mobileDownloadPanelPlaceholder { border-top: 1px solid var(--border-primary); align-items: flex-start; }
     #mobileSettingsPanel { border-bottom: 1px solid var(--border-primary); border-top: 1px solid var(--border-primary); }
 
@@ -554,7 +577,6 @@
     .info-modal-content {
         background-color: var(--primary-bg);
         border: 2px solid var(--primary-text);
-        border-radius: 8px;
         max-width: 600px;
         max-height: 80vh;
         width: 100%;
@@ -596,13 +618,13 @@
     }
 
     .info-modal-body {
-        padding: 20px 25px 25px 25px;
+        padding: 0px 25px 25px 25px;
         line-height: 1.4;
     }
 
     .info-modal-body h3 {
         color: var(--primary-text);
-        margin: 20px 0 10px 0;
+        margin: 20px 0 0 0;
         font-size: 1.2em;
     }
 
@@ -627,29 +649,97 @@
         justify-content: center;
     }
 
-    .github-link-button {
-        background-color: var(--border-light);
+    .btn-action {
+        padding: 6px 10px;
+        font-size: 0.85em;
+        justify-content: flex-start;
+        padding-left: 10px;
+        margin-bottom: 0;
+    }
+    .btn-action i { 
+        margin-right: 8px; 
+        font-size: 1.1em; 
+    }
+
+    .fps-options-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin: 20px 0px 20px 0px;
+    }
+
+    .fps-option-button {
+        background-color: var(--primary-bg);
         color: var(--primary-text);
-        border: 1px solid var(--primary-text);
-        padding: 10px 20px;
-        font-size: 0.9em;
+        border: 2px solid var(--border-primary);
+        padding: 12px 15px;
         cursor: pointer;
-        border-radius: 4px;
+        font-family: inherit;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        min-height: 60px;
+    }
+
+    .fps-option-button:hover {
+        background-color: var(--hover-grey);
+        border-color: var(--primary-text);
+        transform: translateY(-1px);
+    }
+
+    .fps-number {
+        font-size: 1.3em;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: var(--primary-text);
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+
+    .fps-description {
+        align-self: flex-end;
+    }
+
+    .video-metadata {
+        background-color: var(--accent-dark);
+        border: 1px solid var(--border-primary);
+        padding: 5px 15px 5px 15px;
         font-family: inherit;
-        transition: background-color 0.2s;
     }
 
-    .github-link-button:hover {
-        background-color: var(--hover-green);
-    }
-
-    .github-link-button i {
+    .video-metadata h3 {
+        margin: 0 0 10px 0;
+        color: var(--primary-text);
         font-size: 1.1em;
     }
 
+    .metadata-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 0.9em;
+    }
+
+    .metadata-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+    }
+
+    .metadata-label {
+        color: var(--muted-grey);
+        font-weight: normal;
+    }
+
+    .metadata-value {
+        color: var(--primary-text);
+        font-weight: bold;
+        text-align: right;
+    }
 
     .glyphtrix-logo {
         font-family: "Courier New", Courier, monospace;
@@ -823,6 +913,10 @@
       .image-settings-layout, .output-settings-layout, .font-settings-layout { flex-direction: column; gap: 0; }
       .settings-column { margin-bottom: 10px; width: 100%;}
 
+      /* Hide preview toggle on mobile */
+      #previewChangesContainer {
+          display: none !important;
+      }
 
       .column-header { height: 50px; border-top: 1px solid var(--border-primary); }
       .input-column, .output-column { 
@@ -859,7 +953,7 @@
           top: 0;
           left: 0;
           width: 100%;
-          height: 500px;
+          height: 400px;
           z-index: 50;
           background-color: var(--primary-bg);
           display: none;
@@ -877,6 +971,7 @@
           justify-content: center;
           border-bottom: 1px solid var(--border-primary);
           background-color: var(--primary-bg);
+          position: relative;
       }
       
       .mobile-preview-toggle {
@@ -891,7 +986,7 @@
           cursor: pointer;
           padding: 8px 12px;
           transition: all 0.3s ease;
-          color: var(--muted-green);
+          color: var(--muted-grey);
           text-decoration: none;
           border-bottom: 2px solid transparent;
       }
@@ -908,6 +1003,7 @@
       .mobile-preview-content {
           flex: 1;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           position: relative;
@@ -918,7 +1014,7 @@
       .mobile-preview-content video,
       .mobile-preview-content .upload-zone {
           max-width: 100%;
-          max-height: 400px;
+          max-height: 350px;
           object-fit: contain;
       }
       
@@ -935,12 +1031,12 @@
       }
       
       .mobile-preview-content .upload-zone:hover {
-          background-color: var(--hover-green);
+          background-color: var(--hover-grey);
       }
       
 
       .sticky-spacer {
-          height: 500px;
+          height: 400px;
           display: none;
       }
       
@@ -963,7 +1059,6 @@
       }
       .settings-image-content .slider-container,
       .settings-image-content .checkbox-container,
-      .settings-image-content .reset-button-container,
       .settings-font-content .control-container,
       .settings-output-content .control-container { align-items: center; }
       .upload-panel-content, .download-panel-content { align-items: flex-start; }
@@ -1104,6 +1199,7 @@
         <span class="mobile-toggle-option active" id="mobileInputToggle">Input</span>
         <span class="mobile-toggle-option" id="mobileOutputToggle">Output</span>
       </div>
+      <span id="mobileLoadingSpinner" style="display: none;"></span>
     </div>
     <div class="mobile-preview-content" id="mobilePreviewContent">
       <!-- Content will be dynamically inserted here -->
@@ -1121,8 +1217,27 @@
       <div class="input-area">
         <input type="file" id="imageUpload" accept="image/* video/*">
         <div class="upload-zone" id="uploadZone">
-          <i class="ri-upload-2-fill"></i>
-          Drag & Drop Image/Video Here or Click to Upload
+          <i class="ri-upload-2-fill" id="uploadIcon"></i>
+          <div class="upload-spinner" id="uploadSpinner"></div>
+          <span id="uploadText">
+            Drag & drop an image/video here
+            <br>
+            <span style="color: var(--muted-grey);">or</span>
+            <br>
+            Click to upload
+            <br>
+            <span style="color: var(--muted-grey);">or</span>
+            <br>
+            Select an example from below
+          </span>
+        </div>
+        <div class="example-buttons-container" id="exampleButtonsContainer">
+          <button class="btn-base btn-action" onclick="loadExampleImage()">
+            <i class="ri-image-line"></i> Load Example Image
+          </button>
+          <button class="btn-base btn-action" onclick="loadExampleVideo()">
+            <i class="ri-video-line"></i> Load Example Video
+          </button>
         </div>
         <canvas id="inputCanvas" class="imageCanvas"></canvas>
         <video id="inputVideo" class="imageCanvas" playsinline loop muted controls></video>
@@ -1132,16 +1247,12 @@
     <div class="output-column" id="outputColumn">
       <div class="column-header">
         <h2>Output</h2>
-        <span id="loadingSpinner" style="display: none;">
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".14"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".29" transform="rotate(30 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".43" transform="rotate(60 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".57" transform="rotate(90 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".71" transform="rotate(120 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".86" transform="rotate(150 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" transform="rotate(180 12 12)"/><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12"/></g></svg>
-        </span>
+        <span id="loadingSpinner" style="display: none;"></span>
         <div id="sequenceLoadingMessage" style="display: none;"></div>
       </div>
       <canvas id="outputCanvas"></canvas>
       <div id="sequenceLoadingOverlay" style="display: none;">
-        <div id="sequenceLoadingSpinner">
-             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><g><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".14"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".29" transform="rotate(30 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".43" transform="rotate(60 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".57" transform="rotate(90 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".71" transform="rotate(120 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".86" transform="rotate(150 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" transform="rotate(180 12 12)"/><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12"/></g></svg>
-        </div>
+        <div id="sequenceLoadingSpinner"></div>
         <p id="sequenceLoadingOverlayText">Rendering PNG Sequence...</p>
         <button id="cancelSequenceButton">Cancel Rendering</button>
       </div>
@@ -1170,7 +1281,12 @@
           <li>Preview and download your creation</li>
         </ol>
 
-        <p>Tip: If <u>Density</u> value is high, increase the <u>Scale Factor</u> to make the characters bigger. Pay attention to the <u>Resolution</u> value, higher values will take longer to render.</p>
+        <h3>Tips</h3>
+        <ul>
+          <li>If output looks blurry, increase <u>Scale Factor</u> value</li>
+          <li>Increasing <u>Density</u> value makes characters bigger</li>
+          <li>Pay attention to <u>Resolution</u>, larger values will take longer to render</li>
+        </ul>
 
         <h3>Features</h3>
         <ul>
@@ -1188,10 +1304,25 @@
         </ul>
 
         <div class="info-modal-footer">
-          <button class="github-link-button" onclick="openGitHub()">
+          <button class="btn-base btn-action" onclick="openGitHub()">
             <i class="ri-github-line"></i> View source code on GitHub
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FPS Selection Modal -->
+  <div id="fpsModal" class="info-modal" style="display: none;">
+    <div class="info-modal-content">
+      <div class="info-modal-header">
+        <h2>Choose Sequence FPS</h2>
+        <button class="info-modal-close" onclick="closeFpsModal()">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <div class="fps-options-grid" id="fpsOptionsGrid">
+        </div>
+        <div class="video-metadata" id="videoMetadata"></div>
       </div>
     </div>
   </div>
@@ -1204,7 +1335,7 @@
         <label for="condensedImageUpload">
             <div class="filename-container">
                 <span id="condensedFilename"><i class="ri-check-line"></i> Select Image</span>
-                <button class="btn-base change-image-button" onclick="condensedImageUpload.click()"><i class="ri-upload-2-fill"></i> New Upload</button>
+                <button class="btn-base change-image-button" onclick="document.getElementById('imageUpload').click()"><i class="ri-upload-2-fill"></i> New Upload</button>
             </div>
             <input type="file" id="condensedImageUpload" accept="image/* video/*">
         </label>
@@ -1217,17 +1348,31 @@
       <h2>Image</h2>
       <div class="image-settings-layout">
             <div class="settings-column">
+                <div class="checkbox-container control-group" id="previewChangesContainer">
+                    <input type="checkbox" id="previewChangesToggle">
+                    <label for="previewChangesToggle">Preview Changes</label>
+                </div>
+                <div class="checkbox-container control-group" id="invertColorsContainer">
+                    <input type="checkbox" id="invertColorsToggle">
+                    <label for="invertColorsToggle">Invert</label>
+                </div>
+                <div class="checkbox-container control-group" id="backgroundRemovalContainer">
+                    <input type="checkbox" id="backgroundRemovalToggle">
+                    <label for="backgroundRemovalToggle">Remove Chroma</label>
+                </div>
+            </div>
+            <div class="settings-column">
                 <div class="slider-container control-group">
                     <label for="levelsSlider">Grayscale Values <span id="levelsValueDisplay">4</span></label>
-                    <input type="range" id="levelsSlider" min="2" max="16" value="4"> <!-- Max changed to 16 -->
+                    <input type="range" id="levelsSlider" min="2" max="16" value="4">
                 </div>
                 <div class="slider-container control-group">
                     <label for="brightnessSlider">Brightness <span id="brightnessValueDisplay">0</span></label>
                     <input type="range" id="brightnessSlider" min="-100" max="100" value="0">
                 </div>
-                <div class="slider-container control-group" id="blurSliderContainer">
-                    <label for="blurAmountSlider">Blur <span id="blurAmountValueDisplay">0</span></label>
-                    <input type="range" id="blurAmountSlider" min="0" max="5" value="0">
+                <div class="slider-container control-group" id="contrastSliderContainer">
+                    <label for="contrastSlider">Contrast <span id="contrastValueDisplay">0</span></label>
+                    <input type="range" id="contrastSlider" min="-100" max="100" value="0">
                 </div>
             </div>
             <div class="settings-column">
@@ -1242,19 +1387,6 @@
                  <div class="slider-container control-group">
                     <label for="shadowInputSlider">Shadow <span id="shadowInputValueDisplay">0</span></label>
                     <input type="range" id="shadowInputSlider" min="0" max="255" value="0">
-                </div>
-            </div>
-            <div class="settings-column">
-                   <div class="checkbox-container control-group" id="invertColorsContainer">
-                       <input type="checkbox" id="invertColorsToggle">
-                      <label for="invertColorsToggle">Invert</label>
-                  </div>
-                 <div class="checkbox-container control-group" id="previewChangesContainer">
-                    <input type="checkbox" id="previewChangesToggle">
-                    <label for="previewChangesToggle">Preview Changes</label>
-                </div>
-                 <div class="reset-button-container control-group">
-                    <button class="reset-button" id="resetImageSettingsButton">Reset Image Settings</button>
                 </div>
             </div>
         </div>
@@ -1366,7 +1498,7 @@
                     <label for="scaleFactorInput">Scale Factor</label>
                     <div class="input-group">
                         <button class="btn-base" id="scaleFactorDecrement"><</button>
-                        <input type="number" id="scaleFactorInput" min="1" max="5" value="1" step="0.5">
+                        <input type="number" id="scaleFactorInput" min="0.5" max="5" value="1" step="0.5">
                         <button class="btn-base" id="scaleFactorIncrement">></button>
                     </div>
                 </div>
@@ -1379,19 +1511,19 @@
     <div class="settings-panel-section-content download-panel-content" id="downloadPanelContent">
       <h2>Export</h2>
       <div class="download-buttons-grid">
-        <button class="btn-base download-button" onclick="openNewTab()" id="openNewTabButton">
+        <button class="btn-base btn-action download-button" onclick="openNewTab()" id="openNewTabButton">
             <i class="ri-external-link-line"></i> Open Image
         </button>
-         <button class="btn-base download-button" onclick="downloadPng()" id="downloadPngButton">
+         <button class="btn-base btn-action download-button" onclick="downloadPng()" id="downloadPngButton">
             <i class="ri-download-2-line"></i> Download Image
         </button>
-        <button class="btn-base download-button" onclick="downloadText()" id="downloadTextButton">
+        <button class="btn-base btn-action download-button" onclick="downloadText()" id="downloadTextButton">
             <i class="ri-download-2-line"></i> Download Text
         </button>
-        <button class="btn-base download-button" onclick="downloadPngSequence()" id="downloadPngSequenceButton" style="display: none;">
+        <button class="btn-base btn-action download-button" onclick="openFpsModal()" id="downloadPngSequenceButton" style="display: none;">
             <i class="ri-download-2-line"></i> Download Sequence
         </button>
-        <button class="btn-base download-button" onclick="openInfoModal()" id="openInfoButton">
+        <button class="btn-base btn-action download-button" onclick="openInfoModal()" id="openInfoButton">
             <i class="ri-information-line"></i> About Glyphtrix
         </button>
       </div>
@@ -1399,6 +1531,11 @@
   </div>
 
   <script>
+    // Global spinner function
+    function getSpinner(size = 24) {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24"><g><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".14"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".29" transform="rotate(30 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".43" transform="rotate(60 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".57" transform="rotate(90 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".71" transform="rotate(120 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".86" transform="rotate(150 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" transform="rotate(180 12 12)"/><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12"/></g></svg>`;
+    }
+
     const imageUpload = document.getElementById('imageUpload');
     const condensedImageUpload = document.getElementById('condensedImageUpload');
     const inputCanvas = document.getElementById('inputCanvas');
@@ -1407,6 +1544,7 @@
     const inputCtx = inputCanvas.getContext('2d');
     const outputCtx = outputCanvas.getContext('2d');
     const loadingSpinner = document.getElementById('loadingSpinner');
+    const mobileLoadingSpinner = document.getElementById('mobileLoadingSpinner');
     const sequenceLoadingOverlay = document.getElementById('sequenceLoadingOverlay');
     const sequenceLoadingOverlayText = document.getElementById('sequenceLoadingOverlayText');
     const sequenceLoadingMessage = document.getElementById('sequenceLoadingMessage');
@@ -1428,11 +1566,12 @@
     const highlightInputSlider = document.getElementById('highlightInputSlider');
     const highlightInputValueDisplay = document.getElementById('highlightInputValueDisplay');
     const previewChangesToggle = document.getElementById('previewChangesToggle');
-    const resetImageSettingsButton = document.getElementById('resetImageSettingsButton');
     const invertColorsToggle = document.getElementById('invertColorsToggle');
-    const blurAmountSlider = document.getElementById('blurAmountSlider');
-    const blurSliderContainer = document.getElementById('blurSliderContainer');
-    const blurAmountValueDisplay = document.getElementById('blurAmountValueDisplay');
+    const contrastSlider = document.getElementById('contrastSlider');
+    const contrastSliderContainer = document.getElementById('contrastSliderContainer');
+    const contrastValueDisplay = document.getElementById('contrastValueDisplay');
+    const chromaRemovalToggle = document.getElementById('backgroundRemovalToggle');
+    const chromaRemovalContainer = document.getElementById('backgroundRemovalContainer');
     const invertColorsContainer = document.getElementById('invertColorsContainer');
     const previewChangesContainer = document.getElementById('previewChangesContainer');
 
@@ -1491,12 +1630,12 @@
     const latinBasicChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     const latinChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
     const cyrillicChars = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-    const devanagariChars = "अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसहक्षत्रज्ञाेैोौं:्";
+    const devanagariChars = "अआइईउऊऋॠऌएऐओऔअंअःकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसहक़ख़ग़ज़ड़ढ़फ़य़ऴक्षत्रज्ञािीुूेैोौंः्";
     const thaiChars = "กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะาำิีึืุูเแโใไๅๆ็่้๊๋์";
-    const japaneseChars = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン日一国会人年大十二本中長出三同時政事自行社見月分議後前民生連五発間対上部東者党地合市業内相方法四定今回新場金員九入選立開手米力学問高代明実円関決子動京全目表戦経通外最言氏現理調体化田当八六約主題下首意法";
+    const japaneseChars = "一あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン日一国会人年大十二本中長出三同時政事自行社見月分議後前民生連五発間対上部東者党地合市業内相方法四定今回新場金員九入選立開手米力学問高代明実円関決子動京全目表戦経通外最言氏現理調体化田当八六約主題下首意法";
     const koreanChars = "의가은은이하고는에의한을은도를다지지와과는있사기대에고는도한수시나자일내하는로와는생것있적정면위자이에서들중로서나시로를만아지자에서어는국년시기다리리마게명야";
-    const chineseChars = "的是一不我一有大在人了中到资要以可这个你会好他这中大来上们为之之来以个中上们我在有他这之大来以个中上们在有他这之大来以个在有他这之大来以个在有他这之";
-    const arabicChars = "ابجدهوزحطيكلمنسعفصقرشت";
+    const chineseChars = "一的是不了人在有我他这中大为上个国到说们时要就出会可也你对生能而子那得于着下自之年过发后作里用道行所然家种事成方多经么去法学如都同现当没动面起看定天分还进好小部其些主样理心她本前开但因只从想实日军者无力它与长把机十民第公此已工使情明性知全三又关点正业外将两高间由问很最重并物手应战向头文体政美相见被利什二等产或新己制身果加西斯月话合回特代内信表化老给世位次度门任常先海通教儿原东声提立及比员解水名真论处走义各入几口认条平系气题活尔更别打女变四神总何电数安少报才结反受目太量再感建务做接必场件计管期市直德资命山金指克许统区保至队形社便空决治展马科司五基眼书非则听白却界达光放强即像难且权思王象完设式色路记南品住告类求据程北边风规解";
+    const arabicChars = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي";
     let customCharSeqIndex = 0;
 
     let currentBlobMatrix = null;
@@ -1507,6 +1646,8 @@
     let currentImageOriginalHeight = 0;
     let isPreviewChangesActive = false;
     let isInvertColorsActive = false;
+    let isChromaRemovalActive = false;
+    let currentBackgroundTolerance = 10;
     let isVideoInput = false;
     let videoProcessLoopId = null;
 
@@ -1514,7 +1655,6 @@
     let cancelSequenceRenderFlag = false;
     let cachedZipBlob = null;
     let sequenceSettingsSnapshot = null;
-    const RENDER_FPS = 1;
 
 
     const availableFonts = [
@@ -1529,17 +1669,17 @@
     ];
     let currentFontFamily;
 
-    let currentNumLevels, currentBrightness, currentBlurAmount, currentShadowInput,
+    let currentNumLevels, currentBrightness, currentContrast, currentShadowInput,
         currentMidtoneGamma, currentHighlightInput, currentDensity,
         currentScaleFactor, currentColorScheme, currentCharacterSet;
 
     const FIXED_FONT_SIZE = 8;
 
-    function getCurrentSettingsSnapshot() {
+    function getCurrentSettingsSnapshot(fps) {
         return JSON.stringify({
             levels: levelsSlider.value,
             brightness: brightnessSlider.value,
-            blur: blurAmountSlider.value,
+            contrast: contrastSlider.value,
             shadow: shadowInputSlider.value,
             midtone: midtoneGammaSlider.value,
             highlight: highlightInputSlider.value,
@@ -1550,6 +1690,8 @@
             charSet: characterSetSelect.value,
             customChars: customCharsInput.value,
             invert: invertColorsToggle.checked,
+            chromaRemoval: chromaRemovalToggle.checked,
+            sequenceFps: fps,
             gradientTop: gradientTopColor.value,
             gradientBottom: gradientBottomColor.value,
             customText: customTextColor.value,
@@ -1560,7 +1702,7 @@
     function clearCachedSequence() {
         cachedZipBlob = null;
         sequenceSettingsSnapshot = null;
-        customCharSeqIndex = 0; // Reset character sequence
+        customCharSeqIndex = 0;
         updatePngSequenceButtonState();
     }
 
@@ -1597,7 +1739,7 @@
             imageUpload, condensedImageUpload,
             levelsSlider, brightnessSlider,
             shadowInputSlider, midtoneGammaSlider, highlightInputSlider,
-            invertColorsToggle, previewChangesToggle, resetImageSettingsButton,
+            invertColorsToggle, previewChangesToggle,
             densityInput, densityDecrement, densityIncrement, fontSelect, prevFontButton, nextFontButton,
             characterSetSelect, prevCharSetButton, nextCharSetButton, customCharsInput,
             scaleFactorInput, scaleFactorDecrement, scaleFactorIncrement, colorSchemeSelect, prevColorSchemeButton, nextColorSchemeButton,
@@ -1608,17 +1750,7 @@
             if (control) control.disabled = isRendering;
         });
 
-        if (isRendering || isVideoInput) {
-            blurAmountSlider.disabled = true;
-            blurSliderContainer.classList.add('disabled-for-video');
-            if (isVideoInput) {
-                blurSliderContainer.title = "Blur is disabled for video input as it's too performance-intensive for real-time or sequence processing.";
-            }
-        } else {
-            blurAmountSlider.disabled = false;
-            blurSliderContainer.classList.remove('disabled-for-video');
-            blurSliderContainer.removeAttribute('title');
-        }
+
         updatePngSequenceButtonState();
     }
 
@@ -1646,11 +1778,15 @@
                     tempCtx.drawImage(inputVideo, 0, 0, currentImageOriginalWidth, currentImageOriginalHeight);
                     let framePixelData = tempCtx.getImageData(0, 0, currentImageOriginalWidth, currentImageOriginalHeight).data;
 
+                    if (chromaRemovalToggle.checked) {
+                        framePixelData = removeChroma(framePixelData, currentImageOriginalWidth, currentImageOriginalHeight, 10);
+                    }
+                    
                     if (invertColorsToggle.checked) {
                         framePixelData = invertPixelData(framePixelData);
                     }
 
-                    let processedData = applyBoxBlur(new Uint8ClampedArray(framePixelData), currentImageOriginalWidth, currentImageOriginalHeight, 0);
+                    let processedData = applyContrast(new Uint8ClampedArray(framePixelData), currentImageOriginalWidth, currentImageOriginalHeight, parseInt(contrastSlider.value));
                     processedData = applyLevelsAndBrightness(processedData, currentImageOriginalWidth, currentImageOriginalHeight, parseInt(brightnessSlider.value), parseInt(shadowInputSlider.value), parseFloat(midtoneGammaSlider.value), parseInt(highlightInputSlider.value));
 
                     const frameGrayscaleLevels = generateGrayscaleLevels(parseInt(levelsSlider.value));
@@ -1709,14 +1845,17 @@
     }
 
 
-    async function downloadPngSequence() {
+    async function downloadPngSequenceWithFps(fps) {
         if (!isVideoInput || inputVideo.readyState < inputVideo.HAVE_METADATA || isSequenceRendering) return;
 
-        const currentSettings = getCurrentSettingsSnapshot();
+        closeFpsModal();
+
+        const currentSettings = getCurrentSettingsSnapshot(fps);
         if (cachedZipBlob && sequenceSettingsSnapshot === currentSettings) {
+            const randomHash = generateRandomHash(8);
             const link = document.createElement('a');
             link.href = URL.createObjectURL(cachedZipBlob);
-            link.download = 'Glyphtrix_sequence.zip';
+            link.download = `Glyphtrix_sequence_${randomHash}.zip`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1732,7 +1871,8 @@
 
         const pngBlobs = [];
         const videoDuration = inputVideo.duration;
-        const frameInterval = 1 / RENDER_FPS;
+        const selectedFps = fps;
+        const frameInterval = 1 / selectedFps;
         const numFrames = Math.floor(videoDuration / frameInterval);
 
         const tempCaptureCanvas = document.createElement('canvas');
@@ -1774,9 +1914,10 @@
                 cachedZipBlob = await zip.generateAsync({ type: "blob" });
                 sequenceSettingsSnapshot = currentSettings;
 
+                const randomHash = generateRandomHash(8);
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(cachedZipBlob);
-                link.download = 'Glyphtrix_sequence.zip';
+                link.download = `Glyphtrix_sequence_${randomHash}.zip`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -1806,8 +1947,13 @@
             return;
         }
         processImageWithCurrentSettings().then(() => {
+                    if (isPreviewChangesActive) {
+            updateInputCanvasPreview();
+        }
 
-            updateMobilePreviewContent();
+        if (window.innerWidth <= 768 && mobilePreviewActive) {
+            debouncedUpdateMobilePreview();
+        }
             
             if (!inputVideo.paused && !inputVideo.ended) {
                 videoProcessLoopId = requestAnimationFrame(processCurrentFrame);
@@ -1826,17 +1972,32 @@
         downloadTextButton.disabled = disabled;
     }
 
-    function setDefaultValues() {
+    function getFailsafeDensity(width) {
+        if (width > 2500) {
+            return 40;
+        } else if (width >= 1000) {
+            return 20;
+        } else {
+            return 10;
+        }
+    }
+
+    function setDefaultValues(contentWidth = null) {
         levelsSlider.value = 4; levelsValueDisplay.textContent = '4';
         brightnessSlider.value = 0; brightnessValueDisplay.textContent = '0';
-        blurAmountSlider.value = 0; blurAmountValueDisplay.textContent = '0';
+        contrastSlider.value = 0; contrastValueDisplay.textContent = '0';
         shadowInputSlider.value = 0; shadowInputValueDisplay.textContent = '0';
         midtoneGammaSlider.value = 1.0; midtoneGammaValueDisplay.textContent = '1.0';
         highlightInputSlider.value = 255; highlightInputValueDisplay.textContent = '255';
+        chromaRemovalToggle.checked = false;
         invertColorsToggle.checked = false;
         previewChangesToggle.checked = true;
 
-        densityInput.value = isVideoInput ? 20 : 7;
+        showExampleButtons();
+
+        // Set failsafe density based on content width
+        const failsafeDensity = contentWidth ? getFailsafeDensity(contentWidth) : 10;
+        densityInput.value = failsafeDensity;
         scaleFactorInput.value = 1.0;
         colorSchemeSelect.value = 'color1';
         fontSelect.selectedIndex = 0;
@@ -1853,11 +2014,14 @@
         customColorsContainer.style.display = 'none';
         gridSizeDisplay.textContent = '-';
 
+        isBackgroundRemovalActive = backgroundRemovalToggle.checked;
+        currentBackgroundTolerance = 10;
         isInvertColorsActive = invertColorsToggle.checked;
         isPreviewChangesActive = previewChangesToggle.checked;
+        isChromaRemovalActive = chromaRemovalToggle.checked;
         currentNumLevels = parseInt(levelsSlider.value);
         currentBrightness = parseInt(brightnessSlider.value);
-        currentBlurAmount = parseInt(blurAmountSlider.value);
+        currentContrast = parseInt(contrastSlider.value);
         currentShadowInput = parseInt(shadowInputSlider.value);
         currentMidtoneGamma = parseFloat(midtoneGammaSlider.value);
         currentHighlightInput = parseInt(highlightInputSlider.value);
@@ -1909,29 +2073,74 @@
         return invertedData;
     }
 
-    function applyBoxBlur(sourceData, width, height, radius) {
-        if (radius === 0) return new Uint8ClampedArray(sourceData);
-        const outputData = new Uint8ClampedArray(sourceData.length);
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-                let sumR = 0, sumG = 0, sumB = 0, count = 0;
-                for (let ky = -radius; ky <= radius; ky++) {
-                    for (let kx = -radius; kx <= radius; kx++) {
-                        const pixelY = y + ky; const pixelX = x + kx;
-                        if (pixelX >= 0 && pixelX < width && pixelY >= 0 && pixelY < height) {
-                            const i = (pixelY * width + pixelX) * 4;
-                            sumR += sourceData[i]; sumG += sourceData[i + 1]; sumB += sourceData[i + 2];
-                            count++;
-                        }
-                    }
-                }
-                const currentIndex = (y * width + x) * 4;
-                outputData[currentIndex] = sumR / count;
-                outputData[currentIndex + 1] = sumG / count;
-                outputData[currentIndex + 2] = sumB / count;
-                outputData[currentIndex + 3] = sourceData[currentIndex + 3];
+    function applyContrast(sourceData, width, height, contrastAmount) {
+        if (contrastAmount === 0) return new Uint8ClampedArray(sourceData);
+        const outputData = new Uint8ClampedArray(sourceData);
+        const factor = (259 * (contrastAmount + 255)) / (255 * (259 - contrastAmount));
+        
+        for (let i = 0; i < outputData.length; i += 4) {
+            for (let c = 0; c < 3; c++) {
+                let val = factor * (outputData[i + c] - 128) + 128;
+                outputData[i + c] = Math.max(0, Math.min(255, val));
             }
         }
+        return outputData;
+    }
+
+    function removeChroma(sourceData, width, height, tolerance) {
+        if (!sourceData) return new Uint8ClampedArray(sourceData);
+        
+        const outputData = new Uint8ClampedArray(sourceData);
+        
+        // Sample corner pixels to detect chroma key color
+        const corners = [
+            0,
+            (width - 1) * 4,
+            (height - 1) * width * 4,
+            ((height - 1) * width + (width - 1)) * 4
+        ];
+        
+        let chromaR = 0, chromaG = 0, chromaB = 0;
+        let validCorners = 0;
+        
+        for (let corner of corners) {
+            if (corner < sourceData.length - 3) {
+                chromaR += sourceData[corner];
+                chromaG += sourceData[corner + 1];
+                chromaB += sourceData[corner + 2];
+                validCorners++;
+            }
+        }
+        
+        if (validCorners === 0) return outputData;
+        
+        // Average chroma key color from corners
+        chromaR = Math.round(chromaR / validCorners);
+        chromaG = Math.round(chromaG / validCorners);
+        chromaB = Math.round(chromaB / validCorners);
+        
+        const toleranceValue = tolerance * 2.55;
+        
+        for (let i = 0; i < outputData.length; i += 4) {
+            const r = outputData[i];
+            const g = outputData[i + 1];
+            const b = outputData[i + 2];
+            
+            // Calculate color difference
+            const diff = Math.sqrt(
+                Math.pow(r - chromaR, 2) + 
+                Math.pow(g - chromaG, 2) + 
+                Math.pow(b - chromaB, 2)
+            );
+            
+            // If pixel is similar to chroma key, make it black
+            if (diff <= toleranceValue) {
+                outputData[i] = 0;
+                outputData[i + 1] = 0;
+                outputData[i + 2] = 0;
+            }
+        }
+        
         return outputData;
     }
 
@@ -2055,9 +2264,49 @@
             return;
         }
 
-        if (isVideoInput) {
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile && isVideoInput) {
             inputVideo.style.display = 'block';
             inputCanvas.style.display = 'none';
+            return;
+        }
+
+        if (isVideoInput) {
+            if (isPreviewChangesActive && !isMobile) {
+                inputVideo.style.display = 'none';
+                inputCanvas.style.display = 'block';
+                
+                // Capture current video frame
+                inputCanvas.width = currentImageOriginalWidth;
+                inputCanvas.height = currentImageOriginalHeight;
+                inputCtx.drawImage(inputVideo, 0, 0, currentImageOriginalWidth, currentImageOriginalHeight);
+                
+                let framePixelData = inputCtx.getImageData(0, 0, currentImageOriginalWidth, currentImageOriginalHeight).data;
+                
+                if (isChromaRemovalActive) {
+                    framePixelData = removeChroma(framePixelData, currentImageOriginalWidth, currentImageOriginalHeight, currentBackgroundTolerance);
+                }
+                
+                if (isInvertColorsActive) {
+                    framePixelData = invertPixelData(framePixelData);
+                }
+                
+                const tempContrast = parseInt(contrastSlider.value);
+                const tempBrightness = parseInt(brightnessSlider.value);
+                const tempShadow = parseInt(shadowInputSlider.value);
+                const tempGamma = parseFloat(midtoneGammaSlider.value);
+                const tempHighlight = parseInt(highlightInputSlider.value);
+                const tempNumLevels = parseInt(levelsSlider.value);
+                
+                let processedForPreview = applyContrast(new Uint8ClampedArray(framePixelData), currentImageOriginalWidth, currentImageOriginalHeight, tempContrast);
+                processedForPreview = applyLevelsAndBrightness(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, tempBrightness, tempShadow, tempGamma, tempHighlight);
+                
+                const previewLevels = generateGrayscaleLevels(tempNumLevels);
+                drawPosterizedPreview(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, previewLevels);
+            } else {
+                inputVideo.style.display = 'block';
+                inputCanvas.style.display = 'none';
+            }
             return;
         }
 
@@ -2065,22 +2314,32 @@
         if(previewChangesContainer) previewChangesContainer.style.display = 'flex';
 
 
-        let dataForPreview = isInvertColorsActive ? invertPixelData(originalPixelData) : new Uint8ClampedArray(originalPixelData);
+        let dataForPreview = new Uint8ClampedArray(originalPixelData);
+        
+        if (isChromaRemovalActive) {
+            dataForPreview = removeChroma(dataForPreview, currentImageOriginalWidth, currentImageOriginalHeight, currentBackgroundTolerance);
+        }
+        
+        if (isInvertColorsActive) {
+            dataForPreview = invertPixelData(dataForPreview);
+        }
 
-        if (isPreviewChangesActive) {
-            loadingSpinner.style.display = 'inline';
-            await new Promise(resolve => setTimeout(resolve, 0));
-            const tempBlur = parseInt(blurAmountSlider.value);
+        if (isPreviewChangesActive && !isMobile) {
+                    loadingSpinner.style.display = 'inline';
+        if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
+        await new Promise(resolve => setTimeout(resolve, 0));
+                    const tempContrast = parseInt(contrastSlider.value);
             const tempBrightness = parseInt(brightnessSlider.value);
             const tempShadow = parseInt(shadowInputSlider.value);
             const tempGamma = parseFloat(midtoneGammaSlider.value);
             const tempHighlight = parseInt(highlightInputSlider.value);
             const tempNumLevels = parseInt(levelsSlider.value);
-            let processedForPreview = applyBoxBlur(dataForPreview, currentImageOriginalWidth, currentImageOriginalHeight, tempBlur);
+            let processedForPreview = applyContrast(dataForPreview, currentImageOriginalWidth, currentImageOriginalHeight, tempContrast);
             processedForPreview = applyLevelsAndBrightness(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, tempBrightness, tempShadow, tempGamma, tempHighlight);
-            const previewLevels = generateGrayscaleLevels(tempNumLevels);
-            drawPosterizedPreview(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, previewLevels);
-            loadingSpinner.style.display = 'none';
+        const previewLevels = generateGrayscaleLevels(tempNumLevels);
+        drawPosterizedPreview(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, previewLevels);
+        loadingSpinner.style.display = 'none';
+        if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
         } else {
              inputCanvas.width = currentImageOriginalWidth;
              inputCanvas.height = currentImageOriginalHeight;
@@ -2095,9 +2354,8 @@
             }
         }
         
-        // Update mobile preview if showing input
         if (currentMobileView === 'input') {
-            updateMobilePreviewContent();
+            debouncedUpdateMobilePreview();
         }
     }
 
@@ -2108,7 +2366,8 @@
         const totalRows = Math.ceil(originalHeight / densityStep);
         let currentRowIndex = 0;
 
-        for (let y = 0; y < originalHeight; y += densityStep) {
+        // Process from bottom to top to reverse the movement illusion
+        for (let y = originalHeight - densityStep; y >= 0; y -= densityStep) {
             let blobRow = [];
             for (let x = 0; x < originalWidth; x += densityStep) {
                 let avgR = 0, avgG = 0, avgB = 0, count = 0;
@@ -2185,7 +2444,7 @@
                 blobRow.push({char: char, color: color});
             }
             if (blobRow.length > 0) { 
-                blobMatrix.push(blobRow); 
+                blobMatrix.unshift(blobRow);
                 currentRowIndex++;
             }
         }
@@ -2231,6 +2490,8 @@
                 resolve();
             });
         });
+        
+        forceUpdateMobileOutputCanvas();
     }
     function stopVideoProcessingLoop() {
         if (videoProcessLoopId !== null) {
@@ -2243,15 +2504,20 @@
     async function processImageWithCurrentSettings() {
         if (isSequenceRendering) return;
 
+        hideExampleButtons();
+
         loadingSpinner.style.display = 'inline';
+        if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
         if (!isVideoInput || inputVideo.paused) {
              setDownloadButtonsState(true);
         }
 
+        isBackgroundRemovalActive = backgroundRemovalToggle.checked;
+        currentBackgroundTolerance = 10;
         isInvertColorsActive = invertColorsToggle.checked;
         currentNumLevels = parseInt(levelsSlider.value);
         currentBrightness = parseInt(brightnessSlider.value);
-        currentBlurAmount = isVideoInput ? 0 : parseInt(blurAmountSlider.value);
+        currentContrast = parseInt(contrastSlider.value);
         currentShadowInput = parseInt(shadowInputSlider.value);
         currentMidtoneGamma = parseFloat(midtoneGammaSlider.value);
         currentHighlightInput = parseInt(highlightInputSlider.value);
@@ -2265,11 +2531,12 @@
 
         let sourcePixelData;
         if (isVideoInput) {
-            if (!currentMediaElement || currentMediaElement.readyState < inputVideo.HAVE_CURRENT_DATA ) {
-                loadingSpinner.style.display = 'none';
-                setDownloadButtonsState(true);
-                return;
-            }
+                    if (!currentMediaElement || currentMediaElement.readyState < inputVideo.HAVE_CURRENT_DATA ) {
+            loadingSpinner.style.display = 'none';
+            if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+            setDownloadButtonsState(true);
+            return;
+        }
             const tempVidCanvas = document.createElement('canvas');
             tempVidCanvas.width = currentImageOriginalWidth;
             tempVidCanvas.height = currentImageOriginalHeight;
@@ -2277,35 +2544,47 @@
             tempVidCtx.drawImage(currentMediaElement, 0, 0, currentImageOriginalWidth, currentImageOriginalHeight);
             sourcePixelData = tempVidCtx.getImageData(0, 0, currentImageOriginalWidth, currentImageOriginalHeight).data;
 
+            if (isChromaRemovalActive) {
+                sourcePixelData = removeChroma(sourcePixelData, currentImageOriginalWidth, currentImageOriginalHeight, currentBackgroundTolerance);
+            }
             if (isInvertColorsActive) {
                 sourcePixelData = invertPixelData(sourcePixelData);
             }
 
         } else {
-            if (!originalPixelData) {
-                loadingSpinner.style.display = 'none';
-                setDownloadButtonsState(true);
-                return;
-            }
+                    if (!originalPixelData) {
+            loadingSpinner.style.display = 'none';
+            if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+            setDownloadButtonsState(true);
+            return;
+        }
             sourcePixelData = new Uint8ClampedArray(originalPixelData);
+            if (isChromaRemovalActive) {
+                sourcePixelData = removeChroma(sourcePixelData, currentImageOriginalWidth, currentImageOriginalHeight, currentBackgroundTolerance);
+            }
             if (isInvertColorsActive) {
                 sourcePixelData = invertPixelData(sourcePixelData);
             }
         }
 
-        let processedData = applyBoxBlur(new Uint8ClampedArray(sourcePixelData), currentImageOriginalWidth, currentImageOriginalHeight, currentBlurAmount);
+        let processedData = applyContrast(new Uint8ClampedArray(sourcePixelData), currentImageOriginalWidth, currentImageOriginalHeight, currentContrast);
         processedData = applyLevelsAndBrightness(processedData, currentImageOriginalWidth, currentImageOriginalHeight, currentBrightness, currentShadowInput, currentMidtoneGamma, currentHighlightInput);
 
         if (!isVideoInput && isPreviewChangesActive) {
             const previewLevels = generateGrayscaleLevels(currentNumLevels);
             let previewBaseData = new Uint8ClampedArray(originalPixelData);
+            if (chromaRemovalToggle.checked) {
+                previewBaseData = removeChroma(previewBaseData, currentImageOriginalWidth, currentImageOriginalHeight, 10);
+            }
             if (invertColorsToggle.checked) {
                 previewBaseData = invertPixelData(previewBaseData);
             }
-            let previewProcessed = applyBoxBlur(previewBaseData, currentImageOriginalWidth, currentImageOriginalHeight, parseInt(blurAmountSlider.value));
-            previewProcessed = applyLevelsAndBrightness(previewProcessed, currentImageOriginalWidth, currentImageOriginalHeight, parseInt(brightnessSlider.value), parseInt(shadowInputSlider.value), parseFloat(midtoneGammaSlider.value), parseInt(highlightInputSlider.value));
+                            let previewProcessed = applyContrast(previewBaseData, currentImageOriginalWidth, currentImageOriginalHeight, parseInt(contrastSlider.value));
+                previewProcessed = applyLevelsAndBrightness(previewProcessed, currentImageOriginalWidth, currentImageOriginalHeight, parseInt(brightnessSlider.value), parseInt(shadowInputSlider.value), parseFloat(midtoneGammaSlider.value), parseInt(highlightInputSlider.value));
             drawPosterizedPreview(previewProcessed, currentImageOriginalWidth, currentImageOriginalHeight, previewLevels);
 
+        } else if (isVideoInput && isPreviewChangesActive) {
+            updateInputCanvasPreview();
         } else if (isVideoInput) {
              inputVideo.style.display = 'block';
              inputCanvas.style.display = 'none';
@@ -2316,9 +2595,12 @@
         await drawTextOnCanvas(currentBlobMatrix, currentScaleFactor, currentColorScheme, currentFontFamily);
 
         loadingSpinner.style.display = 'none';
+        if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
         setDownloadButtonsState(false);
         
-        updateMobilePreviewContent();
+        if (window.innerWidth <= 768 && mobilePreviewActive) {
+            debouncedUpdateMobilePreview();
+        }
     }
 
 
@@ -2327,12 +2609,24 @@
         clearCachedSequence();
         isVideoInput = false;
         loadingSpinner.style.display = 'inline';
+        if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
         setDownloadButtonsState(true);
         downloadPngSequenceButton.style.display = 'none';
 
+        // Show upload spinner
+        showUploadSpinner();
+
+        // Hide example buttons when file is loaded
+        hideExampleButtons();
 
         inputVideo.style.display = 'none';
         inputVideo.pause();
+        inputVideo.onloadedmetadata = null;
+        inputVideo.onerror = null;
+        inputVideo.onplay = null;
+        inputVideo.onpause = null;
+        inputVideo.onended = null;
+        inputVideo.onseeked = null;
         inputVideo.src = "";
         inputCanvas.style.display = 'none';
 
@@ -2347,6 +2641,8 @@
                     currentImageOriginalWidth = inputVideo.videoWidth;
                     currentImageOriginalHeight = inputVideo.videoHeight;
                     customCharSeqIndex = 0;
+                    
+
 
                     inputVideo.style.display = 'block';
                     inputCanvas.style.display = 'none';
@@ -2355,64 +2651,83 @@
                     if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
                     if(condensedUploadZone) condensedUploadZone.style.display = 'inline-block';
                     if(condensedFilename) condensedFilename.innerHTML = `<i class="ri-check-line"></i> ${file.name} `;
+                    
+                    // Ensure example buttons are hidden
+                    hideExampleButtons();
 
-                    if(previewChangesContainer) previewChangesContainer.style.display = 'none';
+                    if(previewChangesContainer) previewChangesContainer.style.display = 'flex';
+
+                    setDefaultValues(inputVideo.videoWidth);
+                    
+                    // Override default preview settings for video
                     previewChangesToggle.checked = false;
                     isPreviewChangesActive = false;
+                    previewChangesToggle.disabled = true;
+                    currentDensity = parseInt(densityInput.value);
 
 
-                    setDefaultValues();
-                    densityInput.value = 20;
-                    currentDensity = 20;
 
 
-                    blurAmountSlider.disabled = true;
-                    blurSliderContainer.classList.add('disabled-for-video');
-                    blurSliderContainer.title = "Blur is disabled for video input as it's too performance-intensive for real-time or sequence processing.";
-                    blurAmountSlider.value = 0;
-                    blurAmountValueDisplay.textContent = '0';
-                    currentBlurAmount = 0;
-
+                    if(chromaRemovalContainer) chromaRemovalContainer.style.display = 'flex';
                     if(invertColorsContainer) invertColorsContainer.style.display = 'flex';
 
 
                     await processImageWithCurrentSettings();
                     loadingSpinner.style.display = 'none';
+                    if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+                    hideUploadSpinner();
                     updatePngSequenceButtonState();
                     
-                    // Update mobile preview and switch to output view when media is uploaded
+                    previewChangesToggle.disabled = true;
+                    
+                    if (inputVideo.duration > 1) {
+                        inputVideo.currentTime = 1;
+                    }
+                    
                     if (window.innerWidth <= 768 && mobilePreviewActive) {
                         switchMobileView('output');
                     } else {
-                        updateMobilePreviewContent();
+                        debouncedUpdateMobilePreview();
                     }
 
                     inputVideo.onplay = () => {
                         clearCachedSequence();
                         stopVideoProcessingLoop();
+                        if (previewChangesToggle.checked) {
+                            previewChangesToggle.checked = false;
+                            isPreviewChangesActive = false;
+                            updateInputCanvasPreview();
+                        }
+                        previewChangesToggle.disabled = true;
                         videoProcessLoopId = requestAnimationFrame(processCurrentFrame);
                     };
                     inputVideo.onpause = () => {
+                        previewChangesToggle.disabled = false;
                         processImageWithCurrentSettings();
                     };
                     inputVideo.onended = () => stopVideoProcessingLoop();
                     
-                    // Add timeline scrubbing support with debouncing
                     let seekDebounceTimeout;
                     inputVideo.onseeked = () => {
                         clearTimeout(seekDebounceTimeout);
                         seekDebounceTimeout = setTimeout(() => {
                             if (inputVideo.paused && inputVideo.readyState >= inputVideo.HAVE_CURRENT_DATA) {
+                                syncMobileVideoTime();
+                                
                                 processImageWithCurrentSettings().then(() => {
-                                    updateMobilePreviewContent();
+                                    if (window.innerWidth <= 768 && currentMobileView === 'output') {
+                                        debouncedUpdateMobilePreview();
+                                    }
                                 });
                             }
-                        }, 150); // 150ms delay to prevent lag during scrubbing
+                        }, 100);
                     };
                 };
                  inputVideo.onerror = () => {
                     alert("Error loading video.");
                     loadingSpinner.style.display = 'none';
+                    if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+                    hideUploadSpinner();
                     setDownloadButtonsState(true);
                     updatePngSequenceButtonState();
                 };
@@ -2436,17 +2751,17 @@
                     tempCtx.drawImage(img, 0, 0, currentImageOriginalWidth, currentImageOriginalHeight);
                     originalPixelData = tempCtx.getImageData(0, 0, currentImageOriginalWidth, currentImageOriginalHeight).data;
 
+                    if(chromaRemovalContainer) chromaRemovalContainer.style.display = 'flex';
                     if(invertColorsContainer) invertColorsContainer.style.display = 'flex';
                     if(previewChangesContainer) previewChangesContainer.style.display = 'flex';
+                    
+                    previewChangesToggle.disabled = false;
 
-                    setDefaultValues();
-                    densityInput.value = 7;
-                    currentDensity = 7;
+                    setDefaultValues(img.width);
+                    currentDensity = parseInt(densityInput.value);
 
 
-                    blurAmountSlider.disabled = false;
-                    blurSliderContainer.classList.remove('disabled-for-video');
-                    blurSliderContainer.removeAttribute('title');
+
 
 
                     await processImageWithCurrentSettings();
@@ -2454,25 +2769,33 @@
                     inputCanvas.style.display = 'block';
                     uploadZone.style.display = 'none';
                     if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
+                    
+                    // Ensure example buttons are hidden
+                    hideExampleButtons();
+                    
+                    hideUploadSpinner();
                     updatePngSequenceButtonState();
                     
-                    // Update mobile preview and switch to output view when media is uploaded
                     if (window.innerWidth <= 768 && mobilePreviewActive) {
                         switchMobileView('output');
                     } else {
-                        updateMobilePreviewContent();
+                        debouncedUpdateMobilePreview();
                     }
                 }
                 img.src = event.target.result;
                  img.onerror = () => {
                     alert("Error loading image.");
                     loadingSpinner.style.display = 'none';
+                    if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+                    hideUploadSpinner();
                     setDownloadButtonsState(true);
                     updatePngSequenceButtonState();
                 };
             } else {
                 alert('Unsupported file type.');
                 loadingSpinner.style.display = 'none';
+                if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+                hideUploadSpinner();
                 setDownloadButtonsState(true);
                 updatePngSequenceButtonState();
             }
@@ -2502,10 +2825,14 @@
         element.addEventListener(eventType, () => {
             clearCachedSequence();
             if (element === previewChangesToggle) {
-                isPreviewChangesActive = element.checked;
-                if (!isVideoInput) updateInputCanvasPreview();
+                const isMobile = window.innerWidth <= 768;
+                isPreviewChangesActive = !isMobile && element.checked;
+                if (isVideoInput && element.checked && !inputVideo.paused && !isMobile) {
+                    inputVideo.pause();
+                }
+                updateInputCanvasPreview();
             } else {
-                if (element === blurAmountSlider) blurAmountValueDisplay.textContent = element.value;
+                if (element === contrastSlider) contrastValueDisplay.textContent = element.value;
                 else if (element === levelsSlider) levelsValueDisplay.textContent = element.value;
                 else if (element === brightnessSlider) brightnessValueDisplay.textContent = element.value;
                 else if (element === shadowInputSlider) shadowInputValueDisplay.textContent = element.value;
@@ -2537,10 +2864,13 @@
                     gradientColorsContainer.style.display = (element.value === 'gradient') ? 'block' : 'none';
                     customColorsContainer.style.display = (element.value === 'custom') ? 'block' : 'none';
                 }
+                else if (element === chromaRemovalToggle) {
+                    isChromaRemovalActive = element.checked;
+                }
                 else if (element === invertColorsToggle) isInvertColorsActive = element.checked;
 
                 processImageWithCurrentSettings();
-                if (!isVideoInput && (element !== previewChangesToggle)) {
+                if (element !== previewChangesToggle) {
                      updateInputCanvasPreview();
                 }
             }
@@ -2548,8 +2878,9 @@
     }
 
     addSettingsChangeListener(previewChangesToggle, 'change');
+    addSettingsChangeListener(chromaRemovalToggle, 'change');
     addSettingsChangeListener(invertColorsToggle, 'change');
-    addSettingsChangeListener(blurAmountSlider);
+    addSettingsChangeListener(contrastSlider);
     addSettingsChangeListener(levelsSlider);
     addSettingsChangeListener(brightnessSlider);
     addSettingsChangeListener(shadowInputSlider);
@@ -2560,7 +2891,6 @@
     addSettingsChangeListener(characterSetSelect, 'change');
         addSettingsChangeListener(customCharsInput, 'change');
     
-    // Auto-switch to Custom when user edits the text field
     customCharsInput.addEventListener('input', () => {
         if (characterSetSelect.value !== 'custom') {
             characterSetSelect.value = 'custom';
@@ -2578,33 +2908,7 @@
         alert('Custom Characters:\n\n• Using commas randomizes item output (e.g., "A,B,C")\n• Using dots flattens items into a sequence (e.g., "ABC.DEF" becomes "ABCDEF")\n• Supports all Unicode characters (for unique visual effects)');
     });
 
-    resetImageSettingsButton.addEventListener('click', () => {
-        clearCachedSequence();
-        let newDensity = isVideoInput ? 20 : 7;
 
-        setDefaultValues();
-        densityInput.value = newDensity;
-        currentDensity = newDensity;
-
-        invertColorsToggle.checked = false; // Already in setDefaultValues but good to be explicit
-        levelsSlider.value = 4;
-        brightnessSlider.value = 0;
-        blurAmountSlider.value = 0;
-        shadowInputSlider.value = 0;
-        midtoneGammaSlider.value = 1.0;
-        highlightInputSlider.value = 255;
-
-        levelsValueDisplay.textContent = '4';
-        brightnessValueDisplay.textContent = '0';
-        blurAmountValueDisplay.textContent = '0';
-        shadowInputValueDisplay.textContent = '0';
-        midtoneGammaValueDisplay.textContent = '1.0';
-        highlightInputValueDisplay.textContent = '255';
-        isInvertColorsActive = false;
-
-        processImageWithCurrentSettings();
-        if (!isVideoInput) updateInputCanvasPreview();
-    });
 
 
     function updateDensity(newValue) {
@@ -2681,6 +2985,8 @@
     });
 
 
+
+
     inputColumn.addEventListener('dragover', (e) => { e.preventDefault(); inputColumn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--drag-hover'); });
     inputColumn.addEventListener('dragleave', () => { inputColumn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--drag-default'); });
     inputColumn.addEventListener('drop', (e) => {
@@ -2695,7 +3001,20 @@
     });
     uploadZone.addEventListener('click', () => { imageUpload.click(); });
 
-    condensedUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); condensedUploadZone.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--hover-green'); });
+    inputCanvas.addEventListener('click', () => {
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile && isVideoInput && isPreviewChangesActive && inputCanvas.style.display !== 'none') {
+            previewChangesToggle.checked = false;
+            isPreviewChangesActive = false;
+            updateInputCanvasPreview();
+            
+            if (inputVideo.paused) {
+                inputVideo.play();
+            }
+        }
+    });
+
+    condensedUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); condensedUploadZone.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--hover-grey'); });
     condensedUploadZone.addEventListener('dragleave', () => { condensedUploadZone.style.backgroundColor = 'transparent';});
     condensedUploadZone.addEventListener('drop', (e) => {
         e.preventDefault(); condensedUploadZone.style.backgroundColor = 'transparent';
@@ -2708,31 +3027,201 @@
     });
 
 
+    function generateRandomHash(length = 8) {
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += latinBasicChars.charAt(Math.floor(Math.random() * latinBasicChars.length));
+        }
+        return result;
+    }
+
     function downloadPng() {
         if (!outputCanvas || !currentBlobMatrix) return;
+        const randomHash = generateRandomHash(8);
         const imgData = outputCanvas.toDataURL("image/png");
         const link = document.createElement('a');
-        link.href = imgData; link.download = 'Glyphtrix_image.png';
+        link.href = imgData; link.download = `Glyphtrix_image_${randomHash}.png`;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
     function downloadText() {
       if (currentBlobMatrix) {
+        const randomHash = generateRandomHash(8);
         let textToDownload = currentBlobMatrix.map(row => row.map(cell => cell.char).join('')).join('\n');
         const blob = new Blob([textToDownload], { type: "text/plain;charset=utf-8" });
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob); link.download = 'Glyphtrix_image.txt';
+        link.href = URL.createObjectURL(blob); link.download = `Glyphtrix_image_${randomHash}.txt`;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
       }
     }
    function openNewTab() {
        if (!outputCanvas || !currentBlobMatrix) return;
-        const imgData = outputCanvas.toDataURL("image/png");
-        let newTab = window.open();
-        newTab.document.body.style.backgroundColor = getCanvasBackgroundColor(currentColorScheme);
-        newTab.document.body.innerHTML = `<img src="${imgData}" style="max-width:100%; height:auto;">`;
+       
+       outputCanvas.toBlob((blob) => {
+           if (blob) {
+               const blobUrl = URL.createObjectURL(blob);
+               const newTab = window.open(blobUrl, '_blank');
+               
+               // Clean up the blob URL when the new tab is closed
+               newTab.addEventListener('beforeunload', () => {
+                   URL.revokeObjectURL(blobUrl);
+               });
+           }
+       }, 'image/png');
    }
        function openGitHub() {
         window.open('https://github.com/LandoNikko/Glyphtrix', '_blank');
+    }
+
+    async function loadExampleImage() {
+        try {
+            loadingSpinner.style.display = 'inline';
+            if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
+            showUploadSpinner();
+            
+            const response = await fetch('https://archive.org/download/324327main_4_full/324327main_4_full.jpg');
+            if (!response.ok) throw new Error('Failed to fetch example image');
+            
+            const blob = await response.blob();
+            const file = new File([blob], 'example-image.jpeg', { type: 'image/jpeg' });
+            
+            handleImageUpload(file);
+            condensedUploadZone.style.display = 'inline-block';
+            condensedFilename.innerHTML = `<i class="ri-check-line"></i> example-image.jpeg`;
+            if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
+        } catch (error) {
+            console.error('Error loading example image:', error);
+            alert('Failed to load example image. Please try again.');
+        } finally {
+            loadingSpinner.style.display = 'none';
+            if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+            hideUploadSpinner();
+        }
+    }
+
+    async function loadExampleVideo() {
+        try {
+            loadingSpinner.style.display = 'inline';
+            if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
+            showUploadSpinner();
+            
+            // Try multiple CORS-enabled video URLs as fallbacks
+            const videoUrls = [
+            'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            ];
+            
+            let response = null;
+            let videoUrl = null;
+            
+            for (const url of videoUrls) {
+                try {
+                    response = await fetch(url);
+                    if (response.ok) {
+                        videoUrl = url;
+                        break;
+                    }
+                } catch (e) {
+                    continue;
+                }
+            }
+            
+            if (!response || !response.ok) {
+                throw new Error('All video sources are unavailable');
+            }
+            
+            const blob = await response.blob();
+            const file = new File([blob], 'example-video.mp4', { type: 'video/mp4' });
+            
+            handleImageUpload(file);
+            condensedUploadZone.style.display = 'inline-block';
+            condensedFilename.innerHTML = `<i class="ri-check-line"></i> example-video.mp4`;
+            if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
+        } catch (error) {
+            console.error('Error loading example video:', error);
+            alert('Failed to load example video. This may be due to network restrictions. Please try uploading your own video file instead.');
+        } finally {
+            loadingSpinner.style.display = 'none';
+            if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+            hideUploadSpinner();
+        }
+    }
+
+    function hideExampleButtons() {
+        const exampleButtonsContainer = document.getElementById('exampleButtonsContainer');
+        if (exampleButtonsContainer) {
+            exampleButtonsContainer.style.display = 'none';
+        }
+        
+        // Also hide any mobile example buttons
+        const mobilePreviewContent = document.getElementById('mobilePreviewContent');
+        if (mobilePreviewContent) {
+            const mobileExampleButtons = mobilePreviewContent.querySelector('.example-buttons-container');
+            if (mobileExampleButtons) {
+                mobileExampleButtons.style.display = 'none';
+            }
+        }
+    }
+
+    function showExampleButtons() {
+        const exampleButtonsContainer = document.getElementById('exampleButtonsContainer');
+        if (exampleButtonsContainer) {
+            exampleButtonsContainer.style.display = 'flex';
+        }
+    }
+
+    function showUploadSpinner() {
+        const uploadZone = document.getElementById('uploadZone');
+        const uploadSpinner = document.getElementById('uploadSpinner');
+        if (uploadZone && uploadSpinner) {
+            uploadSpinner.innerHTML = getSpinner(48);
+            uploadZone.classList.add('loading');
+        }
+    }
+
+    function hideUploadSpinner() {
+        const uploadZone = document.getElementById('uploadZone');
+        if (uploadZone) {
+            uploadZone.classList.remove('loading');
+        }
+    }
+
+    function resetUploadState() {
+        stopVideoProcessingLoop();
+        clearCachedSequence();
+        isVideoInput = false;
+        currentMediaElement = null;
+        originalPixelData = null;
+        currentBlobMatrix = null;
+        
+        inputVideo.style.display = 'none';
+        inputVideo.pause();
+        inputVideo.src = "";
+        inputCanvas.style.display = 'none';
+        uploadZone.style.display = 'flex';
+        
+        showExampleButtons();
+        
+        condensedUploadZone.style.display = 'none';
+        if(uploadPanelTitle) uploadPanelTitle.style.display = 'none';
+        
+        outputCanvas.width = 1;
+        outputCanvas.height = 1;
+        outputCtx.clearRect(0, 0, 1, 1);
+        
+        if(gridSizeDisplay) gridSizeDisplay.textContent = '-';
+        if(outputResolutionDisplay) outputResolutionDisplay.textContent = '-';
+        
+        setDownloadButtonsState(true);
+        updatePngSequenceButtonState();
+        
+        if(chromaRemovalContainer) chromaRemovalContainer.style.display = 'none';
+        if(invertColorsContainer) invertColorsContainer.style.display = 'none';
+        if(previewChangesContainer) previewChangesContainer.style.display = 'none';
+        
+        setDefaultValues();
+        
+        if (window.innerWidth <= 768 && mobilePreviewActive) {
+            debouncedUpdateMobilePreview();
+        }
     }
 
     function openInfoModal() {
@@ -2743,11 +3232,117 @@
         document.getElementById('infoModal').style.display = 'none';
     }
 
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function formatDuration(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+
+
+    function getVideoMetadata() {
+        if (!inputVideo) return {};
+
+        // Calculate output resolution based on current density and scale settings
+        const density = parseInt(densityInput.value) || 7;
+        const outputCols = Math.ceil(inputVideo.videoWidth / density);
+        const outputRows = Math.ceil(inputVideo.videoHeight / density);
+        const scaleFactor = parseFloat(scaleFactorInput.value) || 1;
+        const charSize = 8 * scaleFactor;
+        const outputWidth = outputCols * charSize;
+        const outputHeight = outputRows * charSize;
+
+        return {
+            duration: inputVideo.duration ? formatDuration(inputVideo.duration) : 'Unknown',
+            outputResolution: `${Math.round(outputWidth)} × ${Math.round(outputHeight)}`
+        };
+    }
+
+    function calculateEstimatedFrames(fps) {
+        if (!inputVideo || !inputVideo.duration) return 0;
+        return Math.floor(inputVideo.duration * fps);
+    }
+
+    function populateVideoMetadata() {
+        const metadataContainer = document.getElementById('videoMetadata');
+        if (!metadataContainer) return;
+
+        const metadata = getVideoMetadata();
+        
+        metadataContainer.innerHTML = `
+            <div class="metadata-grid">
+                <div class="metadata-item">
+                    <span class="metadata-label">Duration</span>
+                    <span class="metadata-value">${metadata.duration}</span>
+                </div>
+                <div class="metadata-item">
+                    <span class="metadata-label">Resolution</span>
+                    <span class="metadata-value">${metadata.outputResolution}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function populateFpsOptions() {
+        const fpsOptionsGrid = document.getElementById('fpsOptionsGrid');
+        if (!fpsOptionsGrid) return;
+
+        const fpsOptions = [
+            { fps: 1, label: '1 FPS' },
+            { fps: 2, label: '2 FPS' },
+            { fps: 5, label: '5 FPS' },
+            { fps: 24, label: '24 FPS' },
+            { fps: 25, label: '25 FPS' },
+            { fps: 30, label: '30 FPS' }
+        ];
+
+        fpsOptionsGrid.innerHTML = '';
+
+        fpsOptions.forEach(option => {
+            const estimatedFrames = calculateEstimatedFrames(option.fps);
+            
+            const button = document.createElement('button');
+            button.className = 'fps-option-button';
+            button.onclick = () => downloadPngSequenceWithFps(option.fps);
+
+            button.innerHTML = `
+                <div class="fps-number"><i class="ri-download-2-line"></i> ${option.label}</div>
+                <div class="fps-description">${estimatedFrames.toLocaleString()} frames</div>
+            `;
+
+            fpsOptionsGrid.appendChild(button);
+        });
+        
+        populateVideoMetadata();
+    }
+
+    function openFpsModal() {
+        if (!isVideoInput || inputVideo.readyState < inputVideo.HAVE_METADATA || isSequenceRendering) return;
+        populateFpsOptions();
+        document.getElementById('fpsModal').style.display = 'flex';
+    }
+
+    function closeFpsModal() {
+        document.getElementById('fpsModal').style.display = 'none';
+    }
+
     // Close modal when clicking outside of it
     document.addEventListener('click', function(event) {
-        const modal = document.getElementById('infoModal');
-        if (event.target === modal) {
+        const infoModal = document.getElementById('infoModal');
+        const fpsModal = document.getElementById('fpsModal');
+        if (event.target === infoModal) {
             closeInfoModal();
+        }
+        if (event.target === fpsModal) {
+            closeFpsModal();
         }
     });
 
@@ -2755,6 +3350,7 @@
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeInfoModal();
+            closeFpsModal();
         }
     });
 
@@ -2776,7 +3372,7 @@
             if (outputSettingsContent.parentNode !== mobileSettingsPanel) mobileSettingsPanel.appendChild(outputSettingsContent);
             if (downloadPanelContent.parentNode !== mobileDownloadPanelPlaceholder) mobileDownloadPanelPlaceholder.appendChild(downloadPanelContent);
             
-            // Let CSS handle mobile layout - remove dynamic height calculation
+            // Let CSS handle mobile layout
             mainContainer.style.height = '';
         } else {
             desktopSettingsPanelContainer.appendChild(uploadPanelContent);
@@ -2787,11 +3383,9 @@
             desktopSettingsPanelContainer.appendChild(downloadPanelContent);
             
             if (isMediumScreen) {
-                // Let CSS media query handle medium screen layout completely
                 mainContainer.style.height = '';
                 mainContainer.style.maxHeight = '';
             } else if (isDesktop) {
-                // Only calculate height for large desktop screens
                 requestAnimationFrame(() => {
                     const desktopHeight = desktopSettingsPanelContainer.offsetHeight || 200;
                     const minContainerHeight = Math.min(window.innerHeight - desktopHeight, window.innerHeight * 0.6);
@@ -2805,32 +3399,28 @@
 
 
 
-    // Add a debounced resize handler to prevent excessive layout calls
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            // Cleanup mobile preview when switching from mobile to desktop
-            if (window.innerWidth > 768) {
-                destroyMobilePreview();
-            }
-            
-            layoutPanels();
-            
-            // Initialize mobile preview when switching to mobile
-            if (window.innerWidth <= 768) {
-                initMobilePreview();
-            }
-            
-            // Reprocess image to update canvas dimensions after layout change
-            if (currentMediaElement || originalPixelData) {
-                setTimeout(() => {
-                    processImageWithCurrentSettings();
-                    if (!isVideoInput) updateInputCanvasPreview();
-                }, 100);
-            }
-        }, 300);
-    });
+            let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (window.innerWidth > 768) {
+                    destroyMobilePreview();
+                }
+                
+                layoutPanels();
+                
+                if (window.innerWidth <= 768) {
+                    initMobilePreview();
+                }
+                
+                if (currentMediaElement || originalPixelData) {
+                    setTimeout(() => {
+                        processImageWithCurrentSettings();
+                        if (!isVideoInput) updateInputCanvasPreview();
+                    }, 100);
+                }
+            }, 300);
+        });
     
     function scrambleText(element, originalText, duration = 250) {
         if (element.dataset.scrambling === 'true') return;
@@ -2897,11 +3487,9 @@
         mobilePreviewSpacer.classList.add('active');
         mobilePreviewActive = true;
         
-        // Hide original columns in mobile
         if (inputColumn) inputColumn.style.display = 'none';
         if (outputColumn) outputColumn.style.display = 'none';
         
-        // Setup toggle event listeners
         if (mobileInputToggle) {
             mobileInputToggle.addEventListener('click', () => switchMobileView('input'));
         }
@@ -2909,14 +3497,11 @@
             mobileOutputToggle.addEventListener('click', () => switchMobileView('output'));
         }
         
-        // Set default view based on whether media is uploaded
         if (currentMediaElement) {
-            // Media uploaded - show output view
             currentMobileView = 'output';
             if (mobileInputToggle) mobileInputToggle.classList.remove('active');
             if (mobileOutputToggle) mobileOutputToggle.classList.add('active');
         } else {
-            // No media - show input view
             currentMobileView = 'input';
             if (mobileInputToggle) mobileInputToggle.classList.add('active');
             if (mobileOutputToggle) mobileOutputToggle.classList.remove('active');
@@ -2930,7 +3515,6 @@
         
         currentMobileView = view;
         
-        // Update toggle button states
         const mobileInputToggle = document.getElementById('mobileInputToggle');
         const mobileOutputToggle = document.getElementById('mobileOutputToggle');
         
@@ -2939,33 +3523,137 @@
             mobileOutputToggle.classList.toggle('active', view === 'output');
         }
         
-        // Update preview content
+        const mobilePreviewContent = document.getElementById('mobilePreviewContent');
+        if (mobilePreviewContent) {
+            mobilePreviewContent.innerHTML = '';
+        }
         updateMobilePreviewContent();
     }
     
+    let mobilePreviewUpdateTimeout;
+    function debouncedUpdateMobilePreview() {
+        clearTimeout(mobilePreviewUpdateTimeout);
+        mobilePreviewUpdateTimeout = setTimeout(() => {
+            if (window.innerWidth <= 768 && mobilePreviewActive) {
+                updateMobilePreviewContent();
+            }
+        }, 50);
+    }
+
+    function forceUpdateMobileOutputCanvas() {
+        if (window.innerWidth <= 768 && mobilePreviewActive && currentMobileView === 'output') {
+            const mobilePreviewContent = document.getElementById('mobilePreviewContent');
+            if (mobilePreviewContent) {
+                const existingContent = mobilePreviewContent.firstElementChild;
+                if (existingContent && existingContent.tagName === 'CANVAS') {
+                    const outputCanvas = document.getElementById('outputCanvas');
+                    if (outputCanvas && currentBlobMatrix && currentBlobMatrix.length > 0) {
+                        if (existingContent.width !== outputCanvas.width || existingContent.height !== outputCanvas.height) {
+                            existingContent.width = outputCanvas.width;
+                            existingContent.height = outputCanvas.height;
+                        }
+                        const ctx = existingContent.getContext('2d');
+                        ctx.clearRect(0, 0, existingContent.width, existingContent.height);
+                        ctx.drawImage(outputCanvas, 0, 0);
+                    }
+                }
+            }
+        }
+    }
+
+    function syncMobileVideoTime() {
+        if (!mobilePreviewActive || window.innerWidth > 768 || currentMobileView !== 'input' || !isVideoInput) return;
+        
+        const mobilePreviewContent = document.getElementById('mobilePreviewContent');
+        if (!mobilePreviewContent) return;
+        
+        const existingContent = mobilePreviewContent.firstElementChild;
+        if (existingContent && existingContent.tagName === 'VIDEO') {
+            const inputVideo = document.getElementById('inputVideo');
+            if (inputVideo && Math.abs(existingContent.currentTime - inputVideo.currentTime) > 0.1) {
+                existingContent.currentTime = inputVideo.currentTime;
+            }
+        }
+    }
+
+    // Track the current mobile video clone globally
+    window.currentMobileVideoClone = null;
+    window.currentMobileVideoCloneSeekedHandler = null;
+    window.inputVideoSeekedHandler = null;
+
     function updateMobilePreviewContent() {
         if (!mobilePreviewActive || window.innerWidth > 768) return;
         
         const mobilePreviewContent = document.getElementById('mobilePreviewContent');
         if (!mobilePreviewContent) return;
         
-        // Clear existing content
+        // Check if content already exists and is the correct type
+        const existingContent = mobilePreviewContent.firstElementChild;
+        const shouldUpdate = !existingContent || 
+            (currentMobileView === 'input' && existingContent.tagName !== 'VIDEO' && existingContent.tagName !== 'CANVAS' && existingContent.id !== 'mobileUploadZone') ||
+            (currentMobileView === 'output' && existingContent.tagName !== 'CANVAS' && !existingContent.style.cssText.includes('placeholder'));
+        
+        if (!shouldUpdate) {
+            if (currentMobileView === 'input' && isVideoInput && existingContent.tagName === 'VIDEO') {
+                syncMobileVideoTime();
+            } else if (currentMobileView === 'output' && existingContent.tagName === 'CANVAS') {
+                const outputCanvas = document.getElementById('outputCanvas');
+                if (outputCanvas && currentBlobMatrix && currentBlobMatrix.length > 0) {
+                    if (existingContent.width !== outputCanvas.width || existingContent.height !== outputCanvas.height) {
+                        existingContent.width = outputCanvas.width;
+                        existingContent.height = outputCanvas.height;
+                    }
+                    const ctx = existingContent.getContext('2d');
+                    ctx.clearRect(0, 0, existingContent.width, existingContent.height);
+                    ctx.drawImage(outputCanvas, 0, 0);
+                }
+            }
+            return;
+        }
+        
         mobilePreviewContent.innerHTML = '';
         
+        if (window.currentMobileVideoClone && window.currentMobileVideoCloneSeekedHandler) {
+            window.currentMobileVideoClone.removeEventListener('seeked', window.currentMobileVideoCloneSeekedHandler);
+            window.currentMobileVideoClone = null;
+            window.currentMobileVideoCloneSeekedHandler = null;
+        }
+        if (window.inputVideoSeekedHandler && document.getElementById('inputVideo')) {
+            document.getElementById('inputVideo').removeEventListener('seeked', window.inputVideoSeekedHandler);
+            window.inputVideoSeekedHandler = null;
+        }
+
         if (currentMobileView === 'input') {
-            // Clone input content visually
             const inputCanvas = document.getElementById('inputCanvas');
             const inputVideo = document.getElementById('inputVideo');
             const uploadZone = document.getElementById('uploadZone');
             
             if (isVideoInput && inputVideo && inputVideo.style.display !== 'none') {
-                // Clone video for preview
                 const videoClone = inputVideo.cloneNode(true);
                 videoClone.id = 'mobilePreviewVideo';
                 videoClone.currentTime = inputVideo.currentTime;
+                
+                const videoCloneSeekedHandler = () => {
+                    if (Math.abs(inputVideo.currentTime - videoClone.currentTime) > 0.1) {
+                        inputVideo.currentTime = videoClone.currentTime;
+                        const seekedEvent = new Event('seeked');
+                        inputVideo.dispatchEvent(seekedEvent);
+                    }
+                };
+                videoClone.addEventListener('seeked', videoCloneSeekedHandler);
+                window.currentMobileVideoClone = videoClone;
+                window.currentMobileVideoCloneSeekedHandler = videoCloneSeekedHandler;
+
+                const inputVideoSeekedHandler = () => {
+                    if (Math.abs(videoClone.currentTime - inputVideo.currentTime) > 0.1) {
+                        videoClone.currentTime = inputVideo.currentTime;
+                    }
+                };
+                inputVideo.addEventListener('seeked', inputVideoSeekedHandler);
+                window.inputVideoSeekedHandler = inputVideoSeekedHandler;
+
                 mobilePreviewContent.appendChild(videoClone);
             } else if (inputCanvas && inputCanvas.style.display !== 'none' && currentMediaElement) {
-                // Clone canvas for preview
                 const canvasClone = document.createElement('canvas');
                 canvasClone.width = inputCanvas.width;
                 canvasClone.height = inputCanvas.height;
@@ -2973,19 +3661,41 @@
                 ctx.drawImage(inputCanvas, 0, 0);
                 mobilePreviewContent.appendChild(canvasClone);
             } else if (uploadZone) {
-                // Clone upload zone for preview
                 const uploadClone = uploadZone.cloneNode(true);
                 uploadClone.id = 'mobileUploadZone';
                 uploadClone.addEventListener('click', () => {
                     document.getElementById('imageUpload').click();
                 });
                 mobilePreviewContent.appendChild(uploadClone);
+                
+                // Add example buttons for mobile - positioned below upload zone
+                const exampleButtonsContainer = document.getElementById('exampleButtonsContainer');
+                if (exampleButtonsContainer && exampleButtonsContainer.style.display !== 'none' && !currentMediaElement && !originalPixelData) {
+                    const mobileExampleButtons = exampleButtonsContainer.cloneNode(true);
+                    mobileExampleButtons.style.cssText = `
+                        display: flex;
+                        gap: 10px;
+                        margin-top: 15px;
+                        justify-content: center;
+                        width: 100%;
+                        flex-direction: column;
+                        align-items: center;
+                    `;
+                    mobileExampleButtons.querySelectorAll('button').forEach(button => {
+                        button.style.cssText = `
+                            min-width: 200px;
+                            justify-content: center;
+                            font-size: 0.9em;
+                            padding: 8px 12px;
+                            margin-bottom: 8px;
+                        `;
+                    });
+                    mobilePreviewContent.appendChild(mobileExampleButtons);
+                }
             }
         } else {
-            // Clone output content visually
             const outputCanvas = document.getElementById('outputCanvas');
             if (outputCanvas && currentBlobMatrix && currentBlobMatrix.length > 0) {
-                // Clone output canvas for preview
                 const canvasClone = document.createElement('canvas');
                 canvasClone.width = outputCanvas.width;
                 canvasClone.height = outputCanvas.height;
@@ -2993,14 +3703,13 @@
                 ctx.drawImage(outputCanvas, 0, 0);
                 mobilePreviewContent.appendChild(canvasClone);
             } else {
-                // Show placeholder when no output
                 const placeholder = document.createElement('div');
                 placeholder.style.cssText = `
                     display: flex; 
                     align-items: center; 
                     justify-content: center; 
                     height: 200px; 
-                    color: var(--muted-green); 
+                    color: var(--muted-grey); 
                     font-size: 1.2em;
                     text-align: center;
                 `;
@@ -3014,7 +3723,6 @@
         const inputColumn = document.getElementById('inputColumn');
         const outputColumn = document.getElementById('outputColumn');
         
-        // Show main columns
         if (inputColumn) inputColumn.style.display = 'flex';
         if (outputColumn) outputColumn.style.display = 'flex';
     }
@@ -3032,28 +3740,23 @@
         const mobilePreviewSpacer = document.getElementById('mobilePreviewSpacer');
         const mobilePreviewContent = document.getElementById('mobilePreviewContent');
         
-        // Clear mobile preview content first
         if (mobilePreviewContent) {
             mobilePreviewContent.innerHTML = '';
         }
         
-        // Reset mobile view to appropriate default based on media
         const mobileInputToggle = document.getElementById('mobileInputToggle');
         const mobileOutputToggle = document.getElementById('mobileOutputToggle');
         
         if (currentMediaElement) {
-            // Media uploaded - default to output view
             currentMobileView = 'output';
             if (mobileInputToggle) mobileInputToggle.classList.remove('active');
             if (mobileOutputToggle) mobileOutputToggle.classList.add('active');
         } else {
-            // No media - default to input view
             currentMobileView = 'input';
             if (mobileInputToggle) mobileInputToggle.classList.add('active');
             if (mobileOutputToggle) mobileOutputToggle.classList.remove('active');
         }
         
-        // Hide mobile preview and show desktop layout
         hideMobilePreview();
         showDesktopLayout();
         
@@ -3061,6 +3764,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        loadingSpinner.innerHTML = getSpinner(24);
+        if (mobileLoadingSpinner) mobileLoadingSpinner.innerHTML = getSpinner(24);
+        const sequenceSpinner = document.getElementById('sequenceLoadingSpinner');
+        if (sequenceSpinner) sequenceSpinner.innerHTML = getSpinner(64);
+        
         availableFonts.forEach(font => {
             const option = document.createElement('option');
             option.value = font.cssName;
@@ -3072,7 +3780,6 @@
         layoutPanels();
         updatePngSequenceButtonState();
         
-        // Ensure proper layout on page load
         setTimeout(() => {
             if (window.innerWidth <= 768) {
                 initMobilePreview();
@@ -3093,7 +3800,6 @@
             });
         }
         
-        // Final check to ensure proper layout on desktop
         if (window.innerWidth > 768) {
             showDesktopLayout();
         }
