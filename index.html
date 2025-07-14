@@ -32,7 +32,7 @@
       --disabled-red: #220000;
       
       /* Accent Colors */
-      --accent-dark: #111;
+      --accent-dark: #0e0e0e;
       --overlay-bg: rgba(0, 0, 0, 0.8);
       --overlay-dark: rgba(0, 0, 0, 0.85);
       
@@ -212,20 +212,16 @@
     }
 
     .upload-zone:hover {
-      background-color: var(--hover-grey);
+      background-color: var(--accent-dark);
     }
 
     .upload-zone i {
       font-size: 3em;
-      margin-bottom: 10px;
     }
 
     .upload-zone span {
       text-align: center;
-    }
-
-    .upload-zone.loading i {
-      display: none;
+      margin-top: 10px;
     }
 
     .upload-zone.loading .upload-spinner {
@@ -238,18 +234,25 @@
       display: none;
     }
 
+    .upload-zone.loading i {
+      display: none;
+    }
+
     .example-buttons-container {
       display: flex;
+      flex-direction: column;
       gap: 10px;
       margin-top: 15px;
       justify-content: center;
       width: 100%;
     }
+    
+
 
     .example-buttons-container .btn-action {
       min-width: 160px;
       justify-content: center;
-      padding: 8px 12px;
+      padding: 15px;
       font-size: 0.9em;
     }
 
@@ -392,15 +395,15 @@
         height: 28px;
     }
     .control-container input[type="text"]:disabled {
-        background-color: var(--border-secondary);
+        background-color: var(--dark-grey);
         color: var(--muted-grey);
         cursor: not-allowed;
     }
     #customCharsHelpButton:disabled {
-        background-color: var(--border-secondary);
+        background-color: var(--dark-grey);
         color: var(--muted-grey);
         cursor: not-allowed;
-        border-color: var(--border-secondary);
+        border-color: var(--dark-grey);
     }
 
 
@@ -471,7 +474,7 @@
       width: 100%;
       overflow: hidden;
     }
-     .condensed-upload-zone:hover { background-color: var(--hover-grey); }
+     .condensed-upload-zone:hover { background-color: var(--accent-dark); }
     .condensed-upload-zone input[type="file"] { display: none; }
     .condensed-upload-zone label {
         cursor: pointer;
@@ -659,6 +662,8 @@
     .btn-action i { 
         margin-right: 8px; 
         font-size: 1.1em; 
+        line-height: 1;
+        display: inline-block;
     }
 
     .fps-options-grid {
@@ -1020,7 +1025,6 @@
       
       .mobile-preview-content .upload-zone {
           width: 80%;
-          height: 200px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -1220,25 +1224,22 @@
           <i class="ri-upload-2-fill" id="uploadIcon"></i>
           <div class="upload-spinner" id="uploadSpinner"></div>
           <span id="uploadText">
-            Drag & drop an image/video here
-            <br>
-            <span style="color: var(--muted-grey);">or</span>
-            <br>
-            Click to upload
-            <br>
-            <span style="color: var(--muted-grey);">or</span>
-            <br>
-            Select an example from below
-          </span>
+            Upload an image or video
+            <div class="example-buttons-container" id="exampleButtonsContainer">
+                <button class="btn-base btn-action" onclick="document.getElementById('imageUpload').click()">
+                    <i class="ri-upload-2-fill"></i> Select file
+                </button>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button class="btn-base btn-action" onclick="loadExampleImage()">
+                      <i class="ri-image-line"></i> Load Example Image
+                    </button>
+                    <button class="btn-base btn-action" onclick="loadExampleVideo()">
+                      <i class="ri-video-line"></i> Load Example Video
+                    </button>
+                </div>
+              </div>
         </div>
-        <div class="example-buttons-container" id="exampleButtonsContainer">
-          <button class="btn-base btn-action" onclick="loadExampleImage()">
-            <i class="ri-image-line"></i> Load Example Image
-          </button>
-          <button class="btn-base btn-action" onclick="loadExampleVideo()">
-            <i class="ri-video-line"></i> Load Example Video
-          </button>
-        </div>
+
         <canvas id="inputCanvas" class="imageCanvas"></canvas>
         <video id="inputVideo" class="imageCanvas" playsinline loop muted controls></video>
       </div>
@@ -1335,7 +1336,7 @@
         <label for="condensedImageUpload">
             <div class="filename-container">
                 <span id="condensedFilename"><i class="ri-check-line"></i> Select Image</span>
-                <button class="btn-base change-image-button" onclick="document.getElementById('imageUpload').click()"><i class="ri-upload-2-fill"></i> New Upload</button>
+                <button class="btn-base btn-action change-image-button" onclick="document.getElementById('imageUpload').click()"><i class="ri-upload-2-fill"></i> New Upload</button>
             </div>
             <input type="file" id="condensedImageUpload" accept="image/* video/*">
         </label>
@@ -2504,7 +2505,10 @@
     async function processImageWithCurrentSettings() {
         if (isSequenceRendering) return;
 
-        hideExampleButtons();
+        // Only hide example buttons if there's a file loaded
+        if (currentMediaElement || originalPixelData) {
+            hideExampleButtons();
+        }
 
         loadingSpinner.style.display = 'inline';
         if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
@@ -2987,19 +2991,8 @@
 
 
 
-    inputColumn.addEventListener('dragover', (e) => { e.preventDefault(); inputColumn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--drag-hover'); });
-    inputColumn.addEventListener('dragleave', () => { inputColumn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--drag-default'); });
-    inputColumn.addEventListener('drop', (e) => {
-        e.preventDefault(); inputColumn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--drag-default');
-        const file = e.dataTransfer.files[0];
-        if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
-          handleImageUpload(file);
-          condensedUploadZone.style.display = 'inline-block';
-          condensedFilename.innerHTML = `<i class="ri-check-line"></i> ${file.name} `;
-           if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
-        } else { alert('Please drop an image or video file.'); }
-    });
-    uploadZone.addEventListener('click', () => { imageUpload.click(); });
+    // Remove drag and drop from inputColumn - only upload zones should handle drag events
+
 
     inputCanvas.addEventListener('click', () => {
         const isMobile = window.innerWidth <= 768;
@@ -3012,6 +3005,26 @@
                 inputVideo.play();
             }
         }
+    });
+
+    // Add drag and drop to the main upload zone
+    uploadZone.addEventListener('dragover', (e) => { 
+        e.preventDefault(); 
+        uploadZone.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--hover-grey'); 
+    });
+    uploadZone.addEventListener('dragleave', () => { 
+        uploadZone.style.backgroundColor = 'transparent';
+    });
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault(); 
+        uploadZone.style.backgroundColor = 'transparent';
+        const file = e.dataTransfer.files[0];
+        if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
+          handleImageUpload(file);
+          condensedUploadZone.style.display = 'inline-block';
+          condensedFilename.innerHTML = `<i class="ri-check-line"></i> ${file.name} `;
+          if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
+        } else { alert('Please drop an image or video file.'); }
     });
 
     condensedUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); condensedUploadZone.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--hover-grey'); });
@@ -3663,35 +3676,14 @@
             } else if (uploadZone) {
                 const uploadClone = uploadZone.cloneNode(true);
                 uploadClone.id = 'mobileUploadZone';
-                uploadClone.addEventListener('click', () => {
+                uploadClone.addEventListener('click', (e) => {
+                    if (e.target.closest('.example-buttons-container')) {
+                        return;
+                    }
                     document.getElementById('imageUpload').click();
                 });
                 mobilePreviewContent.appendChild(uploadClone);
-                
-                // Add example buttons for mobile - positioned below upload zone
-                const exampleButtonsContainer = document.getElementById('exampleButtonsContainer');
-                if (exampleButtonsContainer && exampleButtonsContainer.style.display !== 'none' && !currentMediaElement && !originalPixelData) {
-                    const mobileExampleButtons = exampleButtonsContainer.cloneNode(true);
-                    mobileExampleButtons.style.cssText = `
-                        display: flex;
-                        gap: 10px;
-                        margin-top: 15px;
-                        justify-content: center;
-                        width: 100%;
-                        flex-direction: column;
-                        align-items: center;
-                    `;
-                    mobileExampleButtons.querySelectorAll('button').forEach(button => {
-                        button.style.cssText = `
-                            min-width: 200px;
-                            justify-content: center;
-                            font-size: 0.9em;
-                            padding: 8px 12px;
-                            margin-bottom: 8px;
-                        `;
-                    });
-                    mobilePreviewContent.appendChild(mobileExampleButtons);
-                }
+
             }
         } else {
             const outputCanvas = document.getElementById('outputCanvas');
