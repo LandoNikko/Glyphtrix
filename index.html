@@ -3119,7 +3119,9 @@
             
             // Try multiple CORS-enabled video URLs as fallbacks
             const videoUrls = [
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+                'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4'
             ];
             
             let response = null;
@@ -3150,7 +3152,14 @@
             if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
         } catch (error) {
             console.error('Error loading example video:', error);
-            alert('Failed to load example video. This may be due to network restrictions. Please try uploading your own video file instead.');
+            let errorMessage = 'Failed to load example video. ';
+            if (error.message.includes('CORS')) {
+                errorMessage += 'This is likely due to CORS restrictions when deployed online. ';
+            } else if (error.message.includes('network')) {
+                errorMessage += 'Network error occurred. ';
+            }
+            errorMessage += 'Please try uploading your own video file instead.';
+            alert(errorMessage);
         } finally {
             loadingSpinner.style.display = 'none';
             if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
