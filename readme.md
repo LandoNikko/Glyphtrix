@@ -17,7 +17,7 @@ Glyphtrix is a local web app that transforms images and videos into real-time, c
 
 Try it here: https://landonikko.github.io/Glyphtrix
 
-![Glyphtrix_Home](https://github.com/user-attachments/assets/4b72104b-ada1-49be-8d08-d4b9511bb2ce)
+![Glyphtrix_Home](https://github.com/user-attachments/assets/9390ec09-5294-417a-bdf3-8946495df5ce)
 
 ## ![Features Shield][features-shield]
 

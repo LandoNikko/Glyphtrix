@@ -102,7 +102,7 @@
         display: flex;
         align-items: center;
     }
-          #loadingSpinner {
+    #loadingSpinner {
         position: absolute;
         right: 20px;
         top: 50%;
@@ -114,7 +114,7 @@
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
-      }
+    }
     #sequenceLoadingMessage {
         font-size: 0.9em;
         margin-top: 5px;
@@ -441,7 +441,7 @@
         display: flex; justify-content: space-between; width: 100%;
         margin-bottom: 10px; font-size: 0.85em; white-space: nowrap;
     }
-          .slider-container label span { margin-left: 5px; color: var(--primary-text); }
+    .slider-container label span { margin-left: 5px; color: var(--primary-text); }
       
       #gridSizeDisplay, #outputResolutionDisplay {
         display: inline-block;
@@ -1193,6 +1193,17 @@
         display: none !important;
       }
     }
+
+    #glyphRandomizeButton.dice-animate {
+      animation: dice-rotate 0.25s cubic-bezier(0.6, 0.1, 0.4, 1);
+    }
+    @keyframes dice-rotate {
+      0% { transform: rotate(0deg); }
+      30% { transform: rotate(-40deg); }
+      60% { transform: rotate(20deg); }
+      80% { transform: rotate(-10deg); }
+      100% { transform: rotate(0deg); }
+    }
   </style>
 </head>
 <body>
@@ -1236,7 +1247,7 @@
                     <button class="btn-base btn-action" onclick="loadExampleVideo()">
                       <i class="ri-video-line"></i> Load Example Video
                     </button>
-                </div>
+        </div>
               </div>
         </div>
 
@@ -1278,7 +1289,7 @@
         <h3>How to Use</h3>
         <ol>
           <li>Upload an image or video</li>
-          <li>Adjust the settings to customize your character art</li>
+          <li>Adjust the settings to customize the output</li>
           <li>Preview and download your creation</li>
         </ol>
 
@@ -1288,14 +1299,14 @@
           <li>Increasing <u>Density</u> value makes characters bigger</li>
           <li>Pay attention to <u>Resolution</u>, larger values will take longer to render</li>
         </ul>
-
+        
         <h3>Features</h3>
         <ul>
           <li>Image & video support</li>
-          <li>Multiple (customizable) character sets</li>
-          <li>Customizable output</li>
-          <li>Real-time processing</li>
-          <li>Export as image, text or animated sequence</li>
+          <li>Style presets to get started quickly</li>
+          <li>Extensive customization, full Unicode support</li>
+          <li>Real-time processing & preview</li>
+          <li>Export as image, text or animated PNG sequence</li>
         </ul>
            
         <h3>Privacy</h3>
@@ -1303,7 +1314,7 @@
           <li>No cloud processing, servers or installations</li>
           <li>Everything happens locally in your browser</li>
         </ul>
-
+        
         <div class="info-modal-footer">
           <button class="btn-base btn-action" onclick="openGitHub()">
             <i class="ri-github-line"></i> View source code on GitHub
@@ -1393,7 +1404,9 @@
         </div>
     </div>
     <div class="settings-panel-section-content settings-font-content" id="fontSettingsContent">
-      <h2>Glyph</h2>
+      <h2 style="display: flex; align-items: center; gap: 10px;">Glyph
+        <i class="ri-dice-line" id="glyphRandomizeButton" style="cursor: pointer; opacity: 0.8;"></i>
+      </h2>
       <div class="font-settings-layout">
             <div class="settings-column">
                 <div class="control-container control-group" style="margin-bottom: 0px;">
@@ -1532,7 +1545,7 @@
   </div>
 
   <script>
-    // Global spinner function
+    // Global spinner
     function getSpinner(size = 24) {
         return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24"><g><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".14"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".29" transform="rotate(30 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".43" transform="rotate(60 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".57" transform="rotate(90 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".71" transform="rotate(120 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" opacity=".86" transform="rotate(150 12 12)"/><rect width="2" height="5" x="11" y="1" fill="currentColor" transform="rotate(180 12 12)"/><animateTransform attributeName="transform" calcMode="discrete" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12"/></g></svg>`;
     }
@@ -1782,7 +1795,7 @@
                     if (chromaRemovalToggle.checked) {
                         framePixelData = removeChroma(framePixelData, currentImageOriginalWidth, currentImageOriginalHeight, 10);
                     }
-                    
+
                     if (invertColorsToggle.checked) {
                         framePixelData = invertPixelData(framePixelData);
                     }
@@ -2211,8 +2224,12 @@
             }
             case 'custom': {
                 const textColor = hexToRgb(customTextColor.value);
-                
+                const bgColor = hexToRgb(customBackgroundColor.value);
                 const brightness = level;
+                if (brightness === 0) {
+                    // Use background color for lowest value
+                    return `rgb(${bgColor.r}, ${bgColor.g}, ${bgColor.b})`;
+                }
                 return `rgb(${Math.round(textColor.r * brightness)}, ${Math.round(textColor.g * brightness)}, ${Math.round(textColor.b * brightness)})`;
             }
             default: return `rgb(0, ${value}, 0)`;
@@ -2305,8 +2322,8 @@
                 const previewLevels = generateGrayscaleLevels(tempNumLevels);
                 drawPosterizedPreview(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, previewLevels);
             } else {
-                inputVideo.style.display = 'block';
-                inputCanvas.style.display = 'none';
+            inputVideo.style.display = 'block';
+            inputCanvas.style.display = 'none';
             }
             return;
         }
@@ -2326,9 +2343,9 @@
         }
 
         if (isPreviewChangesActive && !isMobile) {
-                    loadingSpinner.style.display = 'inline';
+            loadingSpinner.style.display = 'inline';
         if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
-        await new Promise(resolve => setTimeout(resolve, 0));
+            await new Promise(resolve => setTimeout(resolve, 0));
                     const tempContrast = parseInt(contrastSlider.value);
             const tempBrightness = parseInt(brightnessSlider.value);
             const tempShadow = parseInt(shadowInputSlider.value);
@@ -2337,9 +2354,9 @@
             const tempNumLevels = parseInt(levelsSlider.value);
             let processedForPreview = applyContrast(dataForPreview, currentImageOriginalWidth, currentImageOriginalHeight, tempContrast);
             processedForPreview = applyLevelsAndBrightness(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, tempBrightness, tempShadow, tempGamma, tempHighlight);
-        const previewLevels = generateGrayscaleLevels(tempNumLevels);
-        drawPosterizedPreview(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, previewLevels);
-        loadingSpinner.style.display = 'none';
+            const previewLevels = generateGrayscaleLevels(tempNumLevels);
+            drawPosterizedPreview(processedForPreview, currentImageOriginalWidth, currentImageOriginalHeight, previewLevels);
+            loadingSpinner.style.display = 'none';
         if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
         } else {
              inputCanvas.width = currentImageOriginalWidth;
@@ -2535,12 +2552,12 @@
 
         let sourcePixelData;
         if (isVideoInput) {
-                    if (!currentMediaElement || currentMediaElement.readyState < inputVideo.HAVE_CURRENT_DATA ) {
-            loadingSpinner.style.display = 'none';
+            if (!currentMediaElement || currentMediaElement.readyState < inputVideo.HAVE_CURRENT_DATA ) {
+                loadingSpinner.style.display = 'none';
             if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
-            setDownloadButtonsState(true);
-            return;
-        }
+                setDownloadButtonsState(true);
+                return;
+            }
             const tempVidCanvas = document.createElement('canvas');
             tempVidCanvas.width = currentImageOriginalWidth;
             tempVidCanvas.height = currentImageOriginalHeight;
@@ -2556,12 +2573,12 @@
             }
 
         } else {
-                    if (!originalPixelData) {
-            loadingSpinner.style.display = 'none';
+            if (!originalPixelData) {
+                loadingSpinner.style.display = 'none';
             if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
-            setDownloadButtonsState(true);
-            return;
-        }
+                setDownloadButtonsState(true);
+                return;
+            }
             sourcePixelData = new Uint8ClampedArray(originalPixelData);
             if (isChromaRemovalActive) {
                 sourcePixelData = removeChroma(sourcePixelData, currentImageOriginalWidth, currentImageOriginalHeight, currentBackgroundTolerance);
@@ -2584,7 +2601,7 @@
                 previewBaseData = invertPixelData(previewBaseData);
             }
                             let previewProcessed = applyContrast(previewBaseData, currentImageOriginalWidth, currentImageOriginalHeight, parseInt(contrastSlider.value));
-                previewProcessed = applyLevelsAndBrightness(previewProcessed, currentImageOriginalWidth, currentImageOriginalHeight, parseInt(brightnessSlider.value), parseInt(shadowInputSlider.value), parseFloat(midtoneGammaSlider.value), parseInt(highlightInputSlider.value));
+            previewProcessed = applyLevelsAndBrightness(previewProcessed, currentImageOriginalWidth, currentImageOriginalHeight, parseInt(brightnessSlider.value), parseInt(shadowInputSlider.value), parseFloat(midtoneGammaSlider.value), parseInt(highlightInputSlider.value));
             drawPosterizedPreview(previewProcessed, currentImageOriginalWidth, currentImageOriginalHeight, previewLevels);
 
         } else if (isVideoInput && isPreviewChangesActive) {
@@ -2607,7 +2624,6 @@
         }
     }
 
-
     function handleImageUpload(file) {
         stopVideoProcessingLoop();
         clearCachedSequence();
@@ -2616,11 +2632,7 @@
         if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
         setDownloadButtonsState(true);
         downloadPngSequenceButton.style.display = 'none';
-
-        // Show upload spinner
         showUploadSpinner();
-
-        // Hide example buttons when file is loaded
         hideExampleButtons();
 
         inputVideo.style.display = 'none';
@@ -2634,7 +2646,6 @@
         inputVideo.src = "";
         inputCanvas.style.display = 'none';
 
-
         const reader = new FileReader();
         reader.onload = function(event) {
             if (file.type.startsWith('video/')) {
@@ -2645,8 +2656,6 @@
                     currentImageOriginalWidth = inputVideo.videoWidth;
                     currentImageOriginalHeight = inputVideo.videoHeight;
                     customCharSeqIndex = 0;
-                    
-
 
                     inputVideo.style.display = 'block';
                     inputCanvas.style.display = 'none';
@@ -2655,26 +2664,20 @@
                     if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
                     if(condensedUploadZone) condensedUploadZone.style.display = 'inline-block';
                     if(condensedFilename) condensedFilename.innerHTML = `<i class="ri-check-line"></i> ${file.name} `;
-                    
-                    // Ensure example buttons are hidden
+
                     hideExampleButtons();
 
                     if(previewChangesContainer) previewChangesContainer.style.display = 'flex';
 
                     setDefaultValues(inputVideo.videoWidth);
                     
-                    // Override default preview settings for video
                     previewChangesToggle.checked = false;
                     isPreviewChangesActive = false;
                     previewChangesToggle.disabled = true;
                     currentDensity = parseInt(densityInput.value);
 
-
-
-
                     if(chromaRemovalContainer) chromaRemovalContainer.style.display = 'flex';
                     if(invertColorsContainer) invertColorsContainer.style.display = 'flex';
-
 
                     await processImageWithCurrentSettings();
                     loadingSpinner.style.display = 'none';
@@ -2686,6 +2689,10 @@
                     
                     if (inputVideo.duration > 1) {
                         inputVideo.currentTime = 1;
+                    }
+                    
+                    if (inputVideo.paused) {
+                        previewChangesToggle.disabled = false;
                     }
                     
                     if (window.innerWidth <= 768 && mobilePreviewActive) {
@@ -2758,15 +2765,11 @@
                     if(chromaRemovalContainer) chromaRemovalContainer.style.display = 'flex';
                     if(invertColorsContainer) invertColorsContainer.style.display = 'flex';
                     if(previewChangesContainer) previewChangesContainer.style.display = 'flex';
-                    
+
                     previewChangesToggle.disabled = false;
 
                     setDefaultValues(img.width);
                     currentDensity = parseInt(densityInput.value);
-
-
-
-
 
                     await processImageWithCurrentSettings();
                     await updateInputCanvasPreview();
@@ -2806,7 +2809,6 @@
         }
         reader.readAsDataURL(file);
     }
-
 
     imageUpload.addEventListener('change', function(e) {
        if (e.target.files && e.target.files[0]) {
@@ -2907,13 +2909,9 @@
     addSettingsChangeListener(customTextColor, 'input');
     addSettingsChangeListener(customBackgroundColor, 'input');
 
-    // Help button functionality
     customCharsHelpButton.addEventListener('click', () => {
         alert('Custom Characters:\n\n• Using commas randomizes item output (e.g., "A,B,C")\n• Using dots flattens items into a sequence (e.g., "ABC.DEF" becomes "ABCDEF")\n• Supports all Unicode characters (for unique visual effects)');
     });
-
-
-
 
     function updateDensity(newValue) {
         clearCachedSequence();
@@ -2988,12 +2986,6 @@
         processImageWithCurrentSettings();
     });
 
-
-
-
-    // Remove drag and drop from inputColumn - only upload zones should handle drag events
-
-
     inputCanvas.addEventListener('click', () => {
         const isMobile = window.innerWidth <= 768;
         if (!isMobile && isVideoInput && isPreviewChangesActive && inputCanvas.style.display !== 'none') {
@@ -3007,7 +2999,6 @@
         }
     });
 
-    // Add drag and drop to the main upload zone
     uploadZone.addEventListener('dragover', (e) => { 
         e.preventDefault(); 
         uploadZone.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--hover-grey'); 
@@ -3023,7 +3014,7 @@
           handleImageUpload(file);
           condensedUploadZone.style.display = 'inline-block';
           condensedFilename.innerHTML = `<i class="ri-check-line"></i> ${file.name} `;
-          if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
+           if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
         } else { alert('Please drop an image or video file.'); }
     });
 
@@ -3074,7 +3065,6 @@
                const blobUrl = URL.createObjectURL(blob);
                const newTab = window.open(blobUrl, '_blank');
                
-               // Clean up the blob URL when the new tab is closed
                newTab.addEventListener('beforeunload', () => {
                    URL.revokeObjectURL(blobUrl);
                });
@@ -3117,10 +3107,8 @@
             if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
             showUploadSpinner();
             
-            // Try multiple CORS-enabled video URLs as fallbacks
             const videoUrls = [
                 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
                 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4'
             ];
             
@@ -3173,7 +3161,6 @@
             exampleButtonsContainer.style.display = 'none';
         }
         
-        // Also hide any mobile example buttons
         const mobilePreviewContent = document.getElementById('mobilePreviewContent');
         if (mobilePreviewContent) {
             const mobileExampleButtons = mobilePreviewContent.querySelector('.example-buttons-container');
@@ -3273,7 +3260,7 @@
     function getVideoMetadata() {
         if (!inputVideo) return {};
 
-        // Calculate output resolution based on current density and scale settings
+        // Calculate optimized output based on current density and scale settings
         const density = parseInt(densityInput.value) || 7;
         const outputCols = Math.ceil(inputVideo.videoWidth / density);
         const outputRows = Math.ceil(inputVideo.videoHeight / density);
@@ -3356,7 +3343,7 @@
         document.getElementById('fpsModal').style.display = 'none';
     }
 
-    // Close modal when clicking outside of it
+    // Close modal
     document.addEventListener('click', function(event) {
         const infoModal = document.getElementById('infoModal');
         const fpsModal = document.getElementById('fpsModal');
@@ -3368,7 +3355,6 @@
         }
     });
 
-    // Close modal with Escape key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeInfoModal();
@@ -3421,28 +3407,28 @@
 
 
 
-            let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
                 if (window.innerWidth > 768) {
                     destroyMobilePreview();
                 }
                 
-                layoutPanels();
+            layoutPanels();
                 
                 if (window.innerWidth <= 768) {
                     initMobilePreview();
                 }
                 
-                if (currentMediaElement || originalPixelData) {
-                    setTimeout(() => {
-                        processImageWithCurrentSettings();
-                        if (!isVideoInput) updateInputCanvasPreview();
-                    }, 100);
-                }
-            }, 300);
-        });
+            if (currentMediaElement || originalPixelData) {
+                setTimeout(() => {
+                    processImageWithCurrentSettings();
+                    if (!isVideoInput) updateInputCanvasPreview();
+                }, 100);
+            }
+        }, 300);
+    });
     
     function scrambleText(element, originalText, duration = 250) {
         if (element.dataset.scrambling === 'true') return;
@@ -3763,7 +3749,7 @@
         
         mobilePreviewActive = false;
     }
-
+    
     document.addEventListener('DOMContentLoaded', () => {
         loadingSpinner.innerHTML = getSpinner(24);
         if (mobileLoadingSpinner) mobileLoadingSpinner.innerHTML = getSpinner(24);
@@ -3806,6 +3792,82 @@
         }
     });
     inputCanvas.style.display = 'none';
+
+    // Glyph Randomizer
+    function getRandomIndex(max) {
+        return Math.floor(Math.random() * max);
+    }
+
+    function getRandomColor() {
+        return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    }
+
+    function randomizeGlyphSettings() {
+        const charSetSelect = document.getElementById('characterSetSelect');
+        if (charSetSelect) {
+            charSetSelect.selectedIndex = getRandomIndex(charSetSelect.options.length);
+            charSetSelect.dispatchEvent(new Event('change'));
+        }
+        const fontSelect = document.getElementById('fontSelect');
+        if (fontSelect) {
+            fontSelect.selectedIndex = getRandomIndex(fontSelect.options.length);
+            fontSelect.dispatchEvent(new Event('change'));
+        }
+        const colorSchemeSelect = document.getElementById('colorSchemeSelect');
+        if (colorSchemeSelect) {
+            const colorValue = colorSchemeSelect.value;
+            let targetScheme = 'custom';
+            if (colorValue.startsWith('gradient')) {
+                targetScheme = 'gradient';
+            } else if (colorValue.startsWith('color')) {
+                targetScheme = 'custom';
+            } else if (colorValue === 'gradient') {
+                targetScheme = 'gradient';
+            } else if (colorValue === 'custom') {
+                targetScheme = 'custom';
+            } else {
+                targetScheme = 'custom';
+            }
+            if (colorSchemeSelect.value !== targetScheme) {
+                colorSchemeSelect.value = targetScheme;
+                colorSchemeSelect.dispatchEvent(new Event('change'));
+            }
+            if (targetScheme === 'custom') {
+                const customTextColor = document.getElementById('customTextColor');
+                const customBackgroundColor = document.getElementById('customBackgroundColor');
+                if (customTextColor && customBackgroundColor) {
+                    customTextColor.value = getRandomColor();
+                    customBackgroundColor.value = getRandomColor();
+                    customTextColor.dispatchEvent(new Event('input'));
+                    customBackgroundColor.dispatchEvent(new Event('input'));
+                }
+            } else if (targetScheme === 'gradient') {
+                const gradientTopColor = document.getElementById('gradientTopColor');
+                const gradientBottomColor = document.getElementById('gradientBottomColor');
+                if (gradientTopColor && gradientBottomColor) {
+                    gradientTopColor.value = getRandomColor();
+                    gradientBottomColor.value = getRandomColor();
+                    gradientTopColor.dispatchEvent(new Event('input'));
+                    gradientBottomColor.dispatchEvent(new Event('input'));
+                }
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const glyphRandomizeButton = document.getElementById('glyphRandomizeButton');
+        if (glyphRandomizeButton) {
+            glyphRandomizeButton.addEventListener('click', function() {
+                randomizeGlyphSettings();
+                glyphRandomizeButton.classList.remove('dice-animate');
+                void glyphRandomizeButton.offsetWidth;
+                glyphRandomizeButton.classList.add('dice-animate');
+            });
+            glyphRandomizeButton.addEventListener('animationend', function() {
+                glyphRandomizeButton.classList.remove('dice-animate');
+            });
+        }
+    });
   </script>
 
 </body>
