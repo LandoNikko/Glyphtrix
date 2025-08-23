@@ -4,18 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glyphtrix — Image and Video to ASCII Art Locally</title>
-  <meta name="description" content="Convert images and videos to ASCII/character art locally in your browser. Customize fonts, density, colors and export as image, text or animated PNG sequence.">
+  <meta name="description" content="Convert images and videos to ASCII art locally in your browser. Customize output and export as image, text or animated PNG sequence.">
   <meta name="keywords" content="ascii art, text art, image to ascii, video to ascii, character art, terminal art, glyph, posterize, free, in-browser">
   <meta name="robots" content="index,follow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <meta property="og:title" content="Glyphtrix — Image and Video to ASCII Art Locally">
+  <meta property="og:title" content="Glyphtrix — Image and Video to ASCII Art">
   <meta property="og:description" content="Glyphtrix is an open source web app that transforms images and videos into ASCII visual art locally within your browser. No cloud processing, no tracking.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
   <meta property="og:image" content="assets/social_preview.jpg">
   <link rel="image_src" href="assets/social_preview.jpg">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Glyphtrix","applicationCategory":"MultimediaApplication","operatingSystem":"Web","description":"Convert images and videos to ASCII/character art locally in your browser. Customize fonts, density, colors, and export as PNG, text, or animated PNG sequence.","browserRequirements":"Requires JavaScript. Works in modern browsers.","featureList":"Image/video to ASCII, presets, custom fonts, density/scale controls, color schemes, preview, export PNG/text/sequence","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Glyphtrix"}}</script>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Glyphtrix","applicationCategory":"MultimediaApplication","operatingSystem":"Web","description":"Convert images and videos to ASCII art locally in your browser. Customize output and export as image, text or animated PNG sequence.","browserRequirements":"Requires JavaScript. Works in modern browsers.","featureList":"Image/video to ASCII, presets, custom fonts, density/scale controls, color schemes, preview, export PNG/text/sequence","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Glyphtrix"}}</script>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
@@ -25,7 +26,7 @@
       /* Primary Colors */
       --primary-bg: #000;
       --primary-text: #fff;
-      --primary-white: #FFFFFF;
+      --primary-white: #fff;
       
       /* Border Colors */
       --border-primary: #555;
@@ -39,7 +40,7 @@
       
       /* Status Colors */
       --error-text: #FF6666;
-      --muted-grey: #636363;
+      --muted-grey: #7e7e7e;
       --dark-grey: #111111;
       --disabled-red: #220000;
       
@@ -113,6 +114,7 @@
     .column-header h2 {
         display: flex;
         align-items: center;
+        cursor: default;
     }
     #loadingSpinner {
         position: absolute;
@@ -330,6 +332,7 @@
         width: 100%;
         text-align: left;
         box-sizing: border-box;
+        cursor: default;
     }
     .upload-panel-content > h2.initially-hidden {
         display: none;
@@ -533,6 +536,7 @@
         border-color: var(--muted-grey);
         cursor: not-allowed;
         background-color: var(--dark-grey);
+        transform: none !important;
     }
 
     .change-image-button {
@@ -597,7 +601,7 @@
         background-color: var(--primary-bg);
         border: 2px solid var(--primary-text);
         max-width: 600px;
-        max-height: 80vh;
+        max-height: 90vh;
         width: 100%;
         overflow-y: auto;
         color: var(--primary-text);
@@ -865,6 +869,9 @@
         padding: 15px;
       }
       
+      .settings-title-section {
+        border-bottom: none;
+      }
 
       
       .upload-panel-content,
@@ -1330,7 +1337,7 @@
         <button class="info-modal-close" onclick="closeInfoModal()">&times;</button>
       </div>
       <div class="info-modal-body">
-        <p><strong>Glyphtrix</strong> is a local web app that transforms images and videos into real-time, character-based visual art in your browser.</p>
+        <p><strong>Glyphtrix</strong> is a tool that transforms images and videos into ASCII art locally in your browser.</p>
         
         <h3>How to Use</h3>
         <ol>
@@ -1343,21 +1350,21 @@
         <ul>
           <li>If output looks blurry, increase <u>Scale Factor</u> value</li>
           <li>Increasing <u>Density</u> value makes characters bigger</li>
-          <li>Pay attention to <u>Resolution</u>, larger values will take longer to render</li>
+          <li>Pay attention to <u>Resolution</u>, larger values will take longer to output</li>
         </ul>
         
         <h3>Features</h3>
         <ul>
+          <li>Example files and presets to get started</li>
           <li>Image & video support</li>
-          <li>Style presets to get started quickly</li>
           <li>Extensive customization, full Unicode support</li>
           <li>Real-time processing & preview</li>
           <li>Export as image, text or animated PNG sequence</li>
         </ul>
            
-        <h3>Privacy</h3>
+        <h3>Privacy & Processing</h3>
         <ul>
-          <li>No cloud processing, servers or installations</li>
+          <li>No cloud processing, no tracking</li>
           <li>Everything happens locally in your browser</li>
         </ul>
         
@@ -1401,7 +1408,7 @@
     </div>
     <div class="settings-panel-section-content settings-title-section" id="settingsTitleSection">
         <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <h2>Settings for</h2>
+        <h2>Settings for</h2>
             <div style="display: flex; gap: 8px;">
                 <button class="btn-base" id="undoButton" disabled style="padding: 5px 8px; font-size: 1em; height: 28px; flex-shrink: 0; margin: 0;">
                     <i class="ri-arrow-go-back-line"></i>
@@ -1427,6 +1434,9 @@
                 <div class="checkbox-container control-group" id="backgroundRemovalContainer">
                     <input type="checkbox" id="backgroundRemovalToggle">
                     <label for="backgroundRemovalToggle">Remove Chroma</label>
+                </div>
+                <div class="control-container control-group">
+                    <span id="resetToDefaultText" style="cursor: pointer; text-decoration: underline; font-size: 0.9em; transition: color 0.1s;" onmouseover="this.style.color='var(--error-text)'" onmouseout="this.style.color=''" >Reset to Default</span>
                 </div>
             </div>
             <div class="settings-column">
@@ -2217,7 +2227,7 @@
             };
         }
         gridSizeDisplay.textContent = '-';
-        
+
         isChromaRemovalActive = chromaRemovalToggle.checked;
         currentBackgroundTolerance = 10;
         isInvertColorsActive = invertColorsToggle.checked;
@@ -2581,7 +2591,7 @@
 
     function generateBlobMatrix(pixelDataToProcess, originalWidth, originalHeight, levelsArray, densityStep, colorScheme, charSet) {
         let blobMatrix = [];
-
+        
         const totalRows = Math.ceil(originalHeight / densityStep);
         let currentRowIndex = 0;
 
@@ -3189,7 +3199,7 @@
 
     addSettingsChangeListener(customTextColor, 'input');
     addSettingsChangeListener(customBackgroundColor, 'input');
-    
+
     customTextColor.addEventListener('input', () => {
         if (colorSchemeSelect.value !== 'custom') {
             colorSchemeSelect.value = 'custom';
@@ -4119,6 +4129,19 @@
         const redoButton = document.getElementById('redoButton');
         if (undoButton) undoButton.addEventListener('click', undoAction);
         if (redoButton) redoButton.addEventListener('click', redoAction);
+        
+        // Reset to Default
+        const resetToDefaultText = document.getElementById('resetToDefaultText');
+        if (resetToDefaultText) {
+            resetToDefaultText.addEventListener('click', () => {
+                setDefaultValues();
+                
+                processImageWithCurrentSettings();
+                if (!isVideoInput) updateInputCanvasPreview();
+                
+                saveActionToHistory();
+            });
+        }
         
         updateUndoRedoButtons();
         
