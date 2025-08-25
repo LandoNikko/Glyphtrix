@@ -15,7 +15,7 @@
 
 Glyphtrix is an open source web app that transforms images and videos into ASCII visual art locally in your browser. No cloud processing, no tracking.
 
-Try it here: https://landonikko.github.io/Glyphtrix
+Try it here: https://glyphtrix.art
 
 ![Glyphtrix_Home](https://github.com/user-attachments/assets/9390ec09-5294-417a-bdf3-8946495df5ce)
 
