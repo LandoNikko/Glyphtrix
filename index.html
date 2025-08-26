@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glyphtrix — Image and Video to ASCII Art Locally</title>
-  <meta name="description" content="Convert images and videos to ASCII art locally in your browser. Customize output and export as image, text or animated PNG sequence.">
+  <meta name="description" content="Convert images and videos into ASCII art. Customize output and export as image, text or animated PNG sequence.">
   <meta name="keywords" content="ascii art, text art, image to ascii, video to ascii, character art, terminal art, glyph, posterize, free, in-browser">
   <meta name="robots" content="index,follow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta property="og:title" content="Glyphtrix — Image and Video to ASCII Art">
-  <meta property="og:description" content="Glyphtrix is an open source web app that transforms images and videos into ASCII visual art locally within your browser. No cloud processing, no tracking.">
+  <meta property="og:description" content="Glyphtrix is an open source web tool that turns images and videos into ASCII art locally within your browser.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
   <meta property="og:image" content="https://glyphtrix.art/assets/social_preview.jpg">
@@ -1060,6 +1060,20 @@
           background-color: var(--hover-grey);
       }
       
+      .upload-zone,
+      .mobile-preview-content .upload-zone,
+      .condensed-upload-zone {
+          border: none !important;
+          background-color: transparent !important;
+          cursor: default !important;
+      }
+
+      .upload-zone:hover,
+      .mobile-preview-content .upload-zone:hover,
+      .condensed-upload-zone:hover {
+          background-color: transparent !important;
+      }
+
 
       .sticky-spacer {
           height: 400px;
@@ -1087,7 +1101,14 @@
       .settings-image-content .checkbox-container,
       .settings-font-content .control-container,
       .settings-output-content .control-container { align-items: center; }
+      .control-container.control-group { align-items: flex-start; }
       .upload-panel-content, .download-panel-content { align-items: flex-start; }
+
+      /* Disable tapping the slider track to allow scrolling */
+      input[type="range"] { pointer-events: none; }
+      input[type="range"]::-webkit-slider-thumb { pointer-events: auto; }
+      input[type="range"]::-moz-range-thumb { pointer-events: auto; }
+      input[type="range"]::-ms-thumb { pointer-events: auto; }
 
 
       .glyphtrix-logo {
@@ -1151,6 +1172,69 @@
         max-width: none;
         width: 100%;
       }
+      /* Mobile control sizing: slightly reduced dropdown/button size, larger touch targets overall */
+      .control-container select, .select-group select {
+        height: 40px;
+        padding: 8px 10px;
+        font-size: 1em;
+      }
+      .select-group button {
+        min-width: 40px;
+        min-height: 40px;
+        padding: 8px 10px;
+        font-size: 1.05em;
+      }
+
+      .input-group input[type="number"] {
+        height: 40px;
+        padding: 6px 8px;
+        font-size: 1em;
+      }
+
+      .checkbox-container input[type="checkbox"] {
+        width: 20px; height: 20px;
+      }
+      .checkbox-container label {
+        font-size: 1em;
+      }
+
+      .btn-base,
+      .btn-action,
+      .change-image-button,
+      .download-button,
+      .reset-button {
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 1em;
+      }
+
+      .control-container label {
+        font-size: 1em;
+        margin-bottom: 0.8rem;
+      }
+      .control-container input[type="text"] {
+        height: 40px;
+        padding: 8px 10px;
+        font-size: 1em;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      #customTextColor,
+      #customBackgroundColor {
+        width: 44px !important;
+        height: 36px !important;
+      }
+
+      #customColorsRandomizeButton {
+        font-size: 1.3em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 4px;
+      }
       
       .input-group, .select-group {
         max-width: none;
@@ -1162,11 +1246,10 @@
           max-width: none;
       }
 
-      /* Enhanced mobile touch targets for sliders */
-      input[type="range"] {
-          height: 12px;
-          padding: 8px 0;
-      }
+      /* Mobile touch targets for sliders */
+      input[type="range"]::-webkit-slider-runnable-track { height: 8px; }
+      input[type="range"]::-moz-range-track { height: 8px; }
+      input[type="range"]::-ms-track { height: 8px; }
       input[type="range"]::-webkit-slider-thumb {
           width: 20px; height: 20px;
       }
@@ -3399,7 +3482,7 @@
             if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
             showUploadSpinner();
             
-            const response = await fetch('https://i.imgur.com/uNxg1NQ.jpeg');
+            const response = await fetch('https://i.imgur.com/6oBu9XC.jpeg');
             if (!response.ok) throw new Error('Failed to fetch example image');
             
             const blob = await response.blob();
