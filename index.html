@@ -1610,7 +1610,10 @@
             </div>
             <div class="settings-column">
                 <div class="control-container control-group"style="margin-bottom: 0px;">
-                    <label for="colorSchemeSelect">Color Scheme</label>
+                    <label for="colorSchemeSelect" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <span>Color Scheme</span>
+                        <i class="ri-dice-line" id="customColorsRandomizeButton" style="cursor: pointer; opacity: 0.8; font-size: 1.3em;"></i>
+                    </label>
                     <div class="select-group">
                         <button class="btn-base" id="prevColorSchemeButton"><</button>
                         <select id="colorSchemeSelect">
@@ -1626,17 +1629,21 @@
                 </div>
 
                 <div class="control-container control-group" id="customColorsContainer">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px; justify-content: space-between;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <input type="color" id="customTextColor" value="#00FF00" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none;">
-                            <input type="color" id="customBackgroundColor" value="#000000" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none;">
-                        </div>
-                        <i class="ri-dice-line" id="customColorsRandomizeButton" style="cursor: pointer; opacity: 0.8;"></i>
+                    <div style="display: flex; align-items: center; margin-top: 5px;">
+                        <input type="color" id="customTextColor" value="#00FF00" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none; margin-right: 8px;">
+                        <input type="color" id="customBackgroundColor" value="#000000" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); border-right: none; background: none;">
+                        <button class="btn-base ri-eye-line" id="transparentBgToggle" style="height: 28px; padding: 0 5px; font-size: 0.8em; opacity: 0.6; min-height: auto;"></button>
                     </div>
                 </div>
-                <div class="checkbox-container control-group" id="transparentBgContainer">
-                    <input type="checkbox" id="transparentBgToggle">
-                    <label for="transparentBgToggle">Transparent Background</label>
+                <div class="slider-container control-group">
+                    <label for="charSpacingSlider" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <span style="display: flex; align-items: center; gap: 8px;">
+                            <i class="ri-shuffle-line" id="randomSpacingToggle" style="cursor: pointer; opacity: 1; font-size: 1.1em;"></i>
+                            Spacing
+                        </span>
+                        <span id="charSpacingValueDisplay">0</span>
+                    </label>
+                    <input type="range" id="charSpacingSlider" min="-50" max="50" value="0" step="1">
                 </div>
             </div>
         </div>
@@ -1767,8 +1774,14 @@
     const customTextColor = document.getElementById('customTextColor');
     const customBackgroundColor = document.getElementById('customBackgroundColor');
     const transparentBgToggle = document.getElementById('transparentBgToggle');
+    const charSpacingSlider = document.getElementById('charSpacingSlider');
+    const charSpacingValueDisplay = document.getElementById('charSpacingValueDisplay');
+    const randomSpacingToggle = document.getElementById('randomSpacingToggle');
 
     let isBgColorTransparent = false;
+    let currentCharSpacing = 0;
+    let isRandomSpacingActive = true;
+    let columnOffsets = [];
 
     const openNewTabButton = document.getElementById('openNewTabButton');
     const downloadPngButton = document.getElementById('downloadPngButton');
@@ -1866,7 +1879,8 @@
 
             customText: customTextColor.value,
             customBackground: customBackgroundColor.value,
-            transparentBg: transparentBgToggle.checked,
+            transparentBg: isBgColorTransparent,
+            charSpacing: charSpacingSlider.value,
         });
     }
 
@@ -1980,10 +1994,14 @@
             if (settings.customText) customTextColor.value = settings.customText;
             if (settings.customBackground) customBackgroundColor.value = settings.customBackground;
             
-            transparentBgToggle.checked = settings.transparentBg || false;
-            isBgColorTransparent = transparentBgToggle.checked;
+            isBgColorTransparent = settings.transparentBg || false;
+            transparentBgToggle.className = isBgColorTransparent ? 'btn-base ri-eye-off-line' : 'btn-base ri-eye-line';
+            transparentBgToggle.style.opacity = '0.6';
             customBackgroundColor.disabled = isBgColorTransparent;
             customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
+            
+            charSpacingSlider.value = settings.charSpacing || 0;
+            charSpacingValueDisplay.textContent = settings.charSpacing || 0;
             
             isChromaRemovalActive = settings.chromaRemoval;
             isInvertColorsActive = settings.invert;
@@ -2300,7 +2318,13 @@
         highlightInputSlider.value = 255; highlightInputValueDisplay.textContent = '255';
         chromaRemovalToggle.checked = false;
         invertColorsToggle.checked = false;
-        transparentBgToggle.checked = false;
+        isBgColorTransparent = false;
+        transparentBgToggle.className = 'btn-base ri-eye-line';
+        transparentBgToggle.style.opacity = '0.6';
+        customBackgroundColor.disabled = false;
+        customBackgroundColor.style.opacity = '1';
+        charSpacingSlider.value = 0;
+        charSpacingValueDisplay.textContent = '0';
         previewChangesToggle.checked = true;
 
         showExampleButtons();
@@ -2698,11 +2722,18 @@
         
         const totalRows = Math.ceil(originalHeight / densityStep);
         let currentRowIndex = 0;
+        
+        const charSpacing = currentCharSpacing || 0;
+        const totalCols = Math.ceil(originalWidth / densityStep);
+        const colsToAdjust = Math.floor(charSpacing);
+        const effectiveCols = Math.max(1, totalCols - colsToAdjust);
+        const adjustedDensityStep = originalWidth / effectiveCols;
 
         // Process from bottom to top to reverse the movement illusion
         for (let y = originalHeight - densityStep; y >= 0; y -= densityStep) {
             let blobRow = [];
-            for (let x = 0; x < originalWidth; x += densityStep) {
+            for (let colIndex = 0; colIndex < effectiveCols; colIndex++) {
+                const x = Math.floor(colIndex * adjustedDensityStep);
                 let avgR = 0, avgG = 0, avgB = 0, count = 0;
                 for (let subY = 0; subY < densityStep && (y + subY) < originalHeight; subY++) {
                     for (let subX = 0; subX < densityStep && (x + subX) < originalWidth; subX++) {
@@ -2789,7 +2820,10 @@
             requestAnimationFrame(() => {
                 const baseCharSize = FIXED_FONT_SIZE;
                 const effectiveCharSize = baseCharSize * scaleFactor;
-                const charWidth = effectiveCharSize; const charHeight = effectiveCharSize;
+                const charSpacing = currentCharSpacing || 0;
+                const charWidth = effectiveCharSize;
+                const charHeight = effectiveCharSize;
+                
                 if (matrixToDraw.length === 0 || matrixToDraw[0].length === 0) {
                     outputCanvas.width = 1; outputCanvas.height = 1; outputCtx.clearRect(0,0,1,1);
                     if (outputResolutionDisplay) outputResolutionDisplay.textContent = `${outputCanvas.width}x${outputCanvas.height}`;
@@ -2797,11 +2831,24 @@
                     resolve(); return;
                 }
                 const numOutputRows = matrixToDraw.length; const numOutputCols = matrixToDraw[0].length;
-                outputCanvas.width = Math.max(1, numOutputCols * charWidth);
+                
+                const colsToAdjust = Math.floor(charSpacing);
+                const originalCols = numOutputCols + colsToAdjust;
+                
+                outputCanvas.width = Math.max(1, originalCols * charWidth);
                 outputCanvas.height = Math.max(1, numOutputRows * charHeight);
                 if (outputResolutionDisplay) outputResolutionDisplay.textContent = `${outputCanvas.width}x${outputCanvas.height}`;
                 if (gridSizeDisplay) gridSizeDisplay.textContent = `${numOutputCols}x${numOutputRows}`;
 
+                const cellWidth = numOutputCols > 1 ? outputCanvas.width / numOutputCols : charWidth;
+
+                if (isRandomSpacingActive && (columnOffsets.length !== numOutputCols || charSpacing !== currentCharSpacing)) {
+                    columnOffsets = [];
+                    const maxOffset = Math.abs(charSpacing);
+                    for (let i = 0; i < numOutputCols; i++) {
+                        columnOffsets.push((Math.random() - 0.5) * 2 * maxOffset);
+                    }
+                }
 
                 outputCtx.font = `${effectiveCharSize}px ${fontFamily}`;
                 outputCtx.textAlign = 'left'; outputCtx.textBaseline = 'top';
@@ -2816,10 +2863,11 @@
                             const cellColor = matrixToDraw[y][x].color;
                             if (cellColor !== 'rgba(0, 0, 0, 0)') {
                                 outputCtx.fillStyle = cellColor;
-                                outputCtx.fillText(matrixToDraw[y][x].char, currentX, currentY);
+                                const xOffset = isRandomSpacingActive ? (columnOffsets[x] || 0) : 0;
+                                outputCtx.fillText(matrixToDraw[y][x].char, currentX + xOffset, currentY);
                             }
                         }
-                        currentX += charWidth;
+                        currentX += cellWidth;
                     }
                     currentY += charHeight;
                 }
@@ -2862,6 +2910,7 @@
         currentHighlightInput = parseInt(highlightInputSlider.value);
         currentDensity = parseInt(densityInput.value);
         currentScaleFactor = parseFloat(scaleFactorInput.value);
+        currentCharSpacing = parseInt(charSpacingSlider.value);
         currentColorScheme = colorSchemeSelect.value;
         currentFontFamily = availableFonts[fontSelect.selectedIndex].cssName;
         currentCharacterSet = characterSetSelect.value;
@@ -3212,6 +3261,7 @@
                 else if (element === shadowInputSlider) shadowInputValueDisplay.textContent = element.value;
                 else if (element === midtoneGammaSlider) midtoneGammaValueDisplay.textContent = parseFloat(element.value).toFixed(1);
                 else if (element === highlightInputSlider) highlightInputValueDisplay.textContent = element.value;
+                else if (element === charSpacingSlider) charSpacingValueDisplay.textContent = element.value;
                 else if (element === densityInput) {
                     updateDensity(element.value);
                     return;
@@ -3250,15 +3300,6 @@
                     isChromaRemovalActive = element.checked;
                 }
                 else if (element === invertColorsToggle) isInvertColorsActive = element.checked;
-                else if (element === transparentBgToggle) {
-                    isBgColorTransparent = element.checked;
-                    customBackgroundColor.disabled = isBgColorTransparent;
-                    customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
-                    
-                    if (colorSchemeSelect.value !== 'custom') {
-                        colorSchemeSelect.value = 'custom';
-                    }
-                }
 
                 processImageWithCurrentSettings();
                 if (element !== previewChangesToggle) {
@@ -3283,19 +3324,20 @@
     addSettingsChangeListener(previewChangesToggle, 'change');
     addSettingsChangeListener(chromaRemovalToggle, 'change');
     addSettingsChangeListener(invertColorsToggle, 'change');
-    addSettingsChangeListener(transparentBgToggle, 'change');
     addSettingsChangeListener(contrastSlider);
     addSettingsChangeListener(levelsSlider);
     addSettingsChangeListener(brightnessSlider);
     addSettingsChangeListener(shadowInputSlider);
     addSettingsChangeListener(midtoneGammaSlider);
     addSettingsChangeListener(highlightInputSlider);
+    addSettingsChangeListener(charSpacingSlider);
     addMobileTouchHandling(contrastSlider);
     addMobileTouchHandling(levelsSlider);
     addMobileTouchHandling(brightnessSlider);
     addMobileTouchHandling(shadowInputSlider);
     addMobileTouchHandling(midtoneGammaSlider);
     addMobileTouchHandling(highlightInputSlider);
+    addMobileTouchHandling(charSpacingSlider);
     addSettingsChangeListener(densityInput, 'input');
     addSettingsChangeListener(scaleFactorInput, 'input');
     addSettingsChangeListener(colorSchemeSelect, 'change');
@@ -3333,6 +3375,37 @@
         window.savedCustomColors.background = customBackgroundColor.value;
     });
 
+    randomSpacingToggle.addEventListener('click', () => {
+        isRandomSpacingActive = !isRandomSpacingActive;
+        randomSpacingToggle.style.opacity = isRandomSpacingActive ? '1' : '0.6';
+        randomSpacingToggle.style.color = isRandomSpacingActive ? 'var(--primary-text)' : '';
+        
+        clearCachedSequence();
+        processImageWithCurrentSettings();
+        updateInputCanvasPreview();
+        
+        enableHistoryAfterUserChange();
+        setTimeout(() => saveActionToHistory(), 100);
+    });
+
+    transparentBgToggle.addEventListener('click', () => {
+        isBgColorTransparent = !isBgColorTransparent;
+        transparentBgToggle.className = isBgColorTransparent ? 'btn-base ri-eye-off-line' : 'btn-base ri-eye-line';
+        transparentBgToggle.style.opacity = '0.6';
+        customBackgroundColor.disabled = isBgColorTransparent;
+        customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
+        
+        if (colorSchemeSelect.value !== 'custom') {
+            colorSchemeSelect.value = 'custom';
+        }
+        
+        clearCachedSequence();
+        processImageWithCurrentSettings();
+        updateInputCanvasPreview();
+        
+        enableHistoryAfterUserChange();
+        setTimeout(() => saveActionToHistory(), 100);
+    });
 
     customCharsHelpButton.addEventListener('click', () => {
         alert('Custom Characters:\n\n• Using commas randomizes item output (e.g., "A,B,C")\n• Using dots flattens items into a sequence (e.g., "ABC.DEF" becomes "ABCDEF")\n• Supports all Unicode characters (for unique visual effects)');
