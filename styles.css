@@ -1,0 +1,1669 @@
+﻿/* ============================================================================
+   GLYPHTRIX - STYLESHEET
+   ============================================================================
+   
+   Table of Contents:
+   1. IMPORTS & FONTS
+   2. CSS CUSTOM PROPERTIES (VARIABLES)
+   3. BASE & RESET STYLES
+   4. LAYOUT - MAIN CONTAINERS
+   5. LAYOUT - INPUT & OUTPUT COLUMNS
+   6. LAYOUT - CANVAS & MEDIA ELEMENTS
+   7. UPLOAD COMPONENTS
+   8. SETTINGS PANEL
+   9. FORM CONTROLS & INPUTS
+   10. BUTTONS
+   11. MODALS
+   12. MOBILE COMPONENTS
+   13. BRANDING
+   14. RESPONSIVE DESIGN - TABLET (769px - 1600px)
+   15. RESPONSIVE DESIGN - MOBILE (max 768px)
+   16. RESPONSIVE DESIGN - LARGE SCREENS
+   17. ANIMATIONS
+   
+   ============================================================================ */
+
+
+/* ============================================================================
+   1. IMPORTS & FONTS
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Victor+Mono:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Bytesized:wght@400&family=VT323&family=Cutive+Mono&family=Doto:wght@100..900&family=Workbench:wght@400&display=swap');
+
+
+/* ============================================================================
+   2. CSS CUSTOM PROPERTIES (VARIABLES)
+   ============================================================================ */
+
+:root {
+  /* Primary Colors */
+  --primary-bg: #000;
+  --primary-text: #fff;
+  --primary-white: #fff;
+  
+  /* Border Colors */
+  --border-primary: #555;
+  --border-secondary: #333;
+  --border-light: #111;
+  
+  /* Hover States */
+  --hover-grey: #1d1d1d;
+  --hover-red: #440000;
+  --hover-red-dark: #660000;
+  
+  /* Status Colors */
+  --error-text: #FF6666;
+  --muted-grey: #7e7e7e;
+  --dark-grey: #111111;
+  --disabled-red: #220000;
+  
+  /* Accent Colors */
+  --accent-dark: #0e0e0e;
+  --overlay-bg: rgba(0, 0, 0, 0.8);
+  --overlay-dark: rgba(0, 0, 0, 0.85);
+  
+  /* Drag States */
+  --drag-hover: #444;
+  --drag-default: #333;
+}
+
+
+/* ============================================================================
+   3. BASE & RESET STYLES
+   ============================================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: "Courier New", Courier, monospace;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+
+/* ============================================================================
+   4. LAYOUT - MAIN CONTAINERS
+   ============================================================================ */
+
+.container {
+  display: flex;
+  width: 100%;
+  background-color: var(--primary-bg);
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+
+/* ============================================================================
+   5. LAYOUT - INPUT & OUTPUT COLUMNS
+   ============================================================================ */
+
+.input-column, .output-column {
+  width: 50%;
+  height: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.input-column {
+  border-right: 1px solid var(--border-primary);
+}
+
+/* Column Headers */
+.column-header {
+  height: auto;
+  min-height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--border-primary);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.column-header h2 {
+    display: flex;
+    align-items: center;
+    cursor: default;
+}
+
+/* Loading Spinners */
+#loadingSpinner {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  #mobileLoadingSpinner {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#sequenceLoadingMessage {
+    font-size: 0.9em;
+    margin-top: 5px;
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    bottom: -25px;
+}
+
+
+/* ============================================================================
+   6. LAYOUT - CANVAS & MEDIA ELEMENTS
+   ============================================================================ */
+
+/* Input Area */
+.input-area {
+  width: 100%;
+  height: calc(100% - 100px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.input-area input[type="file"] {
+  display: none;
+}
+
+/* Canvas Elements */
+.imageCanvas, #inputVideo {
+  width: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  flex-grow: 1;
+  border: none;
+  min-height: 500px;
+}
+
+#inputVideo { 
+  display: none; 
+}
+
+#outputCanvas {
+  background-color: var(--primary-bg);
+  width: 100%;
+  max-width: 100%;
+  height: calc(100% - 100px);
+  object-fit: contain;
+  flex-grow: 1;
+  border: none;
+  min-height: 500px;
+}
+
+/* Sequence Loading Overlay */
+#sequenceLoadingOverlay {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 100px);
+    background-color: var(--overlay-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+#sequenceLoadingSpinner svg {
+    fill: var(--primary-text);
+}
+
+#sequenceLoadingOverlay p {
+    margin-top: 15px;
+    font-size: 1.2em;
+    color: var(--primary-text);
+}
+
+#cancelSequenceButton {
+    background-color: var(--hover-red);
+    color: var(--error-text);
+    border: 1px solid var(--error-text);
+    padding: 8px 15px;
+    font-size: 0.9em;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-top: 20px;
+}
+
+#cancelSequenceButton:hover {
+    background-color: var(--hover-red-dark);
+}
+
+
+/* ============================================================================
+   7. UPLOAD COMPONENTS
+   ============================================================================ */
+
+.upload-zone {
+  border: 4px dashed var(--border-primary);
+  width: 80%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.upload-zone:hover {
+  background-color: var(--accent-dark);
+}
+
+.upload-zone i {
+  font-size: 3em;
+}
+
+.upload-zone span {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.upload-zone.loading .upload-spinner {
+  display: inline-block;
+  font-size: 3em;
+  margin-bottom: 10px;
+}
+
+.upload-zone .upload-spinner {
+  display: none;
+}
+
+.upload-zone.loading i {
+  display: none;
+}
+
+/* Example Buttons Container */
+.example-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
+  width: 100%;
+}
+
+.example-buttons-container .btn-action {
+  min-width: 160px;
+  justify-content: center;
+  padding: 15px;
+  font-size: 0.9em;
+}
+
+/* Condensed Upload Zone */
+.condensed-upload-zone {
+  border: 2px dashed var(--border-primary);
+  padding: 8px;
+  cursor: pointer;
+  display: block;
+  transition: background-color 0.2s;
+  width: 100%;
+  overflow: hidden;
+}
+
+.condensed-upload-zone:hover { 
+  background-color: var(--accent-dark); 
+}
+
+.condensed-upload-zone input[type="file"] { 
+  display: none; 
+}
+
+.condensed-upload-zone label {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 3px;
+    width: 100%;
+}
+
+.condensed-upload-zone .filename-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 3px;
+    width: 100%;
+}
+
+.condensed-upload-zone .filename-container span { 
+    margin-bottom: 3px; 
+    font-size: 0.9em; 
+    word-wrap: break-word; 
+    word-break: break-word;
+    width: 100%;
+}
+
+
+/* ============================================================================
+   8. SETTINGS PANEL
+   ============================================================================ */
+
+.settings-panel-container {
+  width: 100%;
+  min-height: 200px;
+  height: auto;
+  background-color: var(--primary-bg);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border-top: 1px solid var(--border-primary);
+  flex-shrink: 0;
+  overflow-x: hidden;
+}
+
+.settings-panel-section-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
+  overflow-y: auto;
+  min-width: 150px;
+  font-size: 1em;
+}
+
+/* Settings Panel Sections */
+.upload-panel-content {
+    flex-grow: 0.4; 
+    align-items: flex-start;
+    border-right: 1px solid var(--border-primary);
+    min-width: 180px; 
+    width: 100%; 
+    box-sizing: border-box; 
+    overflow: hidden;
+    position: relative;
+ }
+
+ .download-panel-content {
+    flex-grow: 0.8;
+    align-items: flex-start;
+    border-left: 1px solid var(--border-primary);
+    min-width: 280px;
+ }
+
+ .settings-title-section {
+    flex-grow: 0.1; 
+    flex-shrink: 0; 
+    flex-basis: auto;
+    align-items: flex-start; 
+    justify-content: flex-start; 
+    padding-right: 0;
+ }
+
+ .settings-image-content {
+    flex-grow: 1.5;
+    align-items: flex-start;
+ }
+
+ .settings-font-content {
+    flex-grow: 1;
+    align-items: flex-start;
+    min-width: 220px;
+ }
+
+ .settings-output-content {
+    flex-grow: 0.7;
+    align-items: flex-start;
+    min-width: 160px;
+ }
+
+.settings-panel-section-content h2 {
+    font-size: 1.3em;
+    margin: 0 0 10px 0;
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+    cursor: default;
+}
+
+.upload-panel-content > h2.initially-hidden {
+    display: none;
+}
+
+/* Settings Layouts */
+.image-settings-layout, .output-settings-layout, .font-settings-layout {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+}
+
+.font-settings-layout {
+    gap: 1rem;
+}
+
+.settings-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+
+/* ============================================================================
+   9. FORM CONTROLS & INPUTS
+   ============================================================================ */
+
+/* Container Styles */
+.slider-container, .control-container, .checkbox-container, .reset-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    max-width: 180px;
+}
+
+/* Checkboxes */
+.checkbox-container {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    margin-right: 8px; 
+    width: 16px; 
+    height: 16px; 
+    accent-color: var(--primary-text);
+    background-color: var(--border-secondary); 
+    border: 1px solid var(--border-primary); 
+    cursor: pointer;
+    -webkit-appearance: none; 
+    -moz-appearance: none; 
+    appearance: none;
+    border-radius: 3px; 
+    position: relative;
+}
+
+.checkbox-container input[type="checkbox"]:checked {
+    background-color: var(--hover-grey); 
+    border-color: var(--primary-text);
+}
+
+.checkbox-container input[type="checkbox"]:checked::before {
+    content: '\2713'; 
+    font-size: 12px; 
+    color: var(--primary-text);
+    position: absolute; 
+    left: 2px; 
+    top: 0px;
+}
+
+.checkbox-container label { 
+  font-size: 0.85em; 
+  cursor: pointer; 
+}
+
+/* Select Dropdowns */
+.control-container label { 
+  margin-bottom: 5px; 
+  font-size: 0.85em; 
+  white-space: nowrap; 
+}
+
+.control-container select, .select-group select {
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--border-primary);
+    padding: 5px;
+    width: 100%;
+    font-family: inherit;
+    height: 28px;
+    max-width: 180px;
+ }
+
+.select-group select {
+    flex-grow: 1;
+    margin: 0;
+}
+
+/* Text Inputs */
+.control-container input[type="text"] {
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--border-primary);
+    padding: 5px;
+    width: 100%;
+    font-family: inherit;
+    margin-top: 3px;
+    height: 28px;
+}
+
+.control-container input[type="text"]:disabled {
+    background-color: var(--dark-grey);
+    color: var(--muted-grey);
+    cursor: not-allowed;
+}
+
+#customCharsHelpButton:disabled {
+    background-color: var(--dark-grey);
+    color: var(--muted-grey);
+    cursor: not-allowed;
+    border-color: var(--dark-grey);
+}
+
+/* Input Groups */
+.input-group, .select-group {
+    display: flex; 
+    align-items: center; 
+    width: 100%; 
+    max-width: 180px;
+}
+
+.select-group {
+    gap: 0px;
+}
+
+.input-group button, .select-group button {
+    padding: 5px 8px;
+    font-size: 1em;
+    height: 28px;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.input-group input[type="number"] {
+    width: 50px;
+    text-align: center;
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--border-primary);
+    padding: 3px;
+    height: 28px;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    margin: 0 3px;
+}
+
+.input-group input[type=number]::-webkit-outer-spin-button,
+.input-group input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none; 
+    margin: 0;
+}
+
+/* Range Sliders */
+.slider-container label {
+    display: flex; 
+    justify-content: space-between; 
+    width: 100%;
+    margin-bottom: 10px; 
+    font-size: 0.85em; 
+    white-space: nowrap;
+}
+
+.slider-container label span { 
+  margin-left: 5px; 
+  color: var(--primary-text); 
+}
+  
+#gridSizeDisplay, #outputResolutionDisplay {
+  display: inline-block;
+  margin-top: 5px;
+}
+
+input[type="range"] {
+    -webkit-appearance: none; 
+    appearance: none; 
+    width: 100%;
+    height: 8px; 
+    background: var(--border-secondary); 
+    outline: none; 
+    opacity: 0.7;
+    transition: opacity .15s ease-in-out; 
+    border-radius: 4px;
+    touch-action: pan-x;
+}
+
+input[type="range"]:hover { 
+  opacity: 1; 
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none; 
+    width: 16px; 
+    height: 16px;
+    background: var(--primary-text); 
+    cursor: pointer; 
+    border-radius: 50%; 
+    border: 1px solid var(--primary-bg);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px; 
+    height: 16px; 
+    background: var(--primary-text); 
+    cursor: pointer;
+    border-radius: 50%; 
+    border: 1px solid var(--primary-bg);
+}
+
+
+/* ============================================================================
+   10. BUTTONS
+   ============================================================================ */
+
+/* Base Button Styles */
+.btn-base {
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--primary-text);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-base:hover {
+    background-color: var(--hover-grey);
+    transform: translateY(-1px);
+}
+
+.btn-base:disabled {
+    color: var(--muted-grey);
+    border-color: var(--muted-grey);
+    cursor: not-allowed;
+    background-color: var(--dark-grey);
+    transform: none !important;
+}
+
+/* Button Variants */
+.btn-action {
+    padding: 6px 10px;
+    font-size: 0.85em;
+    justify-content: flex-start;
+    padding-left: 10px;
+    margin-bottom: 0;
+}
+
+.btn-action i { 
+    margin-right: 8px; 
+    font-size: 1.1em; 
+    line-height: 1;
+    display: inline-block;
+}
+
+.change-image-button {
+    padding: 4px 7px;
+    justify-content: center;
+    font-size: 0.8em;
+    align-self: flex-start;
+    margin-top: 5px;
+    width: 100%;
+    max-width: 140px;
+}
+
+.download-button {
+    width: 100%;
+}
+
+.download-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+}
+
+.reset-button-container {
+    width: 100%; 
+    margin-top: 10px; 
+    display: flex; 
+    justify-content: flex-start;
+}
+
+.reset-button {
+    background-color: var(--disabled-red);
+    color: var(--error-text);
+    border: 1px solid var(--error-text);
+    padding: 6px 10px;
+    width: auto;
+    min-width: 160px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.reset-button:hover { 
+  background-color: var(--hover-red); 
+}
+
+
+/* ============================================================================
+   11. MODALS
+   ============================================================================ */
+
+/* Info Modal */
+.info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-bg);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.info-modal-content {
+    background-color: var(--primary-bg);
+    border: 2px solid var(--primary-text);
+    max-width: 600px;
+    max-height: 90vh;
+    width: 100%;
+    overflow-y: auto;
+    color: var(--primary-text);
+    font-family: "Courier New", Courier, monospace;
+}
+
+.info-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px 10px 25px;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.info-modal-header h2 {
+    margin: 0;
+    color: var(--primary-text);
+    font-size: 1.5em;
+}
+
+.info-modal-close {
+    background: none;
+    border: none;
+    color: var(--primary-text);
+    font-size: 2em;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-modal-close:hover {
+    color: var(--error-text);
+}
+
+.info-modal-body {
+    padding: 0px 25px 25px 25px;
+    line-height: 1.4;
+}
+
+.info-modal-body h3 {
+    color: var(--primary-text);
+    margin: 20px 0 0 0;
+    font-size: 1.2em;
+}
+
+.info-modal-body ul, .info-modal-body ol {
+    margin: 10px 0;
+    padding-left: 25px;
+}
+
+.info-modal-body p {
+    margin: 15px 0;
+}
+
+.info-modal-body strong {
+    color: var(--primary-text);
+    font-weight: bold;
+}
+
+.info-modal-footer {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-primary);
+    display: flex;
+    justify-content: center;
+}
+
+/* FPS Selection Modal */
+.fps-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 20px 0px 20px 0px;
+}
+
+.fps-option-button {
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    border: 2px solid var(--border-primary);
+    padding: 12px 15px;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 60px;
+}
+
+.fps-option-button:hover {
+    background-color: var(--hover-grey);
+    border-color: var(--primary-text);
+    transform: translateY(-1px);
+}
+
+.fps-number {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--primary-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fps-description {
+    align-self: flex-end;
+}
+
+/* Video Metadata Display */
+.video-metadata {
+    background-color: var(--accent-dark);
+    border: 1px solid var(--border-primary);
+    padding: 5px 15px 5px 15px;
+    font-family: inherit;
+}
+
+.video-metadata h3 {
+    margin: 0 0 10px 0;
+    color: var(--primary-text);
+    font-size: 1.1em;
+}
+
+.metadata-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.9em;
+}
+
+.metadata-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.metadata-label {
+    color: var(--primary-text);
+    font-weight: normal;
+}
+
+.metadata-value {
+    color: var(--primary-text);
+    font-weight: bold;
+    text-align: right;
+}
+
+
+/* ============================================================================
+   12. MOBILE COMPONENTS
+   ============================================================================ */
+
+.mobile-panel {
+    display: none; 
+    width: 100%; 
+    flex-direction: column; 
+    align-items: center;
+    padding: 10px; 
+    box-sizing: border-box; 
+    background-color: var(--primary-bg);
+}
+
+#mobileUploadPanelPlaceholder { 
+  align-items: center; 
+}
+
+#mobileDownloadPanelPlaceholder { 
+  border-top: 1px solid var(--border-primary); 
+  align-items: flex-start; 
+}
+
+#mobileSettingsPanel { 
+  border-bottom: 1px solid var(--border-primary); 
+  border-top: 1px solid var(--border-primary); 
+}
+
+
+/* ============================================================================
+   13. BRANDING
+   ============================================================================ */
+
+.glyphtrix-logo {
+    font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: var(--primary-text);
+    text-align: center;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    letter-spacing: 0.1em;
+    opacity: 0.8;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    user-select: none;
+}
+
+.glyphtrix-logo:hover {
+    opacity: 1;
+}
+
+.glyphtrix-logo.scrambling {
+    animation: scramble 0.6s ease-in-out;
+}
+
+@keyframes scramble {
+    0%, 100% { opacity: 0.8; }
+    25% { opacity: 1; }
+    50% { opacity: 0.9; }
+    75% { opacity: 1; }
+}
+
+
+/* ============================================================================
+   14. RESPONSIVE DESIGN - TABLET (769px - 1600px)
+   ============================================================================ */
+
+@media (min-width: 769px) and (max-width: 1600px) {
+  body {
+    flex-direction: row;
+  }
+  
+  .container {
+    flex-direction: column;
+    margin-left: 400px;
+    width: calc(100% - 400px);
+    height: 100vh;
+    display: flex;
+  }
+  
+  .input-column, .output-column {
+    width: 100%;
+    height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border-primary);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .output-column {
+    border-bottom: none;
+  }
+  
+  .column-header {
+    height: 75px;
+    min-height: 75px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .input-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: calc(100% - 75px);
+  }
+  
+  .imageCanvas, #inputVideo, #outputCanvas {
+    flex: 1;
+    min-height: 200px;
+    max-height: none;
+  }
+  
+  .settings-panel-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 400px;
+    height: 100vh;
+    flex-direction: column;
+    overflow-y: auto;
+    border-right: 2px solid var(--border-primary);
+    z-index: 100;
+    background-color: var(--primary-bg);
+  }
+  
+  .settings-panel-section-content {
+    flex: none;
+    min-height: auto;
+    border-right: none;
+    border-left: none;
+    border-bottom: 1px solid var(--border-primary);
+    padding: 15px;
+  }
+  
+  .settings-title-section {
+    border-bottom: none;
+  }
+
+  
+  .upload-panel-content,
+  .download-panel-content {
+    border-right: none;
+    border-left: none;
+  }
+
+
+  .glyphtrix-logo {
+    position: static;
+    transform: none;
+    text-align: center;
+    align-self: center;
+    width: 100%;
+  }
+  
+  .image-settings-layout,
+  .font-settings-layout,
+  .output-settings-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  
+  .settings-column {
+    margin-bottom: 0;
+  }
+  
+  .mobile-panel {
+    display: none;
+  }
+  
+  .mobile-preview-panel,
+  .sticky-spacer {
+    display: none !important;
+  }
+}
+
+
+/* ============================================================================
+   15. RESPONSIVE DESIGN - MOBILE (max 768px)
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  /* Base Mobile Styles */
+  html, body { 
+      height: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+  }
+
+  body { 
+      justify-content: flex-start; 
+  }
+
+  .container { 
+      flex-direction: column; 
+      height: auto !important;
+      min-height: auto;
+  }
+
+  /* Layout Adjustments */
+  .settings-panel-container { 
+    display: none !important; 
+  }
+
+  .mobile-panel { 
+    display: flex; 
+  }
+
+  .mobile-panel .settings-panel-section-content h2 { 
+    display: block; 
+    text-align: left; 
+  }
+
+  .upload-panel-content, .download-panel-content { 
+    border-right: none !important; 
+    border-left: none !important; 
+  }
+
+  .settings-panel-section-content > .control-group,
+  .settings-panel-section-content > .condensed-upload-zone,
+  .settings-panel-section-content > .download-buttons-grid,
+  .settings-panel-section-content > .image-settings-layout,
+  .settings-panel-section-content > .output-settings-layout,
+  .settings-panel-section-content > .font-settings-layout,
+  .settings-panel-section-content > .checkbox-container {
+      margin-left: 0; 
+      width: 100%;
+  }
+
+  .image-settings-layout, .output-settings-layout, .font-settings-layout { 
+    flex-direction: column; 
+    gap: 0; 
+  }
+
+  .settings-column { 
+    margin-bottom: 10px; 
+    width: 100%;
+  }
+
+  /* Hide preview toggle on mobile */
+  #previewChangesContainer {
+      display: none !important;
+  }
+
+  /* Column Headers */
+  .column-header { 
+    height: 50px; 
+    border-top: 1px solid var(--border-primary); 
+  }
+
+  .input-column, .output-column { 
+      width: 100%; 
+      height: auto;
+      border-right: none; 
+      display: flex;
+      flex-direction: column;
+  }
+
+  .input-area { 
+      display: flex; 
+      padding: 10px;
+      box-sizing: border-box;
+      height: auto;
+      overflow: visible;
+      flex-grow: 0;
+      min-height: 0;
+      justify-content: flex-start;
+      align-items: flex-start;
+  }
+
+  #outputCanvas { 
+      width: 100%; 
+      height: auto;
+      max-width: 100%;
+      object-fit: contain;
+      flex-grow: 0;
+      min-height: 0;
+      transition: all 0.3s ease;
+  }
+  
+
+  /* Mobile Preview Panel */
+  .mobile-preview-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 400px;
+      z-index: 50;
+      background-color: var(--primary-bg);
+      display: none;
+  }
+  
+  .mobile-preview-panel.active {
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .mobile-preview-header {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border-primary);
+      background-color: var(--primary-bg);
+      position: relative;
+  }
+  
+  .mobile-preview-toggle {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+  }
+  
+  .mobile-toggle-option {
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 8px 12px;
+      transition: all 0.3s ease;
+      color: var(--muted-grey);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+  }
+  
+  .mobile-toggle-option.active {
+      color: var(--primary-text);
+      border-bottom-color: var(--primary-text);
+  }
+  
+  .mobile-toggle-option:hover {
+      color: var(--primary-text);
+  }
+  
+  .mobile-preview-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid var(--border-primary);
+  }
+  
+  .mobile-preview-content canvas,
+  .mobile-preview-content video,
+  .mobile-preview-content .upload-zone {
+      max-width: 100%;
+      max-height: 350px;
+      object-fit: contain;
+  }
+  
+  .mobile-preview-content .upload-zone {
+      width: 80%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 4px dashed var(--border-primary);
+      cursor: pointer;
+      transition: background-color 0.2s;
+  }
+  
+  .mobile-preview-content .upload-zone:hover {
+      background-color: var(--hover-grey);
+  }
+  
+  .upload-zone,
+  .mobile-preview-content .upload-zone,
+  .condensed-upload-zone {
+      border: none !important;
+      background-color: transparent !important;
+      cursor: default !important;
+  }
+
+  .upload-zone:hover,
+  .mobile-preview-content .upload-zone:hover,
+  .condensed-upload-zone:hover {
+      background-color: transparent !important;
+  }
+
+  /* Sticky Spacer */
+  .sticky-spacer {
+      height: 400px;
+      display: none;
+  }
+  
+  .sticky-spacer.active {
+      display: block;
+      flex-shrink: 0;
+  }
+  
+
+  /* Canvas Elements */
+  .imageCanvas, #inputVideo {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      object-fit: contain;
+      flex-grow: 0;
+      min-height: 0;
+  }
+
+  .settings-panel-section-content {
+        margin-bottom: 10px; 
+        width: 100%; 
+        padding: 0 5px; 
+        overflow-y: visible; 
+        align-items: flex-start;
+  }
+
+  .settings-image-content .slider-container,
+  .settings-image-content .checkbox-container,
+  .settings-font-content .control-container,
+  .settings-output-content .control-container { 
+    align-items: center; 
+  }
+
+  .control-container.control-group { 
+    align-items: flex-start; 
+  }
+
+  .upload-panel-content, .download-panel-content { 
+    align-items: flex-start; 
+  }
+
+  /* Disable tapping the slider track to allow scrolling */
+  input[type="range"] { 
+    pointer-events: none; 
+  }
+
+  input[type="range"]::-webkit-slider-thumb { 
+    pointer-events: auto; 
+  }
+
+  input[type="range"]::-moz-range-thumb { 
+    pointer-events: auto; 
+  }
+
+  input[type="range"]::-ms-thumb { 
+    pointer-events: auto; 
+  }
+
+  /* Logo Adjustments */
+  .glyphtrix-logo {
+    position: static;
+    transform: none;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    font-size: 1.1em;
+    text-align: center;
+    align-self: center;
+    width: 100%;
+  }
+
+  .download-buttons-grid { 
+    grid-template-columns: 1fr; 
+  }
+
+  .change-image-button, .download-button, .reset-button { 
+    width: 100%; 
+    max-width: none; 
+    margin-bottom: 5px; 
+    box-sizing: border-box;
+  }
+  
+
+  /* Upload Zone Adjustments */
+  .condensed-upload-zone {
+    width: 100%;
+    max-width: none;
+    display: block;
+    min-height: auto;
+    padding: 10px;
+  }
+  
+  .condensed-upload-zone label {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: auto;
+  }
+  
+  .condensed-upload-zone .filename-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .condensed-upload-zone .filename-container span {
+    white-space: normal;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    display: block;
+    width: 100%;
+  }
+  
+  .upload-panel-content {
+    padding: 10px !important;
+    width: 100%;
+    overflow: visible;
+  }
+  
+
+  /* Form Control Sizing */
+  .slider-container, .control-container, .checkbox-container, .reset-button-container {
+    max-width: none;
+    width: 100%;
+    margin-bottom: 25px;
+  }
+  
+  .control-container select, .select-group select {
+    max-width: none;
+    width: 100%;
+  }
+
+  /* Mobile control sizing: slightly reduced dropdown/button size, larger touch targets overall */
+  .control-container select, .select-group select {
+    height: 40px;
+    padding: 8px 10px;
+    font-size: 1em;
+  }
+
+  .select-group button {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 1.05em;
+  }
+
+  .input-group input[type="number"] {
+    height: 40px;
+    padding: 6px 8px;
+    font-size: 1em;
+  }
+
+  .checkbox-container input[type="checkbox"] {
+    width: 20px; 
+    height: 20px;
+  }
+
+  .checkbox-container label {
+    font-size: 1em;
+  }
+
+  .btn-base,
+  .btn-action,
+  .change-image-button,
+  .download-button,
+  .reset-button {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 1em;
+  }
+
+  .control-container label {
+    font-size: 1em;
+    margin-bottom: 0.8rem;
+  }
+
+  .control-container input[type="text"] {
+    height: 40px;
+    padding: 8px 10px;
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #customTextColor,
+  #customBackgroundColor {
+    width: 44px !important;
+    height: 36px !important;
+  }
+
+  #customColorsRandomizeButton {
+    font-size: 1.3em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 4px;
+  }
+
+  
+  .input-group, .select-group {
+    max-width: none;
+    width: 100%;
+  }
+  
+  .slider-container input[type="range"], .input-group input[type="number"], .select-group select {
+      width: 100%;
+      max-width: none;
+  }
+
+  /* Mobile touch targets for sliders */
+  input[type="range"]::-webkit-slider-runnable-track { 
+    height: 8px; 
+  }
+
+  input[type="range"]::-moz-range-track { 
+    height: 8px; 
+  }
+
+  input[type="range"]::-ms-track { 
+    height: 8px; 
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+      width: 20px; 
+      height: 20px;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+      width: 20px; 
+      height: 20px;
+  }
+
+  .slider-container {
+      padding: 8px 0;
+  }
+
+
+  /* Modal Adjustments */
+  .info-modal {
+      padding: 10px;
+  }
+
+  .info-modal-content {
+      max-height: 90vh;
+  }
+
+  .info-modal-header, .info-modal-body {
+      padding: 15px 20px;
+  }
+}
+
+
+/* ============================================================================
+   16. RESPONSIVE DESIGN - LARGE SCREENS
+   ============================================================================ */
+
+/* Settings Panel Adjustments for Screens up to 2000px */
+@media (max-width: 2000px) {
+  .font-settings-layout, .output-settings-layout {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  .font-settings-layout .settings-column, .output-settings-layout .settings-column {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .settings-panel-container {
+    min-height: 280px;
+  }
+}
+
+/* Short Screen Adjustments */
+@media (max-height: 800px) and (min-width: 1601px) {
+  .imageCanvas, #inputVideo {
+    min-height: 300px !important;
+    max-height: calc(100vh - 350px) !important;
+  }
+
+  #outputCanvas {
+    min-height: 300px !important;
+    max-height: calc(100vh - 350px) !important;
+  }
+
+  .settings-panel-container {
+    min-height: 200px !important;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+  .input-area {
+    min-height: 250px;
+  }
+}
+
+/* Extra Large Screens */
+@media (min-width: 1601px) {
+  .mobile-preview-panel,
+  .sticky-spacer {
+    display: none !important;
+  }
+  
+  .settings-title-section {
+    position: relative;
+  }
+  
+  .settings-title-section > div {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .settings-title-section > div > div {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+  }
+}
+
+
+/* ============================================================================
+   17. ANIMATIONS
+   ============================================================================ */
+
+#glyphRandomizeButton.dice-animate, #customColorsRandomizeButton.dice-animate {
+  animation: dice-rotate 0.25s cubic-bezier(0.6, 0.1, 0.4, 1);
+}
+
+@keyframes dice-rotate {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(-40deg); }
+  60% { transform: rotate(20deg); }
+  80% { transform: rotate(-10deg); }
+  100% { transform: rotate(0deg); }
+}
