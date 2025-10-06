@@ -1235,6 +1235,7 @@
         height: 36px;
         padding: 4px;
       }
+
       
       .input-group, .select-group {
         max-width: none;
@@ -1625,11 +1626,17 @@
                 </div>
 
                 <div class="control-container control-group" id="customColorsContainer">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
-                        <input type="color" id="customTextColor" value="#00FF00" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none;">
-                        <input type="color" id="customBackgroundColor" value="#000000" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="color" id="customTextColor" value="#00FF00" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none;">
+                            <input type="color" id="customBackgroundColor" value="#000000" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none;">
+                        </div>
                         <i class="ri-dice-line" id="customColorsRandomizeButton" style="cursor: pointer; opacity: 0.8;"></i>
                     </div>
+                </div>
+                <div class="checkbox-container control-group" id="transparentBgContainer">
+                    <input type="checkbox" id="transparentBgToggle">
+                    <label for="transparentBgToggle">Transparent Background</label>
                 </div>
             </div>
         </div>
@@ -1759,7 +1766,9 @@
     const customColorsContainer = document.getElementById('customColorsContainer');
     const customTextColor = document.getElementById('customTextColor');
     const customBackgroundColor = document.getElementById('customBackgroundColor');
+    const transparentBgToggle = document.getElementById('transparentBgToggle');
 
+    let isBgColorTransparent = false;
 
     const openNewTabButton = document.getElementById('openNewTabButton');
     const downloadPngButton = document.getElementById('downloadPngButton');
@@ -1857,6 +1866,7 @@
 
             customText: customTextColor.value,
             customBackground: customBackgroundColor.value,
+            transparentBg: transparentBgToggle.checked,
         });
     }
 
@@ -1969,6 +1979,11 @@
 
             if (settings.customText) customTextColor.value = settings.customText;
             if (settings.customBackground) customBackgroundColor.value = settings.customBackground;
+            
+            transparentBgToggle.checked = settings.transparentBg || false;
+            isBgColorTransparent = transparentBgToggle.checked;
+            customBackgroundColor.disabled = isBgColorTransparent;
+            customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
             
             isChromaRemovalActive = settings.chromaRemoval;
             isInvertColorsActive = settings.invert;
@@ -2285,6 +2300,7 @@
         highlightInputSlider.value = 255; highlightInputValueDisplay.textContent = '255';
         chromaRemovalToggle.checked = false;
         invertColorsToggle.checked = false;
+        transparentBgToggle.checked = false;
         previewChangesToggle.checked = true;
 
         showExampleButtons();
@@ -2482,11 +2498,16 @@
 
             case 'custom': {
                 const textColor = hexToRgb(customTextColor.value);
-                const bgColor = hexToRgb(customBackgroundColor.value);
+                const bgColor = isBgColorTransparent ? {r: 0, g: 0, b: 0} : hexToRgb(customBackgroundColor.value);
                 const brightness = level;
+                
                 if (brightness === 0) {
+                    if (isBgColorTransparent) {
+                        return 'rgba(0, 0, 0, 0)';
+                    }
                     return `rgb(${bgColor.r}, ${bgColor.g}, ${bgColor.b})`;
                 }
+                
                 return `rgb(${Math.round(textColor.r * brightness)}, ${Math.round(textColor.g * brightness)}, ${Math.round(textColor.b * brightness)})`;
             }
             default: return `rgb(0, ${value}, 0)`;
@@ -2543,7 +2564,8 @@
     function getCanvasBackgroundColor(scheme) {
         switch (scheme) {
             case 'color1': case 'color2': return getComputedStyle(document.documentElement).getPropertyValue('--primary-bg');
-            case 'color3': case 'color4': case 'color5': case 'custom': return customBackgroundColor.value;
+            case 'color3': case 'color4': case 'color5': case 'custom': 
+                return isBgColorTransparent ? 'transparent' : customBackgroundColor.value;
             default: return getComputedStyle(document.documentElement).getPropertyValue('--primary-bg');
         }
     }
@@ -2791,8 +2813,11 @@
                     let currentX = 0;
                     for (let x = 0; x < numOutputCols; x++) {
                         if (matrixToDraw[y] && matrixToDraw[y][x]) {
-                            outputCtx.fillStyle = matrixToDraw[y][x].color;
-                            outputCtx.fillText(matrixToDraw[y][x].char, currentX, currentY);
+                            const cellColor = matrixToDraw[y][x].color;
+                            if (cellColor !== 'rgba(0, 0, 0, 0)') {
+                                outputCtx.fillStyle = cellColor;
+                                outputCtx.fillText(matrixToDraw[y][x].char, currentX, currentY);
+                            }
                         }
                         currentX += charWidth;
                     }
@@ -3225,6 +3250,15 @@
                     isChromaRemovalActive = element.checked;
                 }
                 else if (element === invertColorsToggle) isInvertColorsActive = element.checked;
+                else if (element === transparentBgToggle) {
+                    isBgColorTransparent = element.checked;
+                    customBackgroundColor.disabled = isBgColorTransparent;
+                    customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
+                    
+                    if (colorSchemeSelect.value !== 'custom') {
+                        colorSchemeSelect.value = 'custom';
+                    }
+                }
 
                 processImageWithCurrentSettings();
                 if (element !== previewChangesToggle) {
@@ -3249,6 +3283,7 @@
     addSettingsChangeListener(previewChangesToggle, 'change');
     addSettingsChangeListener(chromaRemovalToggle, 'change');
     addSettingsChangeListener(invertColorsToggle, 'change');
+    addSettingsChangeListener(transparentBgToggle, 'change');
     addSettingsChangeListener(contrastSlider);
     addSettingsChangeListener(levelsSlider);
     addSettingsChangeListener(brightnessSlider);
@@ -3297,6 +3332,7 @@
         if (!window.savedCustomColors) window.savedCustomColors = {};
         window.savedCustomColors.background = customBackgroundColor.value;
     });
+
 
     customCharsHelpButton.addEventListener('click', () => {
         alert('Custom Characters:\n\n• Using commas randomizes item output (e.g., "A,B,C")\n• Using dots flattens items into a sequence (e.g., "ABC.DEF" becomes "ABCDEF")\n• Supports all Unicode characters (for unique visual effects)');
@@ -4385,6 +4421,7 @@
                 customColorsRandomizeButton.classList.remove('dice-animate');
             });
         }
+        
     });
   </script>
 
