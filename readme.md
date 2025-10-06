@@ -17,25 +17,25 @@ Glyphtrix is an open source web app that transforms images and videos into ASCII
 
 Try it here: https://glyphtrix.art
 
-![Glyphtrix_Home](https://github.com/user-attachments/assets/9390ec09-5294-417a-bdf3-8946495df5ce)
+![Glyphtrix_Home](https://i.imgur.com/OKhL2zU.jpeg)
 
 ## ![Features Shield][features-shield]
 
 -   Example files, presets and randomization to get started.
 -   Supports image and video files.
 -   Image adjustments with live preview to fine-tune output visualization.
--   Customizable output with characters; languages and Unicode, fonts, color schemes, density and output scale.
+-   Customizable output with characters; languages and Unicode, fonts, color schemes, spacing, density and output scale.
 -   Output downloadable as PNG, TXT or ZIP package for videos (PNG image sequence).
 
 [features-shield]: https://img.shields.io/badge/Features-00FF00?style=for-the-badge&color=0b0b0b&labelColor=0b0b0b
 
 ## ![Examples][examples-shield]
 
-| Input Image | Output: Binary |
+| | |
 | :------------: | :---------------: |
-| ![Input Image](https://github.com/user-attachments/assets/6cd90c8b-d13b-41bd-a332-e73e5bd0fd24) | ![VisuType_Binary](https://github.com/user-attachments/assets/f96016f4-b1ee-4a04-a27e-78c2bfa431e2) |
-| Output: Chinese Characters | Output: Custom with Unicode Character |
-| ![VisuType_Chinese](https://github.com/user-attachments/assets/562fe261-7747-4de0-9786-d27ae357464a) | ![VisuType_Custom](https://github.com/user-attachments/assets/3b255674-ccf0-4f4e-b30c-9f6926190b7b) |
+| ![Example1](https://i.imgur.com/O8dTdiR.jpeg) | ![Example2](https://i.imgur.com/WHd0kG6.jpeg) |
+| ![Example3](https://i.imgur.com/sSFHyNI.jpeg) | ![Example4](https://i.imgur.com/qQC9ckH.jpeg) |
+| ![Example5](https://i.imgur.com/hVBORdA.jpeg) | ![Example6](https://i.imgur.com/8aBKbum.jpeg) |
 
 
 [examples-shield]: https://img.shields.io/badge/Examples-00FF00?style=for-the-badge&color=0b0b0b&labelColor=0b0b0b
