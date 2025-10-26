@@ -1948,8 +1948,24 @@ async function loadExampleImage() {
         if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
         showUploadSpinner();
         
-        const response = await fetch('https://i.imgur.com/6oBu9XC.jpeg');
-        if (!response.ok) throw new Error('Failed to fetch example image');
+        // Try local asset first, then fallback to imgur
+        const imageUrls = [
+            'assets/example-image.jpeg',
+            'https://i.imgur.com/6oBu9XC.jpeg'
+        ];
+        
+        let response = null;
+        for (const url of imageUrls) {
+            try {
+                response = await fetch(url);
+                if (response.ok) break;
+            } catch (e) {
+                console.log(`Failed to load from ${url}, trying next source...`);
+                continue;
+            }
+        }
+        
+        if (!response || !response.ok) throw new Error('Failed to fetch example image from all sources');
         
         const blob = await response.blob();
         const file = new File([blob], 'example-image.jpeg', { type: 'image/jpeg' });
@@ -1981,7 +1997,9 @@ async function loadExampleVideo() {
         if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
         showUploadSpinner();
         
+        // Try local asset first, then fallback to external sources
         const videoUrls = [
+            'assets/example-video.mp4',
             'https://i.imgur.com/92mxH3N.mp4',
             'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
             'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4'
@@ -1998,6 +2016,7 @@ async function loadExampleVideo() {
                     break;
                 }
             } catch (e) {
+                console.log(`Failed to load from ${url}, trying next source...`);
                 continue;
             }
         }
