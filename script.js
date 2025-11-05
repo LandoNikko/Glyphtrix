@@ -71,7 +71,6 @@ const loadingSpinner = document.getElementById('loadingSpinner');
 const mobileLoadingSpinner = document.getElementById('mobileLoadingSpinner');
 const sequenceLoadingOverlay = document.getElementById('sequenceLoadingOverlay');
 const sequenceLoadingOverlayText = document.getElementById('sequenceLoadingOverlayText');
-const sequenceLoadingMessage = document.getElementById('sequenceLoadingMessage');
 const cancelSequenceButton = document.getElementById('cancelSequenceButton');
 
 
@@ -187,6 +186,9 @@ const MAX_HISTORY_SIZE = 100;
 let isFileJustLoaded = false;
 let sliderChangeTimeout = null;
 const SLIDER_DEBOUNCE_DELAY = 500;
+
+/* Text Direction State */
+let isVerticalTextMode = false;
 
 
 /* ============================================================================
@@ -354,6 +356,7 @@ function restoreSettingsFromSnapshot(snapshot) {
         isBgColorTransparent = settings.transparentBg || false;
         transparentBgToggle.className = isBgColorTransparent ? 'btn-base ri-eye-off-line' : 'btn-base ri-eye-line';
         transparentBgToggle.style.opacity = '0.6';
+        transparentBgToggle.title = isBgColorTransparent ? 'Disable transparent background' : 'Enable transparent background';
         customBackgroundColor.disabled = isBgColorTransparent;
         customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
         
@@ -408,14 +411,10 @@ function toggleSequenceRenderingUI(isRendering, message = "") {
         outputCanvas.style.display = 'none';
         sequenceLoadingOverlay.style.display = 'flex';
         sequenceLoadingOverlayText.textContent = message || "Rendering Sequence...";
-        sequenceLoadingMessage.textContent = message || "Rendering Sequence...";
-        sequenceLoadingMessage.style.display = 'block';
         cancelSequenceButton.style.display = 'block';
     } else {
         outputCanvas.style.display = 'block';
         sequenceLoadingOverlay.style.display = 'none';
-        sequenceLoadingMessage.style.display = 'none';
-        sequenceLoadingMessage.textContent = "";
         cancelSequenceButton.style.display = 'none';
     }
 
@@ -441,7 +440,6 @@ function toggleSequenceRenderingUI(isRendering, message = "") {
 cancelSequenceButton.addEventListener('click', () => {
     cancelSequenceRenderFlag = true;
     sequenceLoadingOverlayText.textContent = "Cancelling rendering...";
-    sequenceLoadingMessage.textContent = "Cancelling rendering...";
 });
 
 
@@ -486,7 +484,12 @@ async function generateGlyphtrixFrameBlob(videoTime, tempCanvas, tempCtx, offscr
                 }
                 const numOutputRows = frameBlobMatrix.length;
                 const numOutputCols = frameBlobMatrix[0].length;
-                offscreenRenderCanvas.width = Math.max(1, numOutputCols * charWidth);
+                
+                const charSpacing = currentCharSpacing || 0;
+                const colsToAdjust = Math.floor(charSpacing);
+                const originalCols = numOutputCols + colsToAdjust;
+                
+                offscreenRenderCanvas.width = Math.max(1, originalCols * charWidth);
                 offscreenRenderCanvas.height = Math.max(1, numOutputRows * charHeight);
                 offscreenRenderCtx.fillStyle = getCanvasBackgroundColor(colorSchemeSelect.value);
                 offscreenRenderCtx.fillRect(0, 0, offscreenRenderCanvas.width, offscreenRenderCanvas.height);
@@ -494,15 +497,20 @@ async function generateGlyphtrixFrameBlob(videoTime, tempCanvas, tempCtx, offscr
                 offscreenRenderCtx.textAlign = 'left';
                 offscreenRenderCtx.textBaseline = 'top';
 
+                const cellWidth = numOutputCols > 1 ? offscreenRenderCanvas.width / numOutputCols : charWidth;
+
                 let currentY = 0;
                 for (let y = 0; y < numOutputRows; y++) {
                     let currentX = 0;
                     for (let x = 0; x < numOutputCols; x++) {
                         if (frameBlobMatrix[y] && frameBlobMatrix[y][x]) {
-                            offscreenRenderCtx.fillStyle = frameBlobMatrix[y][x].color;
-                            offscreenRenderCtx.fillText(frameBlobMatrix[y][x].char, currentX, currentY);
+                            const cellColor = frameBlobMatrix[y][x].color;
+                            if (cellColor !== 'rgba(0, 0, 0, 0)') {
+                                offscreenRenderCtx.fillStyle = cellColor;
+                                offscreenRenderCtx.fillText(frameBlobMatrix[y][x].char, currentX, currentY);
+                            }
                         }
-                        currentX += charWidth;
+                        currentX += cellWidth;
                     }
                     currentY += charHeight;
                 }
@@ -573,14 +581,12 @@ async function downloadPngSequenceWithFps(fps) {
             if (cancelSequenceRenderFlag) {
                 renderingCancelled = true;
                 sequenceLoadingOverlayText.textContent = "Rendering cancelled.";
-                sequenceLoadingMessage.textContent = "Rendering cancelled.";
                 await new Promise(r => setTimeout(r, 1500));
                 break;
             }
             const currentTime = i * frameInterval;
             const progressMessage = `Rendering frame ${i + 1} of ${numFrames} and creating a .zip archive...`;
             sequenceLoadingOverlayText.textContent = progressMessage;
-            sequenceLoadingMessage.textContent = progressMessage;
 
             const blob = await generateGlyphtrixFrameBlob(currentTime, tempCaptureCanvas, tempCaptureCtx, offscreenRenderCanvas, offscreenRenderCtx);
             pngBlobs.push(blob);
@@ -588,7 +594,6 @@ async function downloadPngSequenceWithFps(fps) {
 
         if (!renderingCancelled && pngBlobs.length > 0) {
             sequenceLoadingOverlayText.textContent = "Zipping frames and creating .zip archive...";
-            sequenceLoadingMessage.textContent = "Zipping frames and creating .zip archive...";
             const zip = new JSZip();
             pngBlobs.forEach((blob, index) => {
                 const frameNumber = (index + 1).toString().padStart(4, '0');
@@ -678,6 +683,7 @@ function setDefaultValues(contentWidth = null) {
     isBgColorTransparent = false;
     transparentBgToggle.className = 'btn-base ri-eye-line';
     transparentBgToggle.style.opacity = '0.6';
+    transparentBgToggle.title = 'Enable transparent background';
     customBackgroundColor.disabled = false;
     customBackgroundColor.style.opacity = '1';
     charSpacingSlider.value = 0;
@@ -1077,96 +1083,215 @@ async function updateInputCanvasPreview() {
 function generateBlobMatrix(pixelDataToProcess, originalWidth, originalHeight, levelsArray, densityStep, colorScheme, charSet) {
     let blobMatrix = [];
     
-    const totalRows = Math.ceil(originalHeight / densityStep);
-    let currentRowIndex = 0;
-    
     const charSpacing = currentCharSpacing || 0;
-    const totalCols = Math.ceil(originalWidth / densityStep);
-    const colsToAdjust = Math.floor(charSpacing);
-    const effectiveCols = Math.max(1, totalCols - colsToAdjust);
-    const adjustedDensityStep = originalWidth / effectiveCols;
-
-    // Process from bottom to top to reverse the movement illusion
-    for (let y = originalHeight - densityStep; y >= 0; y -= densityStep) {
-        let blobRow = [];
+    
+    if (isVerticalTextMode) {
+        // Vertical mode: process columns from left to right, rows from top to bottom
+        const totalCols = Math.ceil(originalWidth / densityStep);
+        const colsToAdjust = Math.floor(charSpacing);
+        const effectiveCols = Math.max(1, totalCols - colsToAdjust);
+        const adjustedDensityStep = originalWidth / effectiveCols;
+        const totalRows = Math.ceil(originalHeight / densityStep);
+        
+        // Initialize matrix with empty rows
+        for (let i = 0; i < totalRows; i++) {
+            blobMatrix.push([]);
+        }
+        
+        // Generate random offsets for each column to break patterns
+        const columnOffsets = [];
+        for (let i = 0; i < effectiveCols; i++) {
+            columnOffsets.push(Math.floor(Math.random() * 10000));
+        }
+        
+        let currentColIndex = 0;
+        
+        // Process columns from left to right
         for (let colIndex = 0; colIndex < effectiveCols; colIndex++) {
             const x = Math.floor(colIndex * adjustedDensityStep);
-            let avgR = 0, avgG = 0, avgB = 0, count = 0;
-            for (let subY = 0; subY < densityStep && (y + subY) < originalHeight; subY++) {
-                for (let subX = 0; subX < densityStep && (x + subX) < originalWidth; subX++) {
-                    const i = ((y + subY) * originalWidth + (x + subX)) * 4;
-                    avgR += pixelDataToProcess[i]; avgG += pixelDataToProcess[i+1]; avgB += pixelDataToProcess[i+2]; count++;
+            
+            // Within each column, process from top to bottom
+            for (let y = 0; y < originalHeight; y += densityStep) {
+                const rowIndex = Math.floor(y / densityStep);
+                
+                let avgR = 0, avgG = 0, avgB = 0, count = 0;
+                for (let subY = 0; subY < densityStep && (y + subY) < originalHeight; subY++) {
+                    for (let subX = 0; subX < densityStep && (x + subX) < originalWidth; subX++) {
+                        const i = ((y + subY) * originalWidth + (x + subX)) * 4;
+                        avgR += pixelDataToProcess[i]; avgG += pixelDataToProcess[i+1]; avgB += pixelDataToProcess[i+2]; count++;
+                    }
                 }
-            }
-            if (count === 0) continue;
-            avgR /= count; avgG /= count; avgB /= count;
-            const grayscale = (avgR + avgG + avgB) / 3;
-            let closestLevelValue = levelsArray[0];
-            let minDiff = Math.abs(grayscale - closestLevelValue * 255);
-            for (let j = 1; j < levelsArray.length; j++) {
-                const diff = Math.abs(grayscale - levelsArray[j] * 255);
-                if (diff < minDiff) { minDiff = diff; closestLevelValue = levelsArray[j]; }
-            }
-            let char = ' '; let color = getCharacterDisplayColor(0, colorScheme); let shouldDrawChar = false;
-            if (colorScheme === 'blackOnWhite') {
-                shouldDrawChar = closestLevelValue < 1 || (levelsArray.length === 1 && levelsArray[0] === 1 && grayscale > 128);
-            } else {
-                shouldDrawChar = closestLevelValue > 0 || (levelsArray.length === 1 && levelsArray[0] === 0 && grayscale < 128) || (levelsArray.length > 1 && closestLevelValue === 0);
-            }
+                if (count === 0) continue;
+                avgR /= count; avgG /= count; avgB /= count;
+                const grayscale = (avgR + avgG + avgB) / 3;
+                let closestLevelValue = levelsArray[0];
+                let minDiff = Math.abs(grayscale - closestLevelValue * 255);
+                for (let j = 1; j < levelsArray.length; j++) {
+                    const diff = Math.abs(grayscale - levelsArray[j] * 255);
+                    if (diff < minDiff) { minDiff = diff; closestLevelValue = levelsArray[j]; }
+                }
+                let char = ' '; let color = getCharacterDisplayColor(0, colorScheme); let shouldDrawChar = false;
+                if (colorScheme === 'blackOnWhite') {
+                    shouldDrawChar = closestLevelValue < 1 || (levelsArray.length === 1 && levelsArray[0] === 1 && grayscale > 128);
+                } else {
+                    shouldDrawChar = closestLevelValue > 0 || (levelsArray.length === 1 && levelsArray[0] === 0 && grayscale < 128) || (levelsArray.length > 1 && closestLevelValue === 0);
+                }
 
-            if (shouldDrawChar) {
-                if (charSet === 'custom') {
-                    const customText = customCharsInput.value.trim();
-                    if (customText) {
-                        if (customText.includes(',')) {
-                            const customItems = customText.split(',').map(s => s.trim()).filter(s => s);
-                            if (customItems.length > 0) {
-                                const selectedItem = customItems[Math.floor(Math.random() * customItems.length)];
-                                if (selectedItem.length > 1) {
-                                    char = selectedItem[customCharSeqIndex % selectedItem.length];
+                if (shouldDrawChar) {
+                    if (charSet === 'custom') {
+                        const customText = customCharsInput.value;
+                        if (customText.length > 0) {
+                            const offsetIndex = customCharSeqIndex + columnOffsets[colIndex];
+                            if (customText.includes(',')) {
+                                const customItems = customText.split(',');
+                                if (customItems.length > 0) {
+                                    const selectedItem = customItems[Math.floor(Math.random() * customItems.length)];
+                                    if (selectedItem.length > 1) {
+                                        char = selectedItem[offsetIndex % selectedItem.length];
+                                        customCharSeqIndex++;
+                                    } else {
+                                        char = selectedItem;
+                                    }
+                                } else { char = '#'; }
+                            } else if (customText.includes('.')) {
+                                const customItems = customText.split('.');
+                                if (customItems.length > 0) {
+                                    const flattenedChars = customItems.join('');
+                                    char = flattenedChars[offsetIndex % flattenedChars.length];
                                     customCharSeqIndex++;
-                                } else {
-                                    char = selectedItem;
-                                }
-                            } else { char = '#'; }
-                        } else if (customText.includes('.')) {
-                            const customItems = customText.split('.').map(s => s.trim()).filter(s => s);
-                            if (customItems.length > 0) {
-                                const flattenedChars = customItems.join('');
-                                char = flattenedChars[customCharSeqIndex % flattenedChars.length];
+                                } else { char = '#'; }
+                            } else {
+                                char = customText[offsetIndex % customText.length];
                                 customCharSeqIndex++;
+                            }
+                        } else { char = '#'; }
+                    } else if (charSet.startsWith('preset') || charSet === 'binary') {
+                        const presetValues = {
+                             'binary': '0,1', 'preset1': 'ABC', 'preset2': 'A,B,C', 'preset3': '⦁', 'preset4': '●',
+                             'preset5': '⬤', 'preset6': '〇', 'preset7': '■', 'preset8': '█', 'preset9': '▃',
+                             'preset10': '⯁', 'preset11': '✖', 'preset12': '✚', 'preset13': '╋', 'preset14': '⧸,⧹'
+                         };
+                        const presetText = presetValues[charSet] || '#';
+                        if (presetText.includes(',')) {
+                            const presetItems = presetText.split(',').map(s => s.trim()).filter(s => s);
+                            if (presetItems.length > 0) {
+                                char = presetItems[Math.floor(Math.random() * presetItems.length)];
                             } else { char = '#'; }
                         } else {
-                            char = customText[customCharSeqIndex % customText.length];
+                            const offsetIndex = customCharSeqIndex + columnOffsets[colIndex];
+                            char = presetText[offsetIndex % presetText.length];
                             customCharSeqIndex++;
                         }
-                    } else { char = '#'; }
-                } else if (charSet.startsWith('preset') || charSet === 'binary') {
-                    const presetValues = {
-                         'binary': '0,1', 'preset1': 'ABC', 'preset2': 'A,B,C', 'preset3': '⦁', 'preset4': '●',
-                         'preset5': '⬤', 'preset6': '〇', 'preset7': '■', 'preset8': '█', 'preset9': '▃',
-                         'preset10': '⯁', 'preset11': '✖', 'preset12': '✚', 'preset13': '╋', 'preset14': '⧸,⧹'
-                     };
-                    const presetText = presetValues[charSet] || '#';
-                    if (presetText.includes(',')) {
-                        const presetItems = presetText.split(',').map(s => s.trim()).filter(s => s);
-                        if (presetItems.length > 0) {
-                            char = presetItems[Math.floor(Math.random() * presetItems.length)];
-                        } else { char = '#'; }
                     } else {
-                        char = presetText[customCharSeqIndex % presetText.length];
-                        customCharSeqIndex++;
+                        char = getRandomCharacterForLevel(closestLevelValue, charSet);
                     }
-                } else {
-                    char = getRandomCharacterForLevel(closestLevelValue, charSet);
+                    color = getCharacterDisplayColor(closestLevelValue, colorScheme, currentColIndex, effectiveCols);
                 }
-                color = getCharacterDisplayColor(closestLevelValue, colorScheme, currentRowIndex, totalRows);
+                blobMatrix[rowIndex].push({char: char, color: color});
             }
-            blobRow.push({char: char, color: color});
+            currentColIndex++;
         }
-        if (blobRow.length > 0) { 
-            blobMatrix.unshift(blobRow);
-            currentRowIndex++;
+    } else {
+        // Horizontal mode: original logic
+        const totalRows = Math.ceil(originalHeight / densityStep);
+        let currentRowIndex = 0;
+        
+        const totalCols = Math.ceil(originalWidth / densityStep);
+        const colsToAdjust = Math.floor(charSpacing);
+        const effectiveCols = Math.max(1, totalCols - colsToAdjust);
+        const adjustedDensityStep = originalWidth / effectiveCols;
+
+        // Generate random offsets for each row to break patterns
+        const rowOffsets = [];
+        for (let i = 0; i < totalRows; i++) {
+            rowOffsets.push(Math.floor(Math.random() * 10000));
+        }
+
+        // Process from bottom to top to reverse the movement illusion
+        for (let y = originalHeight - densityStep; y >= 0; y -= densityStep) {
+            let blobRow = [];
+            const currentRowOffset = rowOffsets[currentRowIndex];
+            for (let colIndex = 0; colIndex < effectiveCols; colIndex++) {
+                const x = Math.floor(colIndex * adjustedDensityStep);
+                let avgR = 0, avgG = 0, avgB = 0, count = 0;
+                for (let subY = 0; subY < densityStep && (y + subY) < originalHeight; subY++) {
+                    for (let subX = 0; subX < densityStep && (x + subX) < originalWidth; subX++) {
+                        const i = ((y + subY) * originalWidth + (x + subX)) * 4;
+                        avgR += pixelDataToProcess[i]; avgG += pixelDataToProcess[i+1]; avgB += pixelDataToProcess[i+2]; count++;
+                    }
+                }
+                if (count === 0) continue;
+                avgR /= count; avgG /= count; avgB /= count;
+                const grayscale = (avgR + avgG + avgB) / 3;
+                let closestLevelValue = levelsArray[0];
+                let minDiff = Math.abs(grayscale - closestLevelValue * 255);
+                for (let j = 1; j < levelsArray.length; j++) {
+                    const diff = Math.abs(grayscale - levelsArray[j] * 255);
+                    if (diff < minDiff) { minDiff = diff; closestLevelValue = levelsArray[j]; }
+                }
+                let char = ' '; let color = getCharacterDisplayColor(0, colorScheme); let shouldDrawChar = false;
+                if (colorScheme === 'blackOnWhite') {
+                    shouldDrawChar = closestLevelValue < 1 || (levelsArray.length === 1 && levelsArray[0] === 1 && grayscale > 128);
+                } else {
+                    shouldDrawChar = closestLevelValue > 0 || (levelsArray.length === 1 && levelsArray[0] === 0 && grayscale < 128) || (levelsArray.length > 1 && closestLevelValue === 0);
+                }
+
+                if (shouldDrawChar) {
+                    if (charSet === 'custom') {
+                        const customText = customCharsInput.value;
+                        if (customText.length > 0) {
+                            const offsetIndex = customCharSeqIndex + currentRowOffset;
+                            if (customText.includes(',')) {
+                                const customItems = customText.split(',');
+                                if (customItems.length > 0) {
+                                    const selectedItem = customItems[Math.floor(Math.random() * customItems.length)];
+                                    if (selectedItem.length > 1) {
+                                        char = selectedItem[offsetIndex % selectedItem.length];
+                                        customCharSeqIndex++;
+                                    } else {
+                                        char = selectedItem;
+                                    }
+                                } else { char = '#'; }
+                            } else if (customText.includes('.')) {
+                                const customItems = customText.split('.');
+                                if (customItems.length > 0) {
+                                    const flattenedChars = customItems.join('');
+                                    char = flattenedChars[offsetIndex % flattenedChars.length];
+                                    customCharSeqIndex++;
+                                } else { char = '#'; }
+                            } else {
+                                char = customText[offsetIndex % customText.length];
+                                customCharSeqIndex++;
+                            }
+                        } else { char = '#'; }
+                    } else if (charSet.startsWith('preset') || charSet === 'binary') {
+                        const presetValues = {
+                             'binary': '0,1', 'preset1': 'ABC', 'preset2': 'A,B,C', 'preset3': '⦁', 'preset4': '●',
+                             'preset5': '⬤', 'preset6': '〇', 'preset7': '■', 'preset8': '█', 'preset9': '▃',
+                             'preset10': '⯁', 'preset11': '✖', 'preset12': '✚', 'preset13': '╋', 'preset14': '⧸,⧹'
+                         };
+                        const presetText = presetValues[charSet] || '#';
+                        if (presetText.includes(',')) {
+                            const presetItems = presetText.split(',').map(s => s.trim()).filter(s => s);
+                            if (presetItems.length > 0) {
+                                char = presetItems[Math.floor(Math.random() * presetItems.length)];
+                            } else { char = '#'; }
+                        } else {
+                            const offsetIndex = customCharSeqIndex + currentRowOffset;
+                            char = presetText[offsetIndex % presetText.length];
+                            customCharSeqIndex++;
+                        }
+                    } else {
+                        char = getRandomCharacterForLevel(closestLevelValue, charSet);
+                    }
+                    color = getCharacterDisplayColor(closestLevelValue, colorScheme, currentRowIndex, totalRows);
+                }
+                blobRow.push({char: char, color: color});
+            }
+            if (blobRow.length > 0) { 
+                blobMatrix.unshift(blobRow);
+                currentRowIndex++;
+            }
         }
     }
     return blobMatrix;
@@ -1749,6 +1874,7 @@ transparentBgToggle.addEventListener('click', () => {
     isBgColorTransparent = !isBgColorTransparent;
     transparentBgToggle.className = isBgColorTransparent ? 'btn-base ri-eye-off-line' : 'btn-base ri-eye-line';
     transparentBgToggle.style.opacity = '0.6';
+    transparentBgToggle.title = isBgColorTransparent ? 'Disable transparent background' : 'Enable transparent background';
     customBackgroundColor.disabled = isBgColorTransparent;
     customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
     
@@ -2174,7 +2300,7 @@ function getVideoMetadata() {
 
     return {
         duration: inputVideo.duration ? formatDuration(inputVideo.duration) : 'Unknown',
-        outputResolution: `${Math.round(outputWidth)} Ã— ${Math.round(outputHeight)}`
+        outputResolution: `${Math.round(outputWidth)} x ${Math.round(outputHeight)}`
     };
 }
 
@@ -2235,7 +2361,9 @@ function populateFpsOptions() {
         { fps: 5, label: '5 FPS' },
         { fps: 24, label: '24 FPS' },
         { fps: 25, label: '25 FPS' },
-        { fps: 30, label: '30 FPS' }
+        { fps: 30, label: '30 FPS' },
+        { fps: 60, label: '60 FPS' },
+        { fps: 120, label: '120 FPS' }
     ];
 
     fpsOptionsGrid.innerHTML = '';
@@ -2833,6 +2961,13 @@ function randomizeGlyphSettings() {
         }
     }
     
+    // Randomize spacing
+    if (charSpacingSlider) {
+        const randomSpacing = Math.floor(Math.random() * 151) - 100; // Range: -100 to 50
+        charSpacingSlider.value = randomSpacing;
+        charSpacingValueDisplay.textContent = randomSpacing;
+    }
+    
     processImageWithCurrentSettings();
     if (!isVideoInput) updateInputCanvasPreview();
     
@@ -2868,6 +3003,34 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         customColorsRandomizeButton.addEventListener('animationend', function() {
             customColorsRandomizeButton.classList.remove('dice-animate');
+        });
+    }
+    
+    const textDirectionToggle = document.getElementById('textDirectionToggle');
+    if (textDirectionToggle) {
+        textDirectionToggle.addEventListener('click', function() {
+            isVerticalTextMode = !isVerticalTextMode;
+            
+            // Toggle icon between arrow-right and arrow-down
+            if (isVerticalTextMode) {
+                textDirectionToggle.classList.remove('ri-arrow-right-line');
+                textDirectionToggle.classList.add('ri-arrow-down-line');
+                textDirectionToggle.title = 'Toggle text direction (vertical)';
+            } else {
+                textDirectionToggle.classList.remove('ri-arrow-down-line');
+                textDirectionToggle.classList.add('ri-arrow-right-line');
+                textDirectionToggle.title = 'Toggle text direction (horizontal)';
+            }
+            
+            // Clear cached sequence when direction changes
+            clearCachedSequence();
+            
+            // Reprocess the image with new direction
+            processImageWithCurrentSettings();
+            
+            // Save to history
+            enableHistoryAfterUserChange();
+            setTimeout(() => saveActionToHistory(), 100);
         });
     }
     

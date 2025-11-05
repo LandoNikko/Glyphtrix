@@ -74,7 +74,6 @@
       <div class="column-header">
         <h2>Output</h2>
         <span id="loadingSpinner" style="display: none;"></span>
-        <div id="sequenceLoadingMessage" style="display: none;"></div>
       </div>
       <canvas id="outputCanvas"></canvas>
       <div id="sequenceLoadingOverlay" style="display: none;">
@@ -203,7 +202,7 @@
             <div class="settings-column">
                 <div class="slider-container control-group">
                     <label for="levelsSlider">Grayscale Values <span id="levelsValueDisplay">4</span></label>
-                    <input type="range" id="levelsSlider" min="2" max="16" value="4">
+                    <input type="range" id="levelsSlider" min="2" max="32" value="4">
                 </div>
                 <div class="slider-container control-group">
                     <label for="brightnessSlider">Brightness <span id="brightnessValueDisplay">0</span></label>
@@ -237,7 +236,10 @@
       <div class="font-settings-layout">
             <div class="settings-column">
                 <div class="control-container control-group" style="margin-bottom: 0px;">
-                    <label for="characterSetSelect">Character Set</label>
+                    <label for="characterSetSelect" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <span>Character Set</span>
+                        <i class="ri-arrow-right-line" id="textDirectionToggle" style="cursor: pointer; opacity: 0.8; font-size: 1.3em;" title="Toggle text direction"></i>
+                    </label>
                     <div class="select-group">
                         <button class="btn-base" id="prevCharSetButton"><</button>
                         <select id="characterSetSelect">
@@ -310,7 +312,7 @@
                     <div style="display: flex; align-items: center; margin-top: 5px;">
                         <input type="color" id="customTextColor" value="#00FF00" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none; margin-right: 8px;">
                         <input type="color" id="customBackgroundColor" value="#000000" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); border-right: none; background: none;">
-                        <button class="btn-base ri-eye-line" id="transparentBgToggle" style="height: 28px; padding: 0 5px; font-size: 0.8em; opacity: 0.6; min-height: auto;"></button>
+                        <button class="btn-base ri-eye-line" id="transparentBgToggle" style="height: 28px; padding: 0 5px; font-size: 0.8em; opacity: 0.6; min-height: auto;" title="Enable transparent background"></button>
                     </div>
                 </div>
                 <div class="slider-container control-group">
@@ -321,7 +323,7 @@
                         </span>
                         <span id="charSpacingValueDisplay">0</span>
                     </label>
-                    <input type="range" id="charSpacingSlider" min="-50" max="50" value="0" step="1">
+                    <input type="range" id="charSpacingSlider" min="-100" max="50" value="0" step="1">
                 </div>
             </div>
         </div>
