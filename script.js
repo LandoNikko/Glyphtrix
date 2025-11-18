@@ -141,6 +141,10 @@ const openNewTabButton = document.getElementById('openNewTabButton');
 const downloadPngButton = document.getElementById('downloadPngButton');
 const downloadTextButton = document.getElementById('downloadTextButton');
 const downloadPngSequenceButton = document.getElementById('downloadPngSequenceButton');
+const recordWebcamButton = document.getElementById('recordWebcamButton');
+const recordingOverlay = document.getElementById('recordingOverlay');
+const recordingTimer = document.getElementById('recordingTimer');
+const recordingText = document.getElementById('recordingText');
 
 /* 3.6 Layout & Panel Elements */
 const mainContainer = document.getElementById('mainContainer');
@@ -174,6 +178,12 @@ let isChromaRemovalActive = false;
 let currentBackgroundTolerance = 10;
 let isVideoInput = false;
 let videoProcessLoopId = null;
+
+let isWebcamActive = false;
+let webcamStream = null;
+let isRecordingWebcam = false;
+let mediaRecorder = null;
+let recordedChunks = [];
 
 let isSequenceRendering = false;
 let cancelSequenceRenderFlag = false;
@@ -394,7 +404,7 @@ function clearCachedSequence() {
 }
 
 function updatePngSequenceButtonState() {
-    if (!isVideoInput) {
+    if (!isVideoInput || isWebcamActive) {
         downloadPngSequenceButton.style.display = 'none';
         return;
     }
@@ -1475,6 +1485,7 @@ async function processImageWithCurrentSettings() {
 
 function handleImageUpload(file) {
     stopVideoProcessingLoop();
+    stopWebcam();
     clearCachedSequence();
     isVideoInput = false;
     loadingSpinner.style.display = 'inline';
@@ -2175,6 +2186,329 @@ async function loadExampleVideo() {
     }
 }
 
+async function startWebcam() {
+    try {
+        stopVideoProcessingLoop();
+        clearCachedSequence();
+        
+        loadingSpinner.style.display = 'inline';
+        if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'inline';
+        setDownloadButtonsState(true);
+        downloadPngSequenceButton.style.display = 'none';
+        showUploadSpinner();
+        hideExampleButtons();
+        
+        // Request webcam access
+        webcamStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            },
+            audio: false 
+        });
+        
+        isVideoInput = true;
+        isWebcamActive = true;
+        currentMediaElement = inputVideo;
+        
+        // Set the stream to the video element
+        inputVideo.srcObject = webcamStream;
+        inputVideo.src = "";
+        inputVideo.controls = false; // Remove controls for webcam
+        inputVideo.muted = true; // Keep muted
+        
+        inputVideo.onloadedmetadata = async () => {
+            currentImageOriginalWidth = inputVideo.videoWidth;
+            currentImageOriginalHeight = inputVideo.videoHeight;
+            customCharSeqIndex = 0;
+            
+            inputVideo.style.display = 'block';
+            inputCanvas.style.display = 'none';
+            
+            uploadZone.style.display = 'none';
+            if(uploadPanelTitle) uploadPanelTitle.style.display = 'block';
+            if(condensedUploadZone) condensedUploadZone.style.display = 'inline-block';
+            if(condensedFilename) condensedFilename.innerHTML = `<i class="ri-webcam-line"></i> Webcam Active`;
+            
+            hideExampleButtons();
+            
+            if(previewChangesContainer) previewChangesContainer.style.display = 'flex';
+            
+            setDefaultValues(inputVideo.videoWidth);
+            
+            previewChangesToggle.checked = false;
+            isPreviewChangesActive = false;
+            previewChangesToggle.disabled = true;
+            currentDensity = parseInt(densityInput.value);
+            
+            if(chromaRemovalContainer) chromaRemovalContainer.style.display = 'flex';
+            if(invertColorsContainer) invertColorsContainer.style.display = 'flex';
+            
+            await processImageWithCurrentSettings();
+            loadingSpinner.style.display = 'none';
+            if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+            hideUploadSpinner();
+            updatePngSequenceButtonState();
+            
+            initializeHistoryForNewFile();
+            
+            previewChangesToggle.disabled = true;
+            
+            // Update button text
+            const webcamBtn = document.getElementById('webcamButton');
+            if (webcamBtn) {
+                webcamBtn.innerHTML = '<i class="ri-webcam-line"></i>Stop Webcam';
+            }
+            
+            // Show record webcam button, hide download sequence button
+            if (recordWebcamButton) recordWebcamButton.style.display = '';
+            if (downloadPngSequenceButton) downloadPngSequenceButton.style.display = 'none';
+            
+            if (window.innerWidth <= 768 && mobilePreviewActive) {
+                switchMobileView('output');
+            } else {
+                debouncedUpdateMobilePreview();
+            }
+            
+            // Set up event handlers BEFORE playing
+            inputVideo.onplay = () => {
+                clearCachedSequence();
+                stopVideoProcessingLoop();
+                if (previewChangesToggle.checked) {
+                    previewChangesToggle.checked = false;
+                    isPreviewChangesActive = false;
+                    updateInputCanvasPreview();
+                }
+                previewChangesToggle.disabled = true;
+                videoProcessLoopId = requestAnimationFrame(processCurrentFrame);
+            };
+            
+            inputVideo.onpause = () => {
+                previewChangesToggle.disabled = false;
+                processImageWithCurrentSettings();
+            };
+            
+            // Start the video and processing loop
+            await inputVideo.play();
+            
+            // Manually start the processing loop if play didn't trigger onplay
+            if (!videoProcessLoopId) {
+                videoProcessLoopId = requestAnimationFrame(processCurrentFrame);
+            }
+        };
+        
+    } catch (error) {
+        console.error('Error accessing webcam:', error);
+        let errorMessage = 'Unable to access webcam. ';
+        if (error.name === 'NotAllowedError') {
+            errorMessage += 'Permission denied.';
+        } else if (error.name === 'NotFoundError') {
+            errorMessage += 'No webcam found on your device.';
+        } else {
+            errorMessage += error.message;
+        }
+        alert(errorMessage);
+        
+        isWebcamActive = false;
+        loadingSpinner.style.display = 'none';
+        if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
+        hideUploadSpinner();
+        showExampleButtons();
+    }
+}
+
+function stopWebcam() {
+    if (webcamStream) {
+        // Stop all tracks in the stream
+        webcamStream.getTracks().forEach(track => track.stop());
+        webcamStream = null;
+    }
+    
+    if (inputVideo.srcObject) {
+        inputVideo.srcObject = null;
+    }
+    
+    isWebcamActive = false;
+    isVideoInput = false;
+    
+    stopVideoProcessingLoop();
+    
+    // Reset video element
+    inputVideo.style.display = 'none';
+    inputVideo.pause();
+    inputVideo.onloadedmetadata = null;
+    inputVideo.onerror = null;
+    inputVideo.onplay = null;
+    inputVideo.onpause = null;
+    inputVideo.src = "";
+    inputVideo.controls = true; // Restore controls for video files
+    
+    // Reset UI
+    uploadZone.style.display = 'flex';
+    inputCanvas.style.display = 'none';
+    if(uploadPanelTitle) uploadPanelTitle.style.display = 'none';
+    if(condensedUploadZone) condensedUploadZone.style.display = 'none';
+    
+    showExampleButtons();
+    
+    // Clear output
+    outputCtx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+    
+    // Update button text
+    const webcamBtn = document.getElementById('webcamButton');
+    if (webcamBtn) {
+        webcamBtn.innerHTML = '<i class="ri-webcam-line"></i>Use Webcam';
+    }
+    
+    // Hide record webcam button
+    if (recordWebcamButton) recordWebcamButton.style.display = 'none';
+    
+    downloadPngSequenceButton.style.display = 'none';
+    setDownloadButtonsState(true);
+}
+
+function toggleWebcam() {
+    if (isWebcamActive) {
+        stopWebcam();
+    } else {
+        startWebcam();
+    }
+}
+
+function recordWebcam() {
+    if (!isWebcamActive || !webcamStream) {
+        alert('Please start the webcam first before recording.');
+        return;
+    }
+    
+    if (isRecordingWebcam) {
+        return; // Already recording
+    }
+    
+    // Open the recording duration modal
+    openRecordingDurationModal();
+}
+
+async function startRecordingWithDuration(duration) {
+    // Close the modal
+    closeRecordingDurationModal();
+    
+    if (!isWebcamActive || !webcamStream) {
+        alert('Please start the webcam first before recording.');
+        return;
+    }
+    
+    if (isRecordingWebcam) {
+        return; // Already recording
+    }
+    
+    try {
+        isRecordingWebcam = true;
+        recordedChunks = [];
+        
+        // Reset timer display
+        if (recordingTimer) recordingTimer.textContent = `${duration}s`;
+        if (recordingText) recordingText.textContent = 'Recording...';
+        
+        // Show recording overlay
+        if (recordingOverlay) {
+            recordingOverlay.style.display = 'flex';
+        }
+        
+        // Disable record button during recording
+        if (recordWebcamButton) recordWebcamButton.disabled = true;
+        
+        // Create MediaRecorder
+        const options = { mimeType: 'video/webm;codecs=vp9' };
+        
+        // Fallback to vp8 if vp9 is not supported
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            options.mimeType = 'video/webm;codecs=vp8';
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options.mimeType = 'video/webm';
+            }
+        }
+        
+        mediaRecorder = new MediaRecorder(webcamStream, options);
+        
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstop = async () => {
+            // Create blob from recorded chunks
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const file = new File([blob], 'glyphtrix-webcam-recording.webm', { type: 'video/webm' });
+            
+            // Show processing message
+            if (recordingText) recordingText.textContent = 'Processing...';
+            
+            // Stop the webcam
+            stopWebcam();
+            
+            // Small delay to show processing message
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Hide recording overlay
+            if (recordingOverlay) {
+                recordingOverlay.style.display = 'none';
+            }
+            
+            // Load the recorded video as a file
+            handleImageUpload(file);
+            
+            // Update filename display
+            setTimeout(() => {
+                if (condensedFilename) {
+                    condensedFilename.innerHTML = `<i class="ri-check-line"></i> glyphtrix-webcam-recording.webm`;
+                }
+            }, 100);
+            
+            // Reset recording state
+            isRecordingWebcam = false;
+            recordedChunks = [];
+            mediaRecorder = null;
+            
+            // Re-enable record button
+            if (recordWebcamButton) recordWebcamButton.disabled = false;
+        };
+        
+        // Start recording
+        mediaRecorder.start();
+        
+        // Countdown timer
+        let timeLeft = duration;
+        
+        const countdownInterval = setInterval(() => {
+            timeLeft--;
+            if (recordingTimer) {
+                recordingTimer.textContent = `${timeLeft}s`;
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                
+                // Stop recording
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error recording webcam:', error);
+        alert('Failed to record webcam: ' + error.message);
+        
+        isRecordingWebcam = false;
+        if (recordingOverlay) recordingOverlay.style.display = 'none';
+        if (recordWebcamButton) recordWebcamButton.disabled = false;
+        if (recordingText) recordingText.textContent = 'Recording...';
+        if (recordingTimer) recordingTimer.textContent = '10s';
+    }
+}
+
 function hideExampleButtons() {
     const exampleButtonsContainer = document.getElementById('exampleButtonsContainer');
     if (exampleButtonsContainer) {
@@ -2396,15 +2730,27 @@ function closeFpsModal() {
     document.getElementById('fpsModal').style.display = 'none';
 }
 
+function openRecordingDurationModal() {
+    document.getElementById('recordingDurationModal').style.display = 'flex';
+}
+
+function closeRecordingDurationModal() {
+    document.getElementById('recordingDurationModal').style.display = 'none';
+}
+
 // Close modal
 document.addEventListener('click', function(event) {
     const infoModal = document.getElementById('infoModal');
     const fpsModal = document.getElementById('fpsModal');
+    const recordingDurationModal = document.getElementById('recordingDurationModal');
     if (event.target === infoModal) {
         closeInfoModal();
     }
     if (event.target === fpsModal) {
         closeFpsModal();
+    }
+    if (event.target === recordingDurationModal) {
+        closeRecordingDurationModal();
     }
 });
 
@@ -2412,6 +2758,7 @@ document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeInfoModal();
         closeFpsModal();
+        closeRecordingDurationModal();
     }
 });
 

@@ -51,8 +51,11 @@
           <span id="uploadText">
             Upload an image or video
             <div class="example-buttons-container" id="exampleButtonsContainer">
-              <button class="btn-base btn-action" onclick="document.getElementById('imageUpload').click()">
-                <i class="ri-upload-2-fill"></i> Select file
+              <button class="btn-base btn-action upload-main-button" onclick="document.getElementById('imageUpload').click()">
+                <i class="ri-upload-2-fill"></i>Select File
+              </button>
+              <button class="btn-base btn-action upload-main-button" id="webcamButton" onclick="toggleWebcam()">
+                <i class="ri-webcam-line"></i>Use Webcam
               </button>
               <div style="display: flex; gap: 10px; width: 100%;">
                 <button class="btn-base btn-action" onclick="loadExampleImage()">
@@ -67,6 +70,13 @@
         </div>
         <canvas id="inputCanvas" class="imageCanvas"></canvas>
         <video id="inputVideo" class="imageCanvas" playsinline loop muted controls></video>
+        <div id="recordingOverlay" style="display: none;">
+          <div class="recording-content">
+            <div class="recording-icon">●</div>
+            <p id="recordingText">Recording...</p>
+            <p id="recordingTimer">10s</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -116,7 +126,7 @@
         <h3>Features</h3>
         <ul>
           <li>Example files and presets to get started</li>
-          <li>Image & video support</li>
+          <li>Image, video & webcam support</li>
           <li>Extensive customization, full Unicode support</li>
           <li>Real-time processing & preview</li>
           <li>Export as image, text or animated PNG sequence</li>
@@ -148,6 +158,42 @@
         <div class="fps-options-grid" id="fpsOptionsGrid">
         </div>
         <div class="video-metadata" id="videoMetadata"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recording Duration Modal -->
+  <div id="recordingDurationModal" class="info-modal" style="display: none;">
+    <div class="info-modal-content">
+      <div class="info-modal-header">
+        <h2>Record Webcam</h2>
+        <button class="info-modal-close" onclick="closeRecordingDurationModal()">&times;</button>
+      </div>
+      <div class="info-modal-body">
+        <p style="margin-bottom: 15px; font-weight: bold;">
+          Select recording duration below
+        </p>
+        <div class="fps-options-grid" id="recordingDurationGrid">
+          <button class="fps-option-button" onclick="startRecordingWithDuration(5)">
+            <span class="fps-number">5s</span>
+            <span class="fps-description">.mov</span>
+          </button>
+          <button class="fps-option-button" onclick="startRecordingWithDuration(10)">
+            <span class="fps-number">10s</span>
+            <span class="fps-description">.mov</span>
+          </button>
+          <button class="fps-option-button" onclick="startRecordingWithDuration(30)">
+            <span class="fps-number">30s</span>
+            <span class="fps-description">.mov</span>
+          </button>
+          <button class="fps-option-button" onclick="startRecordingWithDuration(60)">
+            <span class="fps-number">60s</span>
+            <span class="fps-description">.mov</span>
+          </button>
+        </div>
+        <p style="margin-top: 20px; line-height: 1.6; font-size: 0.9em;">
+          The recording will capture your <strong>webcam input</strong> (not the ASCII output) and save it temporarily in your browser's memory for privacy. After recording, you can fine-tune all settings on the captured video.
+        </p>
       </div>
     </div>
   </div>
@@ -373,6 +419,9 @@
         </button>
         <button class="btn-base btn-action download-button" onclick="openFpsModal()" id="downloadPngSequenceButton" style="display: none;">
             <i class="ri-download-2-line"></i> Download Sequence
+        </button>
+        <button class="btn-base btn-action download-button" onclick="recordWebcam()" id="recordWebcamButton" style="display: none;">
+            <i class="ri-record-circle-line"></i> Record Webcam
         </button>
         <button class="btn-base btn-action download-button" onclick="openInfoModal()" id="openInfoButton">
             <i class="ri-information-line"></i> About Glyphtrix

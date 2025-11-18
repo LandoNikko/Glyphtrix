@@ -259,6 +259,57 @@ body {
     background-color: var(--hover-red-dark);
 }
 
+/* Recording Overlay */
+#recordingOverlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 15px 20px;
+    border-radius: 8px;
+    z-index: 15;
+    pointer-events: none;
+}
+
+.recording-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.recording-icon {
+    color: #ff0000;
+    font-size: 1.5em;
+    animation: recording-pulse 1.5s ease-in-out infinite;
+}
+
+#recordingText {
+    color: var(--primary-text);
+    font-size: 1em;
+    margin: 0;
+    font-weight: bold;
+}
+
+#recordingTimer {
+    color: var(--primary-text);
+    font-size: 1.2em;
+    margin: 0;
+    font-weight: bold;
+}
+
+@keyframes recording-pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+    }
+}
+
 
 /* ============================================================================
    7. UPLOAD COMPONENTS
@@ -308,7 +359,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 60px;
   justify-content: center;
   width: 100%;
 }
@@ -318,6 +369,11 @@ body {
   justify-content: center;
   padding: 15px;
   font-size: 0.9em;
+}
+
+.upload-main-button {
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 /* Condensed Upload Zone */
@@ -653,20 +709,20 @@ input[type="range"]:hover {
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; 
     appearance: none; 
-    width: 16px; 
-    height: 16px;
+    width: 4px; 
+    height: 20px;
     background: var(--primary-text); 
     cursor: pointer; 
-    border-radius: 50%; 
+    border-radius: 2px; 
     border: 1px solid var(--primary-bg);
 }
 
 input[type="range"]::-moz-range-thumb {
-    width: 16px; 
-    height: 16px; 
+    width: 4px; 
+    height: 20px; 
     background: var(--primary-text); 
     cursor: pointer;
-    border-radius: 50%; 
+    border-radius: 2px; 
     border: 1px solid var(--primary-bg);
 }
 
@@ -1555,13 +1611,13 @@ input[type="range"]::-moz-range-thumb {
   }
 
   input[type="range"]::-webkit-slider-thumb {
-      width: 20px; 
-      height: 20px;
+      width: 6px; 
+      height: 24px;
   }
 
   input[type="range"]::-moz-range-thumb {
-      width: 20px; 
-      height: 20px;
+      width: 6px; 
+      height: 24px;
   }
 
   .slider-container {
