@@ -16,7 +16,7 @@
    11. MODALS
    12. MOBILE COMPONENTS
    13. BRANDING
-   14. RESPONSIVE DESIGN - TABLET (769px - 1600px)
+   14. RESPONSIVE DESIGN - TABLET (769px - 2000px)
    15. RESPONSIVE DESIGN - MOBILE (max 768px)
    16. RESPONSIVE DESIGN - LARGE SCREENS
    17. ANIMATIONS
@@ -1061,10 +1061,10 @@ input[type="range"]::-moz-range-thumb {
 
 
 /* ============================================================================
-   14. RESPONSIVE DESIGN - TABLET (769px - 1600px)
+   14. RESPONSIVE DESIGN - TABLET (769px - 2000px)
    ============================================================================ */
 
-@media (min-width: 769px) and (max-width: 1600px) {
+@media (min-width: 769px) and (max-width: 2000px) {
   body {
     flex-direction: row;
   }
@@ -1073,7 +1073,6 @@ input[type="range"]::-moz-range-thumb {
     flex-direction: column;
     margin-left: 400px;
     width: calc(100% - 400px);
-    height: 100vh;
     display: flex;
   }
   
@@ -1124,15 +1123,17 @@ input[type="range"]::-moz-range-thumb {
     border-right: 2px solid var(--border-primary);
     z-index: 100;
     background-color: var(--primary-bg);
+    justify-content: flex-start;
   }
   
   .settings-panel-section-content {
     flex: none;
-    min-height: auto;
+    min-height: min-content;
     border-right: none;
     border-left: none;
     border-bottom: 1px solid var(--border-primary);
     padding: 15px;
+    overflow-y: visible;
   }
   
   .settings-title-section {
@@ -1140,10 +1141,19 @@ input[type="range"]::-moz-range-thumb {
   }
 
   
-  .upload-panel-content,
+  .upload-panel-content {
+    border-right: none;
+    border-left: none;
+    flex-grow: 0;
+    min-height: fit-content;
+    align-items: center;
+    overflow: visible;
+  }
+
   .download-panel-content {
     border-right: none;
     border-left: none;
+    flex-grow: 0;
   }
 
 
@@ -1662,7 +1672,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* Short Screen Adjustments */
-@media (max-height: 800px) and (min-width: 1601px) {
+@media (max-height: 800px) and (min-width: 2001px) {
   .imageCanvas, #inputVideo {
     min-height: 300px !important;
     max-height: calc(100vh - 350px) !important;
@@ -1685,7 +1695,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* Extra Large Screens */
-@media (min-width: 1601px) {
+@media (min-width: 2001px) {
   .mobile-preview-panel,
   .sticky-spacer {
     display: none !important;

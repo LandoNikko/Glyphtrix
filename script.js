@@ -2764,8 +2764,8 @@ document.addEventListener('keydown', function(event) {
 
 function layoutPanels() {
     const isMobile = window.innerWidth <= 768;
-    const isMediumScreen = window.innerWidth >= 769 && window.innerWidth <= 1600;
-    const isDesktop = window.innerWidth >= 1601;
+    const isMediumScreen = window.innerWidth >= 769 && window.innerWidth <= 2000;
+    const isDesktop = window.innerWidth >= 2001;
     
     desktopSettingsPanelContainer.style.display = isMobile ? 'none' : 'flex';
     mobileUploadPanelPlaceholder.style.display = isMobile ? 'flex' : 'none';
