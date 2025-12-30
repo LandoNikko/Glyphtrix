@@ -1719,6 +1719,121 @@ input[type="range"]::-moz-range-thumb {
 
 
 /* ============================================================================
+   16. FULLSCREEN MODE
+   ============================================================================ */
+
+.output-column:fullscreen {
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.output-column:fullscreen .column-header {
+  display: none;
+}
+
+.output-column:fullscreen #outputCanvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.output-column:fullscreen #sequenceLoadingOverlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+/* Webkit/Blink fullscreen pseudo-class */
+.output-column:-webkit-full-screen {
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.output-column:-webkit-full-screen .column-header {
+  display: none;
+}
+
+.output-column:-webkit-full-screen #outputCanvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.output-column:-webkit-full-screen #sequenceLoadingOverlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+/* Mozilla fullscreen pseudo-class */
+.output-column:-moz-full-screen {
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.output-column:-moz-full-screen .column-header {
+  display: none;
+}
+
+.output-column:-moz-full-screen #outputCanvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.output-column:-moz-full-screen #sequenceLoadingOverlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+/* Microsoft fullscreen pseudo-class */
+.output-column:-ms-fullscreen {
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.output-column:-ms-fullscreen .column-header {
+  display: none;
+}
+
+.output-column:-ms-fullscreen #outputCanvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.output-column:-ms-fullscreen #sequenceLoadingOverlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+/* ============================================================================
    17. ANIMATIONS
    ============================================================================ */
 

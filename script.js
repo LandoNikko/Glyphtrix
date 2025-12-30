@@ -142,6 +142,7 @@ const downloadPngButton = document.getElementById('downloadPngButton');
 const downloadTextButton = document.getElementById('downloadTextButton');
 const downloadPngSequenceButton = document.getElementById('downloadPngSequenceButton');
 const recordWebcamButton = document.getElementById('recordWebcamButton');
+const fullscreenButton = document.getElementById('fullscreenButton');
 const recordingOverlay = document.getElementById('recordingOverlay');
 const recordingTimer = document.getElementById('recordingTimer');
 const recordingText = document.getElementById('recordingText');
@@ -669,6 +670,7 @@ function setDownloadButtonsState(disabled) {
     openNewTabButton.disabled = disabled;
     downloadPngButton.disabled = disabled;
     downloadTextButton.disabled = disabled;
+    fullscreenButton.disabled = disabled;
 }
 
 function getFailsafeDensity(width) {
@@ -1477,7 +1479,8 @@ async function processImageWithCurrentSettings() {
     loadingSpinner.style.display = 'none';
     if (mobileLoadingSpinner) mobileLoadingSpinner.style.display = 'none';
     setDownloadButtonsState(false);
-    
+    updateFullscreenButton();
+
     if (window.innerWidth <= 768 && mobilePreviewActive) {
         debouncedUpdateMobilePreview();
     }
@@ -2075,6 +2078,65 @@ function downloadText() {
        }
    }, 'image/png');
    }
+
+   function toggleFullscreen() {
+       const outputColumn = document.getElementById('outputColumn');
+
+       if (!document.fullscreenElement) {
+           // Enter fullscreen
+           if (outputColumn.requestFullscreen) {
+               outputColumn.requestFullscreen();
+           } else if (outputColumn.webkitRequestFullscreen) {
+               outputColumn.webkitRequestFullscreen();
+           } else if (outputColumn.msRequestFullscreen) {
+               outputColumn.msRequestFullscreen();
+           }
+       } else {
+           // Exit fullscreen
+           if (document.exitFullscreen) {
+               document.exitFullscreen();
+           } else if (document.webkitExitFullscreen) {
+               document.webkitExitFullscreen();
+           } else if (document.msExitFullscreen) {
+               document.msExitFullscreen();
+           }
+       }
+   }
+
+   function updateFullscreenButton() {
+       const fullscreenButton = document.getElementById('fullscreenButton');
+       const icon = fullscreenButton.querySelector('i');
+
+       if (document.fullscreenElement) {
+           // Show exit button and add click-anywhere-to-exit
+           icon.className = 'ri-fullscreen-exit-line';
+           fullscreenButton.innerHTML = '<i class="ri-fullscreen-exit-line"></i> Exit Fullscreen';
+           fullscreenButton.disabled = false;
+           document.addEventListener('click', exitFullscreenOnClick, true);
+       } else {
+           // Show enter button and enable/disable based on content
+           icon.className = 'ri-fullscreen-line';
+           fullscreenButton.innerHTML = '<i class="ri-fullscreen-line"></i> Fullscreen';
+           fullscreenButton.disabled = !outputCanvas || !currentBlobMatrix || currentBlobMatrix.length === 0;
+           document.removeEventListener('click', exitFullscreenOnClick, true);
+       }
+   }
+
+   function exitFullscreenOnClick(event) {
+       if (document.fullscreenElement) {
+           event.stopPropagation();
+           event.preventDefault();
+
+           if (document.exitFullscreen) {
+               document.exitFullscreen();
+           } else if (document.webkitExitFullscreen) {
+               document.webkitExitFullscreen();
+           } else if (document.msExitFullscreen) {
+               document.msExitFullscreen();
+           }
+       }
+   }
+
    function openGitHub() {
     window.open('https://github.com/LandoNikko/Glyphtrix', '_blank');
 }
@@ -2554,7 +2616,8 @@ function resetUploadState() {
     currentMediaElement = null;
     originalPixelData = null;
     currentBlobMatrix = null;
-    
+    updateFullscreenButton();
+
     inputVideo.style.display = 'none';
     inputVideo.pause();
     inputVideo.src = "";
@@ -2759,6 +2822,17 @@ document.addEventListener('keydown', function(event) {
         closeInfoModal();
         closeFpsModal();
         closeRecordingDurationModal();
+
+        // Exit fullscreen if active
+        if (document.fullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
     }
 });
 
@@ -3184,7 +3258,13 @@ document.addEventListener('DOMContentLoaded', () => {
             saveActionToHistory();
         });
     }
-    
+
+    // Fullscreen event listeners
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+    document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+    document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+
     updateUndoRedoButtons();
     
     setTimeout(() => {
