@@ -364,7 +364,11 @@ function restoreSettingsFromSnapshot(snapshot) {
         chromaRemovalToggle.checked = settings.chromaRemoval;
         outputGlowSlider.value = settings.outputGlow !== undefined ? settings.outputGlow : 0;
         outputGlowValueDisplay.textContent = toGlowDisplayValue(outputGlowSlider.value);
-        previewChangesToggle.checked = settings.previewChanges !== undefined ? settings.previewChanges : true;
+        if (settings.previewChanges !== undefined) {
+            previewChangesToggle.checked = settings.previewChanges;
+        }
+        const isMobile = window.innerWidth <= 768;
+        isPreviewChangesActive = !isMobile && previewChangesToggle.checked;
         
 
         if (settings.customText) customTextColor.value = settings.customText;
@@ -383,7 +387,6 @@ function restoreSettingsFromSnapshot(snapshot) {
         isChromaRemovalActive = settings.chromaRemoval;
         isInvertColorsActive = settings.invert;
         currentOutputGlow = parseInt(outputGlowSlider.value);
-        isPreviewChangesActive = settings.previewChanges !== undefined ? settings.previewChanges : true;
         
         customCharsContainer.style.display = 'flex';
         if (characterSetSelect.value === 'custom') {
@@ -1593,7 +1596,7 @@ function handleImageUpload(file) {
                 
                 previewChangesToggle.checked = false;
                 isPreviewChangesActive = false;
-                previewChangesToggle.disabled = true;
+                previewChangesToggle.disabled = false;
                 currentDensity = parseInt(densityInput.value);
 
                 if(chromaRemovalContainer) chromaRemovalContainer.style.display = 'flex';
@@ -1607,14 +1610,8 @@ function handleImageUpload(file) {
                 
                 initializeHistoryForNewFile();
                 
-                previewChangesToggle.disabled = true;
-                
                 if (inputVideo.duration > 1) {
                     inputVideo.currentTime = 1;
-                }
-                
-                if (inputVideo.paused) {
-                    previewChangesToggle.disabled = false;
                 }
                 
                 if (window.innerWidth <= 768 && mobilePreviewActive) {
@@ -1626,16 +1623,9 @@ function handleImageUpload(file) {
                 inputVideo.onplay = () => {
                     clearCachedSequence();
                     stopVideoProcessingLoop();
-                    if (previewChangesToggle.checked) {
-                        previewChangesToggle.checked = false;
-                        isPreviewChangesActive = false;
-                        updateInputCanvasPreview();
-                    }
-                    previewChangesToggle.disabled = true;
                     videoProcessLoopId = requestAnimationFrame(processCurrentFrame);
                 };
                 inputVideo.onpause = () => {
-                    previewChangesToggle.disabled = false;
                     processImageWithCurrentSettings();
                 };
                 inputVideo.onended = () => stopVideoProcessingLoop();
@@ -1804,9 +1794,6 @@ function addSettingsChangeListener(element, eventType = 'input') {
         if (element === previewChangesToggle) {
             const isMobile = window.innerWidth <= 768;
             isPreviewChangesActive = !isMobile && element.checked;
-            if (isVideoInput && element.checked && !inputVideo.paused && !isMobile) {
-                inputVideo.pause();
-            }
             updateInputCanvasPreview();
         } else {
             if (element === contrastSlider) contrastValueDisplay.textContent = element.value;
