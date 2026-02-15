@@ -127,6 +127,7 @@ const customColorsContainer = document.getElementById('customColorsContainer');
 const customTextColor = document.getElementById('customTextColor');
 const customBackgroundColor = document.getElementById('customBackgroundColor');
 const transparentBgToggle = document.getElementById('transparentBgToggle');
+const transparentBgGrid = document.getElementById('transparentBgGrid');
 const charSpacingSlider = document.getElementById('charSpacingSlider');
 const charSpacingValueDisplay = document.getElementById('charSpacingValueDisplay');
 const randomSpacingToggle = document.getElementById('randomSpacingToggle');
@@ -375,11 +376,7 @@ function restoreSettingsFromSnapshot(snapshot) {
         if (settings.customBackground) customBackgroundColor.value = settings.customBackground;
         
         isBgColorTransparent = settings.transparentBg || false;
-        transparentBgToggle.className = isBgColorTransparent ? 'btn-base ri-eye-off-line' : 'btn-base ri-eye-line';
-        transparentBgToggle.style.opacity = '0.6';
-        transparentBgToggle.title = isBgColorTransparent ? 'Disable transparent background' : 'Enable transparent background';
-        customBackgroundColor.disabled = isBgColorTransparent;
-        customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
+        updateTransparentBgUI();
         
         charSpacingSlider.value = settings.charSpacing || 0;
         charSpacingValueDisplay.textContent = settings.charSpacing || 0;
@@ -705,11 +702,7 @@ function setDefaultValues(contentWidth = null) {
     invertColorsToggle.checked = false;
     outputGlowSlider.value = 0; outputGlowValueDisplay.textContent = '0';
     isBgColorTransparent = false;
-    transparentBgToggle.className = 'btn-base ri-eye-line';
-    transparentBgToggle.style.opacity = '0.6';
-    transparentBgToggle.title = 'Enable transparent background';
-    customBackgroundColor.disabled = false;
-    customBackgroundColor.style.opacity = '1';
+    updateTransparentBgUI();
     charSpacingSlider.value = 0;
     charSpacingValueDisplay.textContent = '0';
     previewChangesToggle.checked = true;
@@ -720,6 +713,7 @@ function setDefaultValues(contentWidth = null) {
     densityInput.value = failsafeDensity;
     scaleFactorInput.value = 1.0;
     colorSchemeSelect.value = 'color1';
+    syncCustomColorsWithPreset('color1');
     fontSelect.selectedIndex = 0;
     characterSetSelect.value = 'binary';
     customCharsInput.value = '0,1';
@@ -890,19 +884,7 @@ function getCharacterDisplayColor(level, scheme, rowIndex = 0, totalRows = 1) {
                         case 'color1': return `rgb(0, ${value}, 0)`;
     case 'color2': return `rgb(${value}, ${value}, ${value})`;
     case 'color3': {
-        const textColor = {r: 17, g: 251, b: 254};
-        const bgColor = hexToRgb(customBackgroundColor.value);
-        if (value === 0) return `rgb(${bgColor.r}, ${bgColor.g}, ${bgColor.b})`;
-        return `rgb(${bgColor.r + Math.round((textColor.r - bgColor.r) * value / 255)}, ${bgColor.g + Math.round((textColor.g - bgColor.g) * value / 255)}, ${bgColor.b + Math.round((textColor.b - bgColor.b) * value / 255)})`;
-    }
-    case 'color4': {
-        const textColor = {r: 79, g: 225, b: 152};
-        const bgColor = hexToRgb(customBackgroundColor.value);
-        if (value === 0) return `rgb(${bgColor.r}, ${bgColor.g}, ${bgColor.b})`;
-        return `rgb(${bgColor.r + Math.round((textColor.r - bgColor.r) * value / 255)}, ${bgColor.g + Math.round((textColor.g - bgColor.g) * value / 255)}, ${bgColor.b + Math.round((textColor.b - bgColor.b) * value / 255)})`;
-    }
-    case 'color5': {
-        const textColor = {r: 255, g: 107, b: 53};
+        const textColor = {r: 20, g: 238, b: 94};
         const bgColor = hexToRgb(customBackgroundColor.value);
         if (value === 0) return `rgb(${bgColor.r}, ${bgColor.g}, ${bgColor.b})`;
         return `rgb(${bgColor.r + Math.round((textColor.r - bgColor.r) * value / 255)}, ${bgColor.g + Math.round((textColor.g - bgColor.g) * value / 255)}, ${bgColor.b + Math.round((textColor.b - bgColor.b) * value / 255)})`;
@@ -938,6 +920,20 @@ function hexToRgb(hex) {
 function toGlowDisplayValue(rawValue) {
     return Math.round(rawValue / 2);
 }
+
+function updateTransparentBgUI() {
+    const transparent = isBgColorTransparent;
+    transparentBgToggle.className = transparent ? 'btn-base ri-eye-off-line' : 'btn-base ri-eye-line';
+    transparentBgToggle.title = transparent ? 'Transparent background (click to use color)' : 'Enable transparent background';
+    customBackgroundColor.disabled = transparent;
+    if (transparentBgGrid) {
+        transparentBgGrid.style.display = transparent ? 'grid' : 'none';
+        customBackgroundColor.style.display = transparent ? 'none' : '';
+    } else {
+        customBackgroundColor.style.opacity = transparent ? '0.3' : '1';
+    }
+}
+
 function syncCustomColorsWithPreset(scheme) {
     const customTextColor = document.getElementById('customTextColor');
     const customBackgroundColor = document.getElementById('customBackgroundColor');
@@ -954,16 +950,8 @@ function syncCustomColorsWithPreset(scheme) {
             customBackgroundColor.value = '#000000';
             break;
         case 'color3':
-            customTextColor.value = '#11fbfe';
-            customBackgroundColor.value = '#14391d';
-            break;
-        case 'color4':
-            customTextColor.value = '#4fe198';
-            customBackgroundColor.value = '#19062a';
-            break;
-        case 'color5':
-            customTextColor.value = '#ff6b35';
-            customBackgroundColor.value = '#0a0a0a';
+            customTextColor.value = '#14ee5e';
+            customBackgroundColor.value = '#c80a60';
             break;
         case 'custom':
             if (window.savedCustomColors) {
@@ -971,16 +959,33 @@ function syncCustomColorsWithPreset(scheme) {
                 customBackgroundColor.value = window.savedCustomColors.background || '#000000';
             }
             break;
+        case 'source':
+            break;
         default:
             customTextColor.value = '#00FF00';
             customBackgroundColor.value = '#000000';
+    }
+    if (customColorsContainer) {
+        const isSource = scheme === 'source';
+        customColorsContainer.style.pointerEvents = isSource ? 'none' : '';
+        customColorsContainer.style.opacity = isSource ? '0.5' : '';
+        customColorsContainer.querySelectorAll('input, button').forEach(el => { el.disabled = isSource; });
+    }
+    const isSource = scheme === 'source';
+    if (levelsSlider) {
+        levelsSlider.disabled = isSource;
+        const grayscaleValuesContainer = levelsSlider.closest('.slider-container');
+        if (grayscaleValuesContainer) {
+            grayscaleValuesContainer.style.pointerEvents = isSource ? 'none' : '';
+            grayscaleValuesContainer.style.opacity = isSource ? '0.5' : '';
+        }
     }
 }
 
 function getCanvasBackgroundColor(scheme) {
     switch (scheme) {
-        case 'color1': case 'color2': return getComputedStyle(document.documentElement).getPropertyValue('--primary-bg');
-        case 'color3': case 'color4': case 'color5': case 'custom': 
+        case 'source': case 'color1': case 'color2': return getComputedStyle(document.documentElement).getPropertyValue('--primary-bg');
+        case 'color3': case 'custom': 
             return isBgColorTransparent ? 'transparent' : customBackgroundColor.value;
         default: return getComputedStyle(document.documentElement).getPropertyValue('--primary-bg');
     }
@@ -1159,7 +1164,8 @@ function generateBlobMatrix(pixelDataToProcess, originalWidth, originalHeight, l
                     const diff = Math.abs(grayscale - levelsArray[j] * 255);
                     if (diff < minDiff) { minDiff = diff; closestLevelValue = levelsArray[j]; }
                 }
-                let char = ' '; let color = getCharacterDisplayColor(0, colorScheme); let shouldDrawChar = false;
+                const cellColorSource = colorScheme === 'source' ? `rgb(${Math.round(avgR)}, ${Math.round(avgG)}, ${Math.round(avgB)})` : null;
+                let char = ' '; let color = cellColorSource !== null ? cellColorSource : getCharacterDisplayColor(0, colorScheme); let shouldDrawChar = false;
                 if (colorScheme === 'blackOnWhite') {
                     shouldDrawChar = closestLevelValue < 1 || (levelsArray.length === 1 && levelsArray[0] === 1 && grayscale > 128);
                 } else {
@@ -1214,7 +1220,7 @@ function generateBlobMatrix(pixelDataToProcess, originalWidth, originalHeight, l
                     } else {
                         char = getRandomCharacterForLevel(closestLevelValue, charSet);
                     }
-                    color = getCharacterDisplayColor(closestLevelValue, colorScheme, currentColIndex, effectiveCols);
+                    if (cellColorSource === null) color = getCharacterDisplayColor(closestLevelValue, colorScheme, currentColIndex, effectiveCols);
                 }
                 blobMatrix[rowIndex].push({char: char, color: color});
             }
@@ -1258,7 +1264,8 @@ function generateBlobMatrix(pixelDataToProcess, originalWidth, originalHeight, l
                     const diff = Math.abs(grayscale - levelsArray[j] * 255);
                     if (diff < minDiff) { minDiff = diff; closestLevelValue = levelsArray[j]; }
                 }
-                let char = ' '; let color = getCharacterDisplayColor(0, colorScheme); let shouldDrawChar = false;
+                const cellColorSource = colorScheme === 'source' ? `rgb(${Math.round(avgR)}, ${Math.round(avgG)}, ${Math.round(avgB)})` : null;
+                let char = ' '; let color = cellColorSource !== null ? cellColorSource : getCharacterDisplayColor(0, colorScheme); let shouldDrawChar = false;
                 if (colorScheme === 'blackOnWhite') {
                     shouldDrawChar = closestLevelValue < 1 || (levelsArray.length === 1 && levelsArray[0] === 1 && grayscale > 128);
                 } else {
@@ -1313,7 +1320,7 @@ function generateBlobMatrix(pixelDataToProcess, originalWidth, originalHeight, l
                     } else {
                         char = getRandomCharacterForLevel(closestLevelValue, charSet);
                     }
-                    color = getCharacterDisplayColor(closestLevelValue, colorScheme, currentRowIndex, totalRows);
+                    if (cellColorSource === null) color = getCharacterDisplayColor(closestLevelValue, colorScheme, currentRowIndex, totalRows);
                 }
                 blobRow.push({char: char, color: color});
             }
@@ -1934,11 +1941,7 @@ randomSpacingToggle.addEventListener('click', () => {
 
 transparentBgToggle.addEventListener('click', () => {
     isBgColorTransparent = !isBgColorTransparent;
-    transparentBgToggle.className = isBgColorTransparent ? 'btn-base ri-eye-off-line' : 'btn-base ri-eye-line';
-    transparentBgToggle.style.opacity = '0.6';
-    transparentBgToggle.title = isBgColorTransparent ? 'Disable transparent background' : 'Enable transparent background';
-    customBackgroundColor.disabled = isBgColorTransparent;
-    customBackgroundColor.style.opacity = isBgColorTransparent ? '0.3' : '1';
+    updateTransparentBgUI();
     
     if (colorSchemeSelect.value !== 'custom') {
         colorSchemeSelect.value = 'custom';
@@ -3361,9 +3364,11 @@ function randomizeCustomColors() {
     const wasFileJustLoaded = isFileJustLoaded;
     isFileJustLoaded = true;
 
-    if (colorSchemeSelect) colorSchemeSelect.value = 'custom';
-
-    if (customTextColor && customBackgroundColor) {
+    if (colorSchemeSelect) {
+        colorSchemeSelect.selectedIndex = Math.floor(Math.random() * colorSchemeSelect.options.length);
+        syncCustomColorsWithPreset(colorSchemeSelect.value);
+    }
+    if (colorSchemeSelect && colorSchemeSelect.value === 'custom' && customTextColor && customBackgroundColor) {
         const newTextColor = getRandomColor();
         const newBackgroundColor = getRandomColor();
         customTextColor.value = newTextColor;
@@ -3426,13 +3431,15 @@ function randomizeGlyphSettings() {
     
     const colorSchemeSelect = document.getElementById('colorSchemeSelect');
     if (colorSchemeSelect) {
-        colorSchemeSelect.value = 'custom';
-        
-        const customTextColor = document.getElementById('customTextColor');
-        const customBackgroundColor = document.getElementById('customBackgroundColor');
-        if (customTextColor && customBackgroundColor) {
-            customTextColor.value = getRandomColor();
-            customBackgroundColor.value = getRandomColor();
+        colorSchemeSelect.selectedIndex = getRandomIndex(colorSchemeSelect.options.length);
+        syncCustomColorsWithPreset(colorSchemeSelect.value);
+        if (colorSchemeSelect.value === 'custom') {
+            const customTextColor = document.getElementById('customTextColor');
+            const customBackgroundColor = document.getElementById('customBackgroundColor');
+            if (customTextColor && customBackgroundColor) {
+                customTextColor.value = getRandomColor();
+                customBackgroundColor.value = getRandomColor();
+            }
         }
     }
     

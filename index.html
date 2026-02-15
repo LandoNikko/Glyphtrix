@@ -343,11 +343,10 @@
                     <div class="select-group">
                         <button class="btn-base" id="prevColorSchemeButton"><</button>
                         <select id="colorSchemeSelect">
+                            <option value="source">Source</option>
                             <option value="color1">Color 1</option>
                             <option value="color2">Color 2</option>
                             <option value="color3">Color 3</option>
-                            <option value="color4">Color 4</option>
-                            <option value="color5">Color 5</option>
                             <option value="custom">Color Custom</option>
                         </select>
                         <button class="btn-base" id="nextColorSchemeButton">></button>
@@ -357,8 +356,14 @@
                 <div class="control-container control-group" id="customColorsContainer">
                     <div style="display: flex; align-items: center; margin-top: 5px;">
                         <input type="color" id="customTextColor" value="#00FF00" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); background: none; margin-right: 8px;">
-                        <input type="color" id="customBackgroundColor" value="#000000" style="width: 40px; height: 28px; padding: 0; border: 1px solid var(--border-primary); border-right: none; background: none;">
-                        <button class="btn-base ri-eye-line" id="transparentBgToggle" style="height: 28px; padding: 0 5px; font-size: 0.8em; opacity: 0.6; min-height: auto;" title="Enable transparent background"></button>
+                        <span id="customBgColorWrapper" style="position: relative; display: inline-flex; align-items: stretch; justify-content: stretch; width: 40px; height: 28px; border: 1px solid var(--border-primary); border-right: none; box-sizing: border-box; overflow: hidden;">
+                            <input type="color" id="customBackgroundColor" value="#000000" style="width: 100%; height: 100%; padding: 0; border: none; background: none; cursor: pointer;">
+                            <div id="transparentBgGrid" style="display: none; position: absolute; inset: 0; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; padding: 2px; box-sizing: border-box; background: var(--border-primary);" title="Transparent background">
+                                <span style="background: #cccccc;"></span><span style="background: #ffffff;"></span><span style="background: #cccccc;"></span>
+                                <span style="background: #ffffff;"></span><span style="background: #cccccc;"></span><span style="background: #ffffff;"></span>
+                            </div>
+                        </span>
+                        <button class="btn-base ri-eye-line" id="transparentBgToggle" style="height: 28px; padding: 0 5px; font-size: 0.8em; opacity: 0.6; min-height: auto;" title="Toggle transparent background"></button>
                     </div>
                 </div>
                 <div class="slider-container control-group">
