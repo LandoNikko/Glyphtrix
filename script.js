@@ -131,8 +131,8 @@ const transparentBgGrid = document.getElementById('transparentBgGrid');
 const charSpacingSlider = document.getElementById('charSpacingSlider');
 const charSpacingValueDisplay = document.getElementById('charSpacingValueDisplay');
 const randomSpacingToggle = document.getElementById('randomSpacingToggle');
-const outputGlowSlider = document.getElementById('outputGlowSlider');
-const outputGlowValueDisplay = document.getElementById('outputGlowValueDisplay');
+const outputBloomSlider = document.getElementById('outputBloomSlider');
+const outputBloomValueDisplay = document.getElementById('outputBloomValueDisplay');
 
 let isBgColorTransparent = false;
 let currentCharSpacing = 0;
@@ -180,7 +180,7 @@ let isPreviewChangesActive = false;
 let isInvertColorsActive = false;
 let isChromaRemovalActive = false;
 let currentBackgroundTolerance = 10;
-let currentOutputGlow = 0;
+let currentOutputBloom = 0;
 let isVideoInput = false;
 let videoProcessLoopId = null;
 
@@ -249,7 +249,7 @@ function getCurrentSettingsSnapshot(fps) {
         customChars: customCharsInput.value,
         invert: invertColorsToggle.checked,
         chromaRemoval: chromaRemovalToggle.checked,
-        outputGlow: outputGlowSlider.value,
+        outputBloom: outputBloomSlider.value,
         sequenceFps: fps,
 
         customText: customTextColor.value,
@@ -363,8 +363,8 @@ function restoreSettingsFromSnapshot(snapshot) {
         customCharsInput.value = settings.customChars;
         invertColorsToggle.checked = settings.invert;
         chromaRemovalToggle.checked = settings.chromaRemoval;
-        outputGlowSlider.value = settings.outputGlow !== undefined ? settings.outputGlow : 0;
-        outputGlowValueDisplay.textContent = toGlowDisplayValue(outputGlowSlider.value);
+        outputBloomSlider.value = settings.outputBloom !== undefined ? settings.outputBloom : 0;
+        outputBloomValueDisplay.textContent = toBloomDisplayValue(outputBloomSlider.value);
         if (settings.previewChanges !== undefined) {
             previewChangesToggle.checked = settings.previewChanges;
         }
@@ -383,7 +383,7 @@ function restoreSettingsFromSnapshot(snapshot) {
         
         isChromaRemovalActive = settings.chromaRemoval;
         isInvertColorsActive = settings.invert;
-        currentOutputGlow = parseInt(outputGlowSlider.value);
+        currentOutputBloom = parseInt(outputBloomSlider.value);
         
         customCharsContainer.style.display = 'flex';
         if (characterSetSelect.value === 'custom') {
@@ -441,7 +441,7 @@ function toggleSequenceRenderingUI(isRendering, message = "") {
         levelsSlider, brightnessSlider,
         shadowInputSlider, midtoneGammaSlider, highlightInputSlider,
         invertColorsToggle, previewChangesToggle,
-        outputGlowSlider,
+        outputBloomSlider,
         densityInput, densityDecrement, densityIncrement, fontSelect, prevFontButton, nextFontButton,
         characterSetSelect, prevCharSetButton, nextCharSetButton, customCharsInput,
         scaleFactorInput, scaleFactorDecrement, scaleFactorIncrement, colorSchemeSelect, prevColorSchemeButton, nextColorSchemeButton,
@@ -700,7 +700,7 @@ function setDefaultValues(contentWidth = null) {
     highlightInputSlider.value = 255; highlightInputValueDisplay.textContent = '255';
     chromaRemovalToggle.checked = false;
     invertColorsToggle.checked = false;
-    outputGlowSlider.value = 0; outputGlowValueDisplay.textContent = '0';
+    outputBloomSlider.value = 0; outputBloomValueDisplay.textContent = '0';
     isBgColorTransparent = false;
     updateTransparentBgUI();
     charSpacingSlider.value = 0;
@@ -734,7 +734,7 @@ function setDefaultValues(contentWidth = null) {
     isChromaRemovalActive = chromaRemovalToggle.checked;
     currentBackgroundTolerance = 10;
     isInvertColorsActive = invertColorsToggle.checked;
-    currentOutputGlow = parseInt(outputGlowSlider.value);
+    currentOutputBloom = parseInt(outputBloomSlider.value);
     isPreviewChangesActive = previewChangesToggle.checked;
     currentNumLevels = parseInt(levelsSlider.value);
     currentBrightness = parseInt(brightnessSlider.value);
@@ -917,7 +917,7 @@ function hexToRgb(hex) {
     } : {r: 0, g: 255, b: 0};
 }
 
-function toGlowDisplayValue(rawValue) {
+function toBloomDisplayValue(rawValue) {
     return Math.round(rawValue / 2);
 }
 
@@ -1390,15 +1390,15 @@ function drawTextOnCanvas(matrixToDraw, scaleFactor, colorScheme, fontFamily) {
                 currentY += charHeight;
             }
 
-            if (currentOutputGlow > 0) {
-                const glowCanvas = document.createElement('canvas');
-                glowCanvas.width = outputCanvas.width;
-                glowCanvas.height = outputCanvas.height;
-                const glowCtx = glowCanvas.getContext('2d');
-                glowCtx.clearRect(0, 0, glowCanvas.width, glowCanvas.height);
-                glowCtx.font = outputCtx.font;
-                glowCtx.textAlign = 'left';
-                glowCtx.textBaseline = 'top';
+            if (currentOutputBloom > 0) {
+                const bloomCanvas = document.createElement('canvas');
+                bloomCanvas.width = outputCanvas.width;
+                bloomCanvas.height = outputCanvas.height;
+                const bloomCtx = bloomCanvas.getContext('2d');
+                bloomCtx.clearRect(0, 0, bloomCanvas.width, bloomCanvas.height);
+                bloomCtx.font = outputCtx.font;
+                bloomCtx.textAlign = 'left';
+                bloomCtx.textBaseline = 'top';
 
                 currentY = 0;
                 for (let y = 0; y < numOutputRows; y++) {
@@ -1407,9 +1407,9 @@ function drawTextOnCanvas(matrixToDraw, scaleFactor, colorScheme, fontFamily) {
                         if (matrixToDraw[y] && matrixToDraw[y][x]) {
                             const cellColor = matrixToDraw[y][x].color;
                             if (cellColor !== 'rgba(0, 0, 0, 0)') {
-                                glowCtx.fillStyle = cellColor;
+                                bloomCtx.fillStyle = cellColor;
                                 const xOffset = isRandomSpacingActive ? (columnOffsets[x] || 0) : 0;
-                                glowCtx.fillText(matrixToDraw[y][x].char, currentX + xOffset, currentY);
+                                bloomCtx.fillText(matrixToDraw[y][x].char, currentX + xOffset, currentY);
                             }
                         }
                         currentX += cellWidth;
@@ -1417,17 +1417,17 @@ function drawTextOnCanvas(matrixToDraw, scaleFactor, colorScheme, fontFamily) {
                     currentY += charHeight;
                 }
 
-                const glowStrength = Math.max(0, Math.min(1, 0.2 + currentOutputGlow / 120));
-                const blurAmount = Math.max(4, Math.round(4 + currentOutputGlow * 0.25));
-                const passCount = Math.min(8, 2 + Math.floor(currentOutputGlow / 60));
+                const bloomStrength = Math.max(0, Math.min(1, 0.2 + currentOutputBloom / 120));
+                const blurAmount = Math.max(4, Math.round(4 + currentOutputBloom * 0.25));
+                const passCount = Math.min(8, 2 + Math.floor(currentOutputBloom / 60));
                 outputCtx.save();
                 outputCtx.globalCompositeOperation = 'lighter';
                 for (let i = 0; i < passCount; i++) {
-                    const passAlpha = Math.min(1, glowStrength * (1 + i * 0.35));
+                    const passAlpha = Math.min(1, bloomStrength * (1 + i * 0.35));
                     const passBlur = blurAmount * (1 + i * 0.9);
                     outputCtx.globalAlpha = passAlpha;
                     outputCtx.filter = `blur(${passBlur}px)`;
-                    outputCtx.drawImage(glowCanvas, 0, 0);
+                    outputCtx.drawImage(bloomCanvas, 0, 0);
                 }
                 outputCtx.restore();
             }
@@ -1462,7 +1462,7 @@ async function processImageWithCurrentSettings() {
     isChromaRemovalActive = chromaRemovalToggle.checked;
     currentBackgroundTolerance = 10;
     isInvertColorsActive = invertColorsToggle.checked;
-    currentOutputGlow = parseInt(outputGlowSlider.value);
+    currentOutputBloom = parseInt(outputBloomSlider.value);
     currentNumLevels = parseInt(levelsSlider.value);
     currentBrightness = parseInt(brightnessSlider.value);
     currentContrast = parseInt(contrastSlider.value);
@@ -1788,7 +1788,7 @@ function addMobileTouchHandling(slider) {
             else if (slider === shadowInputSlider) shadowInputValueDisplay.textContent = slider.value;
             else if (slider === midtoneGammaSlider) midtoneGammaValueDisplay.textContent = parseFloat(slider.value).toFixed(1);
             else if (slider === highlightInputSlider) highlightInputValueDisplay.textContent = slider.value;
-            else if (slider === outputGlowSlider) outputGlowValueDisplay.textContent = toGlowDisplayValue(slider.value);
+            else if (slider === outputBloomSlider) outputBloomValueDisplay.textContent = toBloomDisplayValue(slider.value);
         }
         isDragging = false;
         hasMovedHorizontally = false;
@@ -1809,7 +1809,7 @@ function addSettingsChangeListener(element, eventType = 'input') {
             else if (element === shadowInputSlider) shadowInputValueDisplay.textContent = element.value;
             else if (element === midtoneGammaSlider) midtoneGammaValueDisplay.textContent = parseFloat(element.value).toFixed(1);
             else if (element === highlightInputSlider) highlightInputValueDisplay.textContent = element.value;
-            else if (element === outputGlowSlider) outputGlowValueDisplay.textContent = toGlowDisplayValue(element.value);
+            else if (element === outputBloomSlider) outputBloomValueDisplay.textContent = toBloomDisplayValue(element.value);
             else if (element === charSpacingSlider) charSpacingValueDisplay.textContent = element.value;
             else if (element === densityInput) {
                 updateDensity(element.value);
@@ -1879,7 +1879,7 @@ addSettingsChangeListener(brightnessSlider);
 addSettingsChangeListener(shadowInputSlider);
 addSettingsChangeListener(midtoneGammaSlider);
 addSettingsChangeListener(highlightInputSlider);
-addSettingsChangeListener(outputGlowSlider);
+addSettingsChangeListener(outputBloomSlider);
 addSettingsChangeListener(charSpacingSlider);
 addMobileTouchHandling(contrastSlider);
 addMobileTouchHandling(levelsSlider);
@@ -1887,7 +1887,7 @@ addMobileTouchHandling(brightnessSlider);
 addMobileTouchHandling(shadowInputSlider);
 addMobileTouchHandling(midtoneGammaSlider);
 addMobileTouchHandling(highlightInputSlider);
-addMobileTouchHandling(outputGlowSlider);
+addMobileTouchHandling(outputBloomSlider);
 addMobileTouchHandling(charSpacingSlider);
 addSettingsChangeListener(densityInput, 'input');
 addSettingsChangeListener(scaleFactorInput, 'input');
